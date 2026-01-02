@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 
-const API_BASE = 'http://localhost:8001';
+// API base - empty string uses relative URLs (works in Docker with nginx proxy)
+const API_BASE = '';
 
 export interface Paper {
   paper_id: string;
@@ -134,10 +135,51 @@ export function useResearch() {
     }
   }, []);
 
+  // Get all papers (for initial display)
+  const listAllPapers = useCallback(async (limit = 100): Promise<Paper[]> => {
+    try {
+      const res = await fetch(`${API_BASE}/api/aikh/papers?limit=${limit}`);
+      if (!res.ok) {
+        // Fallback: use search with empty query
+        return searchPapers('', limit);
+      }
+      const data = await res.json();
+      return data.papers || data || [];
+    } catch {
+      // Fallback to search
+      return searchPapers('', limit);
+    }
+  }, [searchPapers]);
+
+  // Get categories/topics for exploration
+  const getCategories = useCallback(async (): Promise<{ category: string; count: number }[]> => {
+    try {
+      const res = await fetch(`${API_BASE}/api/aikh/categories`);
+      if (!res.ok) return [];
+      return await res.json();
+    } catch {
+      return [];
+    }
+  }, []);
+
+  // Get top concepts for exploration
+  const getTopConcepts = useCallback(async (limit = 20): Promise<{ concept: string; frequency: number }[]> => {
+    try {
+      const res = await fetch(`${API_BASE}/api/aikh/concepts?limit=${limit}`);
+      if (!res.ok) return [];
+      return await res.json();
+    } catch {
+      return [];
+    }
+  }, []);
+
   return {
     loading,
     error,
     searchPapers,
+    listAllPapers,
+    getCategories,
+    getTopConcepts,
     autocomplete,
     getBibtex,
     copyBibtex,

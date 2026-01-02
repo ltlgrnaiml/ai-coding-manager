@@ -5,11 +5,15 @@ import {
   LayoutList, 
   Box, 
   Cpu, 
-  AlertTriangle,
   BookOpen,
   Network,
-  Maximize2,
-  Filter
+  Tag,
+  Users,
+  TrendingUp,
+  Clock,
+  Sparkles,
+  ChevronRight,
+  Layers
 } from 'lucide-react'
 import { useResearch, Paper } from '../hooks/useResearch'
 import { PaperCard, PaperDetailModal, PaperGraph2D, PaperGraph3D } from '../components/research'
@@ -19,9 +23,18 @@ type ViewMode = 'list' | 'grid' | '2d' | '3d'
 interface GPUCapabilities {
   webgl2: boolean
   webgpu: boolean
-  maxTextureSize: number
   renderer: string
   estimatedMaxNodes: number
+}
+
+interface Category {
+  category: string
+  count: number
+}
+
+interface Concept {
+  concept: string
+  frequency: number
 }
 
 function detectGPUCapabilities(): GPUCapabilities {
@@ -29,32 +42,43 @@ function detectGPUCapabilities(): GPUCapabilities {
   const gl = canvas.getContext('webgl2')
   
   let webgl2 = false
-  let maxTextureSize = 0
   let renderer = 'Unknown'
   
   if (gl) {
     webgl2 = true
-    maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE)
     const debugInfo = gl.getExtension('WEBGL_debug_renderer_info')
     if (debugInfo) {
       renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)
     }
   }
   
-  // Estimate max nodes based on GPU capability
-  const estimatedMaxNodes = webgl2 ? Math.min(maxTextureSize / 4, 50000) : 1000
-  
-  // WebGPU detection (experimental)
+  const estimatedMaxNodes = webgl2 ? 50000 : 1000
   const webgpu = 'gpu' in navigator
   
-  return {
-    webgl2,
-    webgpu,
-    maxTextureSize,
-    renderer,
-    estimatedMaxNodes
-  }
+  return { webgl2, webgpu, renderer, estimatedMaxNodes }
 }
+
+// Sample categories for exploration (will be fetched from API)
+const SAMPLE_CATEGORIES = [
+  { category: 'Agentic AI', count: 24 },
+  { category: 'RAG Systems', count: 18 },
+  { category: 'Context Compression', count: 12 },
+  { category: 'Code Generation', count: 15 },
+  { category: 'Multi-Agent', count: 9 },
+  { category: 'Prompt Engineering', count: 8 },
+]
+
+// Sample concepts for exploration
+const SAMPLE_CONCEPTS = [
+  { concept: 'transformer', frequency: 45 },
+  { concept: 'attention mechanism', frequency: 38 },
+  { concept: 'embedding', frequency: 35 },
+  { concept: 'retrieval', frequency: 32 },
+  { concept: 'context window', frequency: 28 },
+  { concept: 'fine-tuning', frequency: 25 },
+  { concept: 'prompt', frequency: 22 },
+  { concept: 'agent', frequency: 20 },
+]
 
 export default function ResearchPage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -62,21 +86,19 @@ export default function ResearchPage() {
   const [selectedPaper, setSelectedPaper] = useState<Paper | null>(null)
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [gpuCapabilities, setGpuCapabilities] = useState<GPUCapabilities | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [showFilters, setShowFilters] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [categories] = useState<Category[]>(SAMPLE_CATEGORIES)
+  const [concepts] = useState<Concept[]>(SAMPLE_CONCEPTS)
   
-  const { searchPapers, getGPUStats, copyBibtex } = useResearch()
+  const { searchPapers, listAllPapers, getGPUStats, copyBibtex } = useResearch()
   const [gpuStats, setGpuStats] = useState<{ papersEmbedded: number; totalPapers: number } | null>(null)
 
   // Detect GPU capabilities on mount
   useEffect(() => {
     const caps = detectGPUCapabilities()
     setGpuCapabilities(caps)
-    
-    // If no WebGL2, force 2D mode max
-    if (!caps.webgl2) {
-      setViewMode('list')
-    }
+    if (!caps.webgl2) setViewMode('list')
   }, [])
 
   // Load GPU stats
@@ -91,48 +113,171 @@ export default function ResearchPage() {
     })
   }, [getGPUStats])
 
-  // Load initial papers
+  // Load papers on mount - THIS IS THE KEY FIX
   useEffect(() => {
     setIsLoading(true)
-    searchPapers('', 50).then(results => {
+    listAllPapers(79).then(results => {
       setPapers(results)
       setIsLoading(false)
     })
-  }, [searchPapers])
+  }, [listAllPapers])
 
   // Search handler
   const handleSearch = useCallback(async () => {
+    if (!searchQuery.trim()) {
+      const results = await listAllPapers(79)
+      setPapers(results)
+      return
+    }
     setIsLoading(true)
     const results = await searchPapers(searchQuery, 50)
     setPapers(results)
     setIsLoading(false)
-  }, [searchQuery, searchPapers])
+  }, [searchQuery, searchPapers, listAllPapers])
 
-  // Determine if 3D is available
+  // Category filter handler
+  const handleCategoryClick = useCallback(async (category: string) => {
+    setSelectedCategory(category === selectedCategory ? null : category)
+    setIsLoading(true)
+    const results = await searchPapers(category, 50)
+    setPapers(results)
+    setIsLoading(false)
+  }, [selectedCategory, searchPapers])
+
+  // Concept click handler
+  const handleConceptClick = useCallback(async (concept: string) => {
+    setSearchQuery(concept)
+    setIsLoading(true)
+    const results = await searchPapers(concept, 50)
+    setPapers(results)
+    setIsLoading(false)
+  }, [searchPapers])
+
   const is3DAvailable = gpuCapabilities?.webgl2 && papers.length < (gpuCapabilities?.estimatedMaxNodes || 1000)
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-gray-950">
-      {/* Header */}
-      <header className="border-b border-gray-800 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-600/20 rounded-lg">
-              <BookOpen className="w-6 h-6 text-purple-400" />
+    <div className="flex-1 flex h-full bg-gray-950">
+      {/* Left Sidebar - Discovery Panel */}
+      <aside className="w-64 border-r border-gray-800 flex flex-col bg-gray-900/50 overflow-y-auto">
+        {/* Stats Header */}
+        <div className="p-4 border-b border-gray-800">
+          <div className="flex items-center gap-2 text-purple-400 mb-2">
+            <Layers className="w-5 h-5" />
+            <span className="font-semibold">Knowledge Base</span>
+          </div>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="bg-gray-800/50 rounded-lg p-2 text-center">
+              <p className="text-2xl font-bold text-white">{gpuStats?.totalPapers || 79}</p>
+              <p className="text-gray-400">Papers</p>
             </div>
-            <div>
-              <h1 className="text-xl font-semibold text-white">Research Papers</h1>
-              <p className="text-sm text-gray-400">
-                {gpuStats ? `${gpuStats.papersEmbedded}/${gpuStats.totalPapers} papers embedded` : 'Loading...'}
-                {gpuCapabilities?.webgl2 && (
-                  <span className="ml-2 text-green-400">• GPU Accelerated</span>
-                )}
-              </p>
+            <div className="bg-gray-800/50 rounded-lg p-2 text-center">
+              <p className="text-2xl font-bold text-green-400">{gpuStats?.papersEmbedded || 79}</p>
+              <p className="text-gray-400">Embedded</p>
             </div>
           </div>
+        </div>
 
-          {/* GPU Status Badge */}
-          <div className="flex items-center gap-4">
+        {/* Topics/Categories */}
+        <div className="p-4 border-b border-gray-800">
+          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <Tag className="w-3 h-3" />
+            Topics
+          </h3>
+          <div className="space-y-1">
+            {categories.map(cat => (
+              <button
+                key={cat.category}
+                onClick={() => handleCategoryClick(cat.category)}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm flex items-center justify-between transition-colors ${
+                  selectedCategory === cat.category
+                    ? 'bg-purple-600/30 text-purple-300'
+                    : 'text-gray-300 hover:bg-gray-800'
+                }`}
+              >
+                <span>{cat.category}</span>
+                <span className="text-xs text-gray-500">{cat.count}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Concept Cloud */}
+        <div className="p-4 border-b border-gray-800">
+          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <Sparkles className="w-3 h-3" />
+            Top Concepts
+          </h3>
+          <div className="flex flex-wrap gap-1.5">
+            {concepts.map(c => (
+              <button
+                key={c.concept}
+                onClick={() => handleConceptClick(c.concept)}
+                className="px-2 py-1 text-xs bg-gray-800 hover:bg-purple-600/30 text-gray-300 hover:text-purple-300 rounded-full transition-colors"
+                title={`${c.frequency} occurrences`}
+              >
+                {c.concept}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="p-4">
+          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <TrendingUp className="w-3 h-3" />
+            Explore
+          </h3>
+          <div className="space-y-2">
+            <button 
+              onClick={() => handleSearch()}
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 rounded-lg transition-colors"
+            >
+              <Clock className="w-4 h-4 text-cyan-400" />
+              <span>Recent Papers</span>
+              <ChevronRight className="w-4 h-4 ml-auto text-gray-600" />
+            </button>
+            <button 
+              onClick={() => setViewMode('2d')}
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 rounded-lg transition-colors"
+            >
+              <Network className="w-4 h-4 text-purple-400" />
+              <span>Relationship Graph</span>
+              <ChevronRight className="w-4 h-4 ml-auto text-gray-600" />
+            </button>
+            <button 
+              onClick={() => setViewMode('3d')}
+              disabled={!is3DAvailable}
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 rounded-lg transition-colors disabled:opacity-50"
+            >
+              <Box className="w-4 h-4 text-cyan-400" />
+              <span>3D Explorer</span>
+              <ChevronRight className="w-4 h-4 ml-auto text-gray-600" />
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <header className="border-b border-gray-800 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-purple-600/20 rounded-lg">
+                <BookOpen className="w-6 h-6 text-purple-400" />
+              </div>
+              <div>
+                <h1 className="text-xl font-semibold text-white">Research Papers</h1>
+                <p className="text-sm text-gray-400">
+                  {papers.length} papers loaded
+                  {gpuCapabilities?.webgl2 && (
+                    <span className="ml-2 text-green-400">• GPU Accelerated</span>
+                  )}
+                </p>
+              </div>
+            </div>
+
+            {/* GPU Status Badge */}
             {gpuCapabilities && (
               <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs ${
                 gpuCapabilities.webgl2 
@@ -140,146 +285,137 @@ export default function ResearchPage() {
                   : 'bg-amber-900/30 text-amber-400'
               }`}>
                 <Cpu className="w-4 h-4" />
-                {gpuCapabilities.webgl2 ? 'WebGL2' : 'CPU Fallback'}
+                {gpuCapabilities.webgl2 ? 'WebGL2' : 'CPU'}
                 {gpuCapabilities.webgpu && <span className="text-cyan-400">+ WebGPU</span>}
               </div>
             )}
           </div>
-        </div>
 
-        {/* Search & View Controls */}
-        <div className="mt-4 flex items-center gap-4">
-          {/* Search */}
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              placeholder="Search papers by title, abstract, or concepts..."
-              className="w-full bg-gray-800 border border-gray-700 rounded-xl pl-11 pr-4 py-3 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
-            />
+          {/* Search & View Controls */}
+          <div className="mt-4 flex items-center gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                placeholder="Search papers by title, abstract, or concepts..."
+                className="w-full bg-gray-800 border border-gray-700 rounded-xl pl-11 pr-4 py-3 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+            </div>
+
+            {/* View Mode Toggle */}
+            <div className="flex items-center bg-gray-800 rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded-md transition-colors ${
+                  viewMode === 'list' ? 'bg-purple-600 text-white' : 'text-gray-400 hover:text-white'
+                }`}
+                title="List View"
+              >
+                <LayoutList className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded-md transition-colors ${
+                  viewMode === 'grid' ? 'bg-purple-600 text-white' : 'text-gray-400 hover:text-white'
+                }`}
+                title="Grid View"
+              >
+                <Grid3X3 className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setViewMode('2d')}
+                className={`p-2 rounded-md transition-colors ${
+                  viewMode === '2d' ? 'bg-purple-600 text-white' : 'text-gray-400 hover:text-white'
+                }`}
+                title="2D Graph (WebGL)"
+              >
+                <Network className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => is3DAvailable && setViewMode('3d')}
+                disabled={!is3DAvailable}
+                className={`p-2 rounded-md transition-colors ${
+                  viewMode === '3d' 
+                    ? 'bg-purple-600 text-white' 
+                    : is3DAvailable 
+                      ? 'text-gray-400 hover:text-white' 
+                      : 'text-gray-600 cursor-not-allowed'
+                }`}
+                title={is3DAvailable ? '3D Graph (WebGL2)' : '3D unavailable'}
+              >
+                <Box className="w-5 h-5" />
+              </button>
+            </div>
           </div>
+        </header>
 
-          {/* Filter Button */}
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className={`p-3 rounded-lg transition-colors ${
-              showFilters ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
-            }`}
-          >
-            <Filter className="w-5 h-5" />
-          </button>
-
-          {/* View Mode Toggle */}
-          <div className="flex items-center bg-gray-800 rounded-lg p-1">
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-2 rounded-md transition-colors ${
-                viewMode === 'list' ? 'bg-purple-600 text-white' : 'text-gray-400 hover:text-white'
-              }`}
-              title="List View"
-            >
-              <LayoutList className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`p-2 rounded-md transition-colors ${
-                viewMode === 'grid' ? 'bg-purple-600 text-white' : 'text-gray-400 hover:text-white'
-              }`}
-              title="Grid View"
-            >
-              <Grid3X3 className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => setViewMode('2d')}
-              className={`p-2 rounded-md transition-colors ${
-                viewMode === '2d' ? 'bg-purple-600 text-white' : 'text-gray-400 hover:text-white'
-              }`}
-              title="2D Graph (WebGL)"
-            >
-              <Network className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => is3DAvailable && setViewMode('3d')}
-              disabled={!is3DAvailable}
-              className={`p-2 rounded-md transition-colors ${
-                viewMode === '3d' 
-                  ? 'bg-purple-600 text-white' 
-                  : is3DAvailable 
-                    ? 'text-gray-400 hover:text-white' 
-                    : 'text-gray-600 cursor-not-allowed'
-              }`}
-              title={is3DAvailable ? '3D Graph (WebGL2)' : '3D unavailable - too many nodes or no WebGL2'}
-            >
-              <Box className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        {/* GPU Fallback Warning */}
-        {!gpuCapabilities?.webgl2 && (
-          <div className="mt-3 flex items-center gap-2 text-amber-400 text-sm bg-amber-900/20 px-4 py-2 rounded-lg">
-            <AlertTriangle className="w-4 h-4" />
-            <span>WebGL2 not available. Running in CPU fallback mode with limited visualization.</span>
-          </div>
-        )}
-      </header>
-
-      {/* Main Content */}
-      <div className="flex-1 overflow-hidden">
-        {isLoading ? (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-gray-400">Loading papers...</div>
-          </div>
-        ) : viewMode === 'list' || viewMode === 'grid' ? (
-          /* List/Grid View */
-          <div className={`h-full overflow-y-auto p-6 ${
-            viewMode === 'grid' 
-              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 content-start' 
-              : 'space-y-3'
-          }`}>
-            {papers.length === 0 ? (
-              <div className="col-span-full flex flex-col items-center justify-center py-20 text-gray-500">
-                <BookOpen className="w-16 h-16 mb-4" />
-                <p className="text-lg">No papers found</p>
-                <p className="text-sm">Try a different search query</p>
+        {/* Main Content Area */}
+        <div className="flex-1 overflow-hidden">
+          {isLoading ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center">
+                <div className="w-12 h-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                <p className="text-gray-400">Loading papers...</p>
               </div>
-            ) : (
-              papers.map(paper => (
-                <PaperCard
-                  key={paper.paper_id}
-                  paper={paper}
-                  onCopyBibtex={copyBibtex}
-                  onInsertReference={() => {}}
-                  onViewDetails={() => setSelectedPaper(paper)}
-                  compact={viewMode === 'grid'}
-                />
-              ))
-            )}
-          </div>
-        ) : viewMode === '2d' ? (
-          /* 2D Graph View - Sigma.js WebGL */
-          <PaperGraph2D
-            papers={papers}
-            onNodeClick={(paperId) => {
-              const paper = papers.find(p => p.paper_id === paperId)
-              if (paper) setSelectedPaper(paper)
-            }}
-            className="h-full"
-          />
-        ) : (
-          /* 3D Graph View - deck.gl WebGL2 */
-          <PaperGraph3D
-            papers={papers}
-            onNodeClick={(paperId) => {
-              const paper = papers.find(p => p.paper_id === paperId)
-              if (paper) setSelectedPaper(paper)
-            }}
-            className="h-full"
-          />
-        )}
+            </div>
+          ) : viewMode === 'list' || viewMode === 'grid' ? (
+            <div className={`h-full overflow-y-auto p-6 ${
+              viewMode === 'grid' 
+                ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 content-start' 
+                : 'space-y-3'
+            }`}>
+              {papers.length === 0 ? (
+                <div className="col-span-full flex flex-col items-center justify-center py-20 text-gray-500">
+                  <BookOpen className="w-16 h-16 mb-4" />
+                  <p className="text-lg">No papers found</p>
+                  <p className="text-sm mb-4">Try selecting a topic from the sidebar</p>
+                  <button
+                    onClick={() => {
+                      setSearchQuery('')
+                      setSelectedCategory(null)
+                      listAllPapers(79).then(setPapers)
+                    }}
+                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-500"
+                  >
+                    Show All Papers
+                  </button>
+                </div>
+              ) : (
+                papers.map(paper => (
+                  <PaperCard
+                    key={paper.paper_id}
+                    paper={paper}
+                    onCopyBibtex={copyBibtex}
+                    onInsertReference={() => {}}
+                    onViewDetails={() => setSelectedPaper(paper)}
+                    compact={viewMode === 'grid'}
+                  />
+                ))
+              )}
+            </div>
+          ) : viewMode === '2d' ? (
+            <PaperGraph2D
+              papers={papers}
+              onNodeClick={(paperId) => {
+                const paper = papers.find(p => p.paper_id === paperId)
+                if (paper) setSelectedPaper(paper)
+              }}
+              className="h-full"
+            />
+          ) : (
+            <PaperGraph3D
+              papers={papers}
+              onNodeClick={(paperId) => {
+                const paper = papers.find(p => p.paper_id === paperId)
+                if (paper) setSelectedPaper(paper)
+              }}
+              className="h-full"
+            />
+          )}
+        </div>
       </div>
 
       {/* Paper Detail Modal */}
