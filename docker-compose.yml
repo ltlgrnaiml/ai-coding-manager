@@ -1,48 +1,164 @@
 version: '3.8'
 
 # AI Dev Orchestrator - Standalone Workflow & Chat App
-# Uses ports 8100/3100 to avoid conflicts with engineering-tools (8000/3000)
+# Uses ports 8100/3100/6006 to avoid conflicts with engineering-tools
+#
+# Usage:
+#   Main profile (default):  docker compose --profile main up
+#   Backup profile:          docker compose --profile backup up
+#   Both simultaneously:     docker compose --profile main --profile backup up
+#
+# Main ports:   8100 (API), 3100 (UI), 6006 (Phoenix)
+# Backup ports: 8101 (API), 3101 (UI), 6007 (Phoenix)
 
+# ============================================================================
+# YAML Anchors - Shared configurations (DRY)
+# ============================================================================
+x-backend-base: &backend-base
+  build:
+    context: .
+    dockerfile: docker/backend.Dockerfile
+  environment: &backend-env
+    XAI_API_KEY: ${XAI_API_KEY}
+    GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+    WORKSPACE_ROOT: /workspace
+    KNOWLEDGE_EMBEDDING_MODE: local
+  volumes: &backend-volumes
+    - ./.adrs:/workspace/.adrs
+    - ./.discussions:/workspace/.discussions
+    - ./.plans:/workspace/.plans
+    - ./.sessions:/workspace/.sessions
+    - ./.questions:/workspace/.questions
+    - ./.workspace:/workspace/.workspace
+  healthcheck: &backend-healthcheck
+    test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+    interval: 30s
+    timeout: 10s
+    retries: 3
+
+x-frontend-base: &frontend-base
+  build:
+    context: .
+    dockerfile: docker/frontend.Dockerfile
+
+x-phoenix-base: &phoenix-base
+  image: arizephoenix/phoenix:latest
+  environment:
+    PHOENIX_WORKING_DIR: /data
+  healthcheck:
+    test: ["CMD", "wget", "-q", "--spider", "http://localhost:6006/healthz"]
+    interval: 30s
+    timeout: 10s
+    retries: 3
+
+# ============================================================================
+# Services
+# ============================================================================
 services:
-  aidev-backend:
-    container_name: aidev-backend
-    build:
-      context: .
-      dockerfile: docker/backend.Dockerfile
+  # --------------------------------------------------------------------------
+  # MAIN PROFILE - Primary development containers
+  # --------------------------------------------------------------------------
+  aidev-phoenix:
+    <<: *phoenix-base
+    container_name: aidev-phoenix
+    profiles: ["main"]
     ports:
-      - "8100:8000"  # External 8100, internal 8000
-    environment:
-      - XAI_API_KEY=${XAI_API_KEY}
-      - WORKSPACE_ROOT=/workspace
+      - "6006:6006"   # Phoenix UI
+      - "4317:4317"   # OTLP gRPC collector
+      - "4318:4318"   # OTLP HTTP collector
     volumes:
-      - ./.adrs:/workspace/.adrs:ro
-      - ./.discussions:/workspace/.discussions:ro
-      - ./.plans:/workspace/.plans:ro
-      - ./.sessions:/workspace/.sessions:ro
-      - ./.questions:/workspace/.questions:ro
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      - phoenix-data:/data
+    networks:
+      - aidev-network
+
+  aidev-backend:
+    <<: *backend-base
+    container_name: aidev-backend
+    profiles: ["main"]
+    ports:
+      - "8100:8000"
+    environment:
+      <<: *backend-env
+      PHOENIX_COLLECTOR_ENDPOINT: http://aidev-phoenix:4317
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://aidev-phoenix:4317
+    depends_on:
+      - aidev-phoenix
     networks:
       - aidev-network
 
   aidev-frontend:
+    <<: *frontend-base
     container_name: aidev-frontend
-    build:
-      context: .
-      dockerfile: docker/frontend.Dockerfile
+    profiles: ["main"]
     ports:
-      - "3100:80"  # External 3100, internal 80
+      - "3100:80"
     depends_on:
       - aidev-backend
     environment:
-      - VITE_API_URL=http://aidev-backend:8000
+      VITE_API_URL: http://aidev-backend:8000
     networks:
       - aidev-network
 
+  # --------------------------------------------------------------------------
+  # BACKUP PROFILE - Secondary containers on alternate ports
+  # --------------------------------------------------------------------------
+  aidev-phoenix-backup:
+    <<: *phoenix-base
+    container_name: aidev-phoenix-backup
+    profiles: ["backup"]
+    ports:
+      - "6007:6006"   # Phoenix UI (backup)
+      - "4319:4317"   # OTLP gRPC collector (backup)
+      - "4320:4318"   # OTLP HTTP collector (backup)
+    volumes:
+      - phoenix-data-backup:/data
+    networks:
+      - aidev-network-backup
+
+  aidev-backend-backup:
+    <<: *backend-base
+    container_name: aidev-backend-backup
+    profiles: ["backup"]
+    ports:
+      - "8101:8000"
+    environment:
+      <<: *backend-env
+      PHOENIX_COLLECTOR_ENDPOINT: http://aidev-phoenix-backup:4317
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://aidev-phoenix-backup:4317
+    depends_on:
+      - aidev-phoenix-backup
+    networks:
+      - aidev-network-backup
+
+  aidev-frontend-backup:
+    <<: *frontend-base
+    container_name: aidev-frontend-backup
+    profiles: ["backup"]
+    ports:
+      - "3101:80"
+    depends_on:
+      - aidev-backend-backup
+    environment:
+      VITE_API_URL: http://aidev-backend-backup:8000
+    networks:
+      - aidev-network-backup
+
+# ============================================================================
+# Networks
+# ============================================================================
 networks:
   aidev-network:
     name: aidev-network
     driver: bridge
+  aidev-network-backup:
+    name: aidev-network-backup
+    driver: bridge
+
+# ============================================================================
+# Volumes
+# ============================================================================
+volumes:
+  phoenix-data:
+    name: aidev-phoenix-data
+  phoenix-data-backup:
+    name: aidev-phoenix-data-backup

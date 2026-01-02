@@ -1,5 +1,22 @@
+# Light dependencies - can change frequently without major rebuild cost
+# Note: Heavy deps (sentence-transformers) are in requirements-heavy.txt
+#
+# Total download: ~100MB
+# ============================================================================
+
+# Web framework
 fastapi>=0.104.0
 uvicorn[standard]>=0.24.0
 pydantic>=2.0
-openai>=1.0.0
 python-multipart>=0.0.6
+python-dotenv>=1.0.0
+
+# LLM clients
+openai>=1.0.0
+google-generativeai>=0.3.0
+
+# Observability - Phoenix tracing (grpcio ~50MB is the largest here)
+opentelemetry-api>=1.20.0
+opentelemetry-sdk>=1.20.0
+opentelemetry-exporter-otlp-proto-grpc>=1.20.0
+openinference-instrumentation-openai>=0.1.0

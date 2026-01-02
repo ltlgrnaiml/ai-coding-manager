@@ -13,8 +13,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        // Use port 8100 to avoid conflict with engineering-tools (8000)
-        target: 'http://localhost:8100',
+        target: 'http://localhost:8000',
         changeOrigin: true,
       },
     },

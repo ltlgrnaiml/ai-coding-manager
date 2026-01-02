@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { ChevronDown, ChevronRight, Loader2 } from 'lucide-react'
 import { cn } from '../../lib/utils'
 
-const API_BASE = 'http://localhost:8000/api/devtools'
+const API_BASE = '/api/devtools'
 
 // JSON Schema type definitions
 interface JSONSchemaProperty {

@@ -5,6 +5,7 @@ Provides functions for discovering and relating workflow artifacts.
 """
 
 import json
+import os
 import re
 from datetime import datetime
 from pathlib import Path
@@ -29,8 +30,8 @@ from contracts.devtools.workflow import (
 
 __version__ = "2025.12.01"
 
-# Get project root (parent of gateway/services/)
-PROJECT_ROOT = Path(__file__).parent.parent.parent
+# Get project root from WORKSPACE_ROOT env var (for Docker) or fallback to file path
+PROJECT_ROOT = Path(os.getenv("WORKSPACE_ROOT", Path(__file__).parent.parent.parent))
 
 # =============================================================================
 # Constants
@@ -568,7 +569,7 @@ def scan_artifacts(
     types_to_scan = [artifact_type] if artifact_type else list(ArtifactType)
 
     for atype in types_to_scan:
-        directory = Path(ARTIFACT_DIRECTORIES[atype])
+        directory = PROJECT_ROOT / ARTIFACT_DIRECTORIES[atype]
         if not directory.exists():
             continue
 

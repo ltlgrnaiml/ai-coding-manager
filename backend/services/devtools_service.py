@@ -5,6 +5,7 @@ development artifacts. Access is controlled by runtime flags.
 """
 
 import json
+import os
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -75,8 +76,8 @@ def get_knowledge_context(prompt: str, max_tokens: int = 4000) -> dict | None:
         return None
 
 
-# Get project root (parent of gateway/)
-PROJECT_ROOT = Path(__file__).parent.parent.parent
+# Get project root from WORKSPACE_ROOT env var (for Docker) or fallback to file path
+PROJECT_ROOT = Path(os.getenv("WORKSPACE_ROOT", Path(__file__).parent.parent.parent))
 ADRS_DIR = PROJECT_ROOT / ".adrs"
 
 
@@ -558,16 +559,23 @@ async def create_artifact(request: CreateArtifactRequest) -> ArtifactResponse:
     Returns:
         ArtifactResponse with created artifact summary.
     """
-    from backend.services.workflow_service import ARTIFACT_DIRECTORIES
+    from backend.services.workflow_service import ARTIFACT_DIRECTORIES, PROJECT_ROOT
 
-    # Determine file path based on artifact type
-    base_dir = Path(ARTIFACT_DIRECTORIES.get(request.type, "."))
+    # Determine file path based on artifact type (use PROJECT_ROOT for absolute path)
+    base_dir = PROJECT_ROOT / ARTIFACT_DIRECTORIES.get(request.type, ".")
 
     # Generate artifact ID and filename
     if request.type == ArtifactType.ADR:
         # Find next ADR number
         existing = list(base_dir.rglob("ADR-*.json"))
-        numbers = [int(f.stem.split("_")[0].replace("ADR-", "")) for f in existing if f.stem.startswith("ADR-")]
+        numbers = []
+        for f in existing:
+            if f.stem.startswith("ADR-"):
+                try:
+                    num_str = f.stem.split("_")[0].replace("ADR-", "")
+                    numbers.append(int(num_str))
+                except ValueError:
+                    continue
         next_num = max(numbers, default=0) + 1
         slug = request.title.lower().replace(" ", "-").replace("_", "-")[:50]
         artifact_id = f"ADR-{next_num:04d}_{slug}"
@@ -575,7 +583,14 @@ async def create_artifact(request: CreateArtifactRequest) -> ArtifactResponse:
         file_path = base_dir / "core" / filename
     elif request.type == ArtifactType.DISCUSSION:
         existing = list(base_dir.rglob("DISC-*.md"))
-        numbers = [int(f.stem.split("_")[0].replace("DISC-", "")) for f in existing if f.stem.startswith("DISC-")]
+        numbers = []
+        for f in existing:
+            if f.stem.startswith("DISC-"):
+                try:
+                    num_str = f.stem.split("_")[0].replace("DISC-", "")
+                    numbers.append(int(num_str))
+                except ValueError:
+                    continue
         next_num = max(numbers, default=0) + 1
         slug = request.title.lower().replace(" ", "-").replace("_", "-")[:50]
         artifact_id = f"DISC-{next_num:03d}_{slug}"
@@ -583,7 +598,14 @@ async def create_artifact(request: CreateArtifactRequest) -> ArtifactResponse:
         file_path = base_dir / filename
     elif request.type == ArtifactType.PLAN:
         existing = list(base_dir.rglob("PLAN-*.md"))
-        numbers = [int(f.stem.split("_")[0].replace("PLAN-", "")) for f in existing if f.stem.startswith("PLAN-")]
+        numbers = []
+        for f in existing:
+            if f.stem.startswith("PLAN-"):
+                try:
+                    num_str = f.stem.split("_")[0].replace("PLAN-", "")
+                    numbers.append(int(num_str))
+                except ValueError:
+                    continue
         next_num = max(numbers, default=0) + 1
         slug = request.title.lower().replace(" ", "-").replace("_", "-")[:50]
         artifact_id = f"PLAN-{next_num:03d}_{slug}"
@@ -591,7 +613,14 @@ async def create_artifact(request: CreateArtifactRequest) -> ArtifactResponse:
         file_path = base_dir / filename
     elif request.type == ArtifactType.SPEC:
         existing = list(base_dir.rglob("SPEC-*.json"))
-        numbers = [int(f.stem.split("_")[0].replace("SPEC-", "").replace("SPEC-", "")) for f in existing if "SPEC-" in f.stem]
+        numbers = []
+        for f in existing:
+            if f.stem.startswith("SPEC-"):
+                try:
+                    num_str = f.stem.split("_")[0].replace("SPEC-", "")
+                    numbers.append(int(num_str))
+                except ValueError:
+                    continue
         next_num = max(numbers, default=0) + 1
         slug = request.title.lower().replace(" ", "-").replace("_", "-")[:50]
         artifact_id = f"SPEC-{next_num:04d}_{slug}"

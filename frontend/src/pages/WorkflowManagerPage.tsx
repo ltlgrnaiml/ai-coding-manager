@@ -17,7 +17,7 @@ import type { ArtifactType, FileFormat, ArtifactSummary } from '../components/wo
 import type { WorkflowType } from '../components/workflow/workflowUtils'
 import { isStageInWorkflow, artifactTypeToStage } from '../components/workflow/workflowUtils'
 
-const API_BASE = 'http://localhost:8000/api/devtools'
+const API_BASE = '/api/devtools'
 
 export function WorkflowManagerPage() {
   const [selectedArtifact, setSelectedArtifact] = useState<{ id: string; type: ArtifactType; filePath: string; fileFormat: FileFormat } | null>(null)

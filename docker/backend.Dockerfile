@@ -1,16 +1,24 @@
+# syntax=docker/dockerfile:1.4
 FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install dependencies
-COPY backend/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Install heavy dependencies first (rarely change) - separate layer for better caching
+COPY backend/requirements-heavy.txt .
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install -r requirements-heavy.txt
 
-# Copy backend code
-COPY backend/ .
+# Install remaining dependencies (may change more often)
+COPY backend/requirements.txt .
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install -r requirements.txt
+
+# Copy backend code and contracts
+COPY backend/ ./backend/
+COPY contracts/ ./contracts/
 
 # Expose port
 EXPOSE 8000
 
 # Run server
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]

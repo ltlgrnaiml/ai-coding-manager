@@ -1,0 +1,13 @@
+# Heavy dependencies - rarely change, cached in separate Docker layer
+# These packages have large transitive dependencies and should only be
+# modified when absolutely necessary to avoid long rebuild times.
+#
+# Total download: ~1GB+
+# ============================================================================
+
+# sentence-transformers pulls:
+#   - torch (~900MB)
+#   - transformers (~500MB) 
+#   - huggingface_hub, tokenizers, safetensors
+#   - numpy, scipy, scikit-learn
+sentence-transformers>=2.2.0

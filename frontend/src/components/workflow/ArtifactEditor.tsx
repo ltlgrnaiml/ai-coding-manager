@@ -8,7 +8,7 @@ import { DiscussionEditorForm } from './DiscussionEditorForm'
 import { PlanEditorForm } from './PlanEditorForm'
 import type { ArtifactType } from './types'
 
-const API_BASE = 'http://localhost:8000/api/devtools'
+const API_BASE = '/api/devtools'
 
 interface ArtifactEditorProps {
   artifactId: string

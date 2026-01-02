@@ -7,7 +7,7 @@ import { SchemaInterpreter } from './SchemaInterpreter'
 import { usePrompt } from '../../hooks/useWorkflowApi'
 import type { ArtifactType, FileFormat } from './types'
 
-const API_BASE = 'http://localhost:8000/api/devtools'
+const API_BASE = '/api/devtools'
 
 interface ArtifactReaderProps {
   artifactId: string

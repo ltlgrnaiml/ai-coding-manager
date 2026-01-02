@@ -3,10 +3,12 @@
 Per ADR-0047: SQLite database at workspace/knowledge.db.
 """
 
+import os
 import sqlite3
 from pathlib import Path
 
-DB_PATH = Path("workspace/knowledge.db")
+WORKSPACE_ROOT = Path(os.getenv("WORKSPACE_ROOT", "."))
+DB_PATH = WORKSPACE_ROOT / ".workspace" / "knowledge.db"
 
 SCHEMA = """
 -- Documents table (SPEC-0043-AR01)

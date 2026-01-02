@@ -6,7 +6,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { ArtifactSummary, ArtifactType, GraphResponse, WorkflowState, PromptResponse } from '../components/workflow/types'
 
-const API_BASE = 'http://localhost:8000/api/devtools'
+const API_BASE = '/api/devtools'
 
 interface UseDataResult<T> {
   data: T | null

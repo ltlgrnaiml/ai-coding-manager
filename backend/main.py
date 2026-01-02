@@ -4,11 +4,14 @@ Provides:
 - Workflow artifact management (discussions, ADRs, plans)
 - AI streaming chat with xAI/Grok
 - Knowledge base search
+- Phoenix tracing for observability
 """
 
 import asyncio
 import json
+import logging
 import os
+from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
 from typing import AsyncGenerator
@@ -19,12 +22,83 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from backend.services.devtools_service import router as devtools_router
+from backend.services.knowledge.database import init_database
 
-# Initialize FastAPI
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Phoenix tracing initialization (sends to external Phoenix container)
+_tracer_provider = None
+
+def init_phoenix():
+    """Initialize Phoenix tracing - sends traces to external Phoenix collector."""
+    global _tracer_provider
+    
+    phoenix_endpoint = os.getenv("PHOENIX_COLLECTOR_ENDPOINT", "http://localhost:4317")
+    
+    try:
+        from opentelemetry import trace
+        from opentelemetry.sdk.trace import TracerProvider
+        from opentelemetry.sdk.trace.export import BatchSpanProcessor
+        from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+        from openinference.instrumentation.openai import OpenAIInstrumentor
+        
+        # Create OTLP exporter pointing to Phoenix collector
+        exporter = OTLPSpanExporter(endpoint=phoenix_endpoint, insecure=True)
+        
+        # Set up tracer provider with batch processor
+        _tracer_provider = TracerProvider()
+        _tracer_provider.add_span_processor(BatchSpanProcessor(exporter))
+        trace.set_tracer_provider(_tracer_provider)
+        
+        # Instrument OpenAI SDK (works for xAI too)
+        OpenAIInstrumentor().instrument(tracer_provider=_tracer_provider)
+        
+        logger.info(f"Phoenix tracing initialized - sending to {phoenix_endpoint}")
+        logger.info("Phoenix UI available at http://localhost:6006")
+        return True
+    except ImportError as e:
+        logger.warning(f"OpenTelemetry/Phoenix instrumentation not available: {e}")
+        return False
+    except Exception as e:
+        logger.error(f"Failed to initialize Phoenix tracing: {e}")
+        return False
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application lifespan - startup and shutdown."""
+    # Startup
+    logger.info("Starting AI Dev Orchestrator...")
+    
+    # Initialize SQLite knowledge database
+    try:
+        init_database()
+        logger.info("SQLite knowledge database initialized")
+    except Exception as e:
+        logger.error(f"Failed to initialize database: {e}")
+    
+    # Initialize Phoenix tracing (connects to external Phoenix container)
+    init_phoenix()
+    
+    yield
+    
+    # Shutdown
+    logger.info("Shutting down...")
+    if _tracer_provider:
+        try:
+            _tracer_provider.shutdown()
+        except:
+            pass
+
+
+# Initialize FastAPI with lifespan
 app = FastAPI(
     title="AI Dev Orchestrator",
-    description="Workflow management + AI streaming chat",
+    description="Workflow management + AI streaming chat + Phoenix tracing",
     version="2025.12.01",
+    lifespan=lifespan,
 )
 
 # CORS for frontend
@@ -227,8 +301,78 @@ async def stream_chat_response(
     model: str,
     temperature: float,
     max_tokens: int,
+    use_rag: bool = True,
 ) -> AsyncGenerator[str, None]:
-    """Stream chat response from xAI API."""
+    """Stream chat response from xAI or Google API based on model."""
+    import logging
+    logging.info(f"Chat request using model: {model}")
+    
+    # Inject RAG context if enabled and there are user messages
+    if use_rag and messages:
+        messages = _inject_rag_context(messages)
+    
+    # Route to appropriate provider based on model
+    is_gemini = model.startswith("gemini")
+    
+    if is_gemini:
+        # Use Google Gemini API
+        async for chunk in _stream_gemini(messages, model, temperature, max_tokens):
+            yield chunk
+    else:
+        # Use xAI API
+        async for chunk in _stream_xai(messages, model, temperature, max_tokens):
+            yield chunk
+
+
+def _inject_rag_context(messages: list[ChatMessage]) -> list[ChatMessage]:
+    """Inject relevant knowledge context into the conversation."""
+    try:
+        from backend.services.knowledge.retrieval import get_knowledge_context
+        
+        # Get the last user message for context retrieval
+        last_user_msg = None
+        for msg in reversed(messages):
+            if msg.role == "user":
+                last_user_msg = msg.content
+                break
+        
+        if not last_user_msg:
+            return messages
+        
+        # Retrieve relevant context
+        context = get_knowledge_context(last_user_msg, max_tokens=1500)
+        
+        if not context:
+            return messages
+        
+        # Inject context as system message at the start
+        system_msg = ChatMessage(
+            role="system",
+            content=f"Use the following knowledge context to help answer the user's question:\n\n{context}"
+        )
+        
+        # Check if there's already a system message
+        if messages and messages[0].role == "system":
+            # Append context to existing system message
+            messages[0].content += f"\n\n{context}"
+            return messages
+        else:
+            # Add new system message
+            return [system_msg] + list(messages)
+    
+    except Exception as e:
+        import logging
+        logging.warning(f"RAG context injection failed: {e}")
+        return messages
+
+
+async def _stream_xai(
+    messages: list[ChatMessage],
+    model: str,
+    temperature: float,
+    max_tokens: int,
+) -> AsyncGenerator[str, None]:
+    """Stream from xAI/Grok API."""
     from openai import OpenAI
     
     api_key = os.getenv("XAI_API_KEY", "")
@@ -243,13 +387,7 @@ async def stream_chat_response(
     )
     
     try:
-        # Convert to OpenAI format
-        oai_messages = [
-            {"role": m.role, "content": m.content}
-            for m in messages
-        ]
-        
-        # Stream response
+        oai_messages = [{"role": m.role, "content": m.content} for m in messages]
         stream = client.chat.completions.create(
             model=model,
             messages=oai_messages,
@@ -261,7 +399,55 @@ async def stream_chat_response(
         for chunk in stream:
             if chunk.choices and chunk.choices[0].delta.content:
                 content = chunk.choices[0].delta.content
-                yield f"data: {json.dumps({'content': content})}\n\n"
+                yield f"data: {json.dumps({'content': content, 'model': model, 'provider': 'xai'})}\n\n"
+        
+        yield "data: [DONE]\n\n"
+        
+    except Exception as e:
+        yield f"data: {json.dumps({'error': str(e)})}\n\n"
+        yield "data: [DONE]\n\n"
+
+
+async def _stream_gemini(
+    messages: list[ChatMessage],
+    model: str,
+    temperature: float,
+    max_tokens: int,
+) -> AsyncGenerator[str, None]:
+    """Stream from Google Gemini API."""
+    import google.generativeai as genai
+    
+    api_key = os.getenv("GOOGLE_API_KEY", "")
+    if not api_key:
+        yield f"data: {json.dumps({'error': 'GOOGLE_API_KEY not configured'})}\n\n"
+        yield "data: [DONE]\n\n"
+        return
+    
+    try:
+        genai.configure(api_key=api_key)
+        
+        # Convert messages to Gemini format
+        gemini_messages = []
+        for m in messages:
+            role = "user" if m.role == "user" else "model"
+            gemini_messages.append({"role": role, "parts": [m.content]})
+        
+        # Create model and generate
+        gemini_model = genai.GenerativeModel(model)
+        
+        # Use streaming
+        response = gemini_model.generate_content(
+            gemini_messages,
+            generation_config=genai.GenerationConfig(
+                temperature=temperature,
+                max_output_tokens=max_tokens,
+            ),
+            stream=True,
+        )
+        
+        for chunk in response:
+            if chunk.text:
+                yield f"data: {json.dumps({'content': chunk.text, 'model': model, 'provider': 'google'})}\n\n"
         
         yield "data: [DONE]\n\n"
         
@@ -293,12 +479,26 @@ async def list_models():
     """List available chat models."""
     return {
         "models": [
-            {"id": "grok-4-1-fast-reasoning", "name": "Grok 4.1 Fast (Reasoning)", "category": "fast"},
-            {"id": "grok-4-fast-reasoning", "name": "Grok 4 Fast (Reasoning)", "category": "fast"},
-            {"id": "grok-4-1-fast-non-reasoning", "name": "Grok 4.1 Fast", "category": "fast"},
-            {"id": "grok-3-fast", "name": "Grok 3 Fast", "category": "budget"},
-            {"id": "grok-3-mini-fast", "name": "Grok 3 Mini Fast", "category": "budget"},
-            {"id": "grok-vision-beta", "name": "Grok Vision Beta", "category": "vision"},
+            # Fast reasoning models (2M context)
+            {"id": "grok-4-1-fast-reasoning", "name": "Grok 4.1 Fast (Reasoning)", "category": "reasoning", "context": "2M"},
+            {"id": "grok-4-fast-reasoning", "name": "Grok 4 Fast (Reasoning)", "category": "reasoning", "context": "2M"},
+            # Fast non-reasoning models (2M context)
+            {"id": "grok-4-1-fast-non-reasoning", "name": "Grok 4.1 Fast", "category": "fast", "context": "2M"},
+            {"id": "grok-4-fast-non-reasoning", "name": "Grok 4 Fast", "category": "fast", "context": "2M"},
+            # Code-optimized model (256K context)
+            {"id": "grok-code-fast-1", "name": "Grok Code Fast", "category": "code", "context": "256K"},
+            # Premium models
+            {"id": "grok-4-0709", "name": "Grok 4 (Premium)", "category": "premium", "context": "256K"},
+            {"id": "grok-3", "name": "Grok 3", "category": "premium", "context": "131K"},
+            # Budget model
+            {"id": "grok-3-mini", "name": "Grok 3 Mini", "category": "budget", "context": "131K"},
+            # Vision model
+            {"id": "grok-2-vision-1212", "name": "Grok 2 Vision", "category": "vision", "context": "32K"},
+            # Google Gemini models
+            {"id": "gemini-2.0-flash", "name": "Gemini 2.0 Flash", "category": "gemini", "context": "1M", "provider": "google"},
+            {"id": "gemini-2.0-flash-thinking", "name": "Gemini 2.0 Flash Thinking", "category": "gemini-reasoning", "context": "32K", "provider": "google"},
+            {"id": "gemini-1.5-pro", "name": "Gemini 1.5 Pro", "category": "gemini", "context": "2M", "provider": "google"},
+            {"id": "gemini-1.5-flash", "name": "Gemini 1.5 Flash", "category": "gemini", "context": "1M", "provider": "google"},
         ]
     }
 
