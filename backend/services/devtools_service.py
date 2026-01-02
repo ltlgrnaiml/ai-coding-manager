@@ -898,6 +898,75 @@ class GenerateAllRequest(BaseModel):
     use_reranking: bool = True  # UI toggle for LLM re-ranking
 
 
+@router.get("/artifacts/{artifact_id}/chat-analysis")
+async def get_chat_analysis(artifact_id: str) -> dict[str, Any]:
+    """Get chat record analysis for an artifact.
+    
+    Args:
+        artifact_id: The artifact ID.
+        
+    Returns:
+        Dict with chat session, insights, and copyable snippets.
+    """
+    from ai_dev_orchestrator.knowledge.artifact_processor import create_processor
+    
+    # Find the artifact
+    artifacts = scan_artifacts()
+    artifact = next((a for a in artifacts if a.id == artifact_id), None)
+    
+    if not artifact:
+        raise HTTPException(status_code=404, detail=f"Artifact {artifact_id} not found")
+    
+    file_path = Path(artifact.file_path)
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail=f"Artifact file not found: {file_path}")
+    
+    # Process the file to get chat analysis
+    processor = create_processor()
+    result = processor.process_file(file_path)
+    
+    if not result.success:
+        raise HTTPException(status_code=500, detail=f"Failed to process chat record: {result.error}")
+    
+    if not result.chat_session:
+        raise HTTPException(status_code=400, detail="File is not a chat record")
+    
+    return {
+        "chat_session": {
+            "session_id": result.chat_session.session_id,
+            "title": result.chat_session.title,
+            "date": result.chat_session.date,
+            "messages": [
+                {
+                    "role": msg.role,
+                    "content": msg.content,
+                    "timestamp": msg.timestamp
+                }
+                for msg in result.chat_session.messages
+            ],
+            "total_messages": result.chat_session.total_messages,
+            "user_messages": result.chat_session.user_messages,
+            "assistant_messages": result.chat_session.assistant_messages
+        },
+        "conversation_insights": {
+            "topics_discussed": result.conversation_insights.topics_discussed,
+            "key_insights": result.conversation_insights.key_insights,
+            "action_items": result.conversation_insights.action_items,
+            "decisions_made": result.conversation_insights.decisions_made,
+            "technical_concepts": result.conversation_insights.technical_concepts,
+            "summary": result.conversation_insights.summary
+        },
+        "disc_log_entry": {
+            "date": result.disc_log_entry.date,
+            "session_id": result.disc_log_entry.session_id,
+            "topics_discussed": result.disc_log_entry.topics_discussed,
+            "key_insights": result.disc_log_entry.key_insights,
+            "action_items": result.disc_log_entry.action_items
+        },
+        "copyable_snippets": result.copyable_snippets or {}
+    }
+
+
 @router.post("/workflows/{workflow_id}/generate-all", response_model=GenerationResponse)
 async def generate_all_endpoint(
     workflow_id: str,

@@ -104,6 +104,40 @@ def cmd_models(args):
         print()
 
 
+def cmd_archive(args):
+    """Handle archive commands."""
+    from ai_dev_orchestrator.cli_commands.archive_artifacts import (
+        downloads, files, directory, status
+    )
+    
+    if args.archive_command == "downloads":
+        downloads.callback(
+            downloads_path=args.downloads_path,
+            pattern=args.pattern,
+            verbose=args.verbose,
+            init_db=args.init_db
+        )
+    elif args.archive_command == "files":
+        files.callback(
+            files=tuple(args.files),
+            verbose=args.verbose,
+            init_db=args.init_db
+        )
+    elif args.archive_command == "directory":
+        directory.callback(
+            directory=args.directory,
+            pattern=args.pattern,
+            recursive=args.recursive,
+            verbose=args.verbose,
+            init_db=args.init_db
+        )
+    elif args.archive_command == "status":
+        status.callback(verbose=args.verbose)
+    else:
+        print("Usage: ai-dev archive {downloads|files|directory|status}")
+        print("Use 'ai-dev archive --help' for more information.")
+
+
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
@@ -147,6 +181,37 @@ def main():
     # models
     p_models = subparsers.add_parser("models", help="List available xAI models")
     p_models.set_defaults(func=cmd_models)
+    
+    # archive
+    p_archive = subparsers.add_parser("archive", help="Archive markdown artifacts to knowledge database")
+    archive_subparsers = p_archive.add_subparsers(dest="archive_command", help="Archive commands")
+    
+    # archive downloads
+    p_archive_downloads = archive_subparsers.add_parser("downloads", help="Process Downloads folder")
+    p_archive_downloads.add_argument("-d", "--downloads-path", help="Custom Downloads folder path")
+    p_archive_downloads.add_argument("-p", "--pattern", default="*.md", help="File pattern (default: *.md)")
+    p_archive_downloads.add_argument("-v", "--verbose", action="store_true", help="Show detailed results")
+    p_archive_downloads.add_argument("--init-db", action="store_true", help="Initialize database first")
+    
+    # archive files
+    p_archive_files = archive_subparsers.add_parser("files", help="Process specific files")
+    p_archive_files.add_argument("files", nargs="+", help="File paths to process")
+    p_archive_files.add_argument("-v", "--verbose", action="store_true", help="Show detailed results")
+    p_archive_files.add_argument("--init-db", action="store_true", help="Initialize database first")
+    
+    # archive directory
+    p_archive_dir = archive_subparsers.add_parser("directory", help="Process directory")
+    p_archive_dir.add_argument("directory", help="Directory path to process")
+    p_archive_dir.add_argument("-p", "--pattern", default="*.md", help="File pattern (default: *.md)")
+    p_archive_dir.add_argument("-r", "--recursive", action="store_true", help="Process recursively")
+    p_archive_dir.add_argument("-v", "--verbose", action="store_true", help="Show detailed results")
+    p_archive_dir.add_argument("--init-db", action="store_true", help="Initialize database first")
+    
+    # archive status
+    p_archive_status = archive_subparsers.add_parser("status", help="Show database status")
+    p_archive_status.add_argument("-v", "--verbose", action="store_true", help="Show detailed statistics")
+    
+    p_archive.set_defaults(func=cmd_archive)
     
     args = parser.parse_args()
     

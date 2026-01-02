@@ -4,6 +4,7 @@ import { cn } from '../../lib/utils'
 import { MarkdownRenderer } from './MarkdownRenderer'
 import { CodeRenderer } from './CodeRenderer'
 import { SchemaInterpreter } from './SchemaInterpreter'
+import { ChatRecordViewer } from './ChatRecordViewer'
 import { usePrompt } from '../../hooks/useWorkflowApi'
 import type { ArtifactType, FileFormat } from './types'
 
@@ -24,6 +25,7 @@ export function ArtifactReader({ artifactId, artifactType, fileFormat: propFileF
   const [error, setError] = useState<string | null>(null)
   const [fileFormat, setFileFormat] = useState<FileFormat>(propFileFormat || 'unknown')
   const [promptCopied, setPromptCopied] = useState(false)
+  const [isChatRecord, setIsChatRecord] = useState(false)
   const { fetchPrompt, loading: promptLoading } = usePrompt()
 
   useEffect(() => {
@@ -45,6 +47,16 @@ export function ArtifactReader({ artifactId, artifactType, fileFormat: propFileF
           else if (ext === 'md') setFileFormat('markdown')
           else if (ext === 'py') setFileFormat('python')
         }
+        
+        // Check if this is a chat record
+        const filename = data.file_path?.toLowerCase() || ''
+        const contentStr = typeof data.content === 'string' ? data.content.toLowerCase() : ''
+        const chatIndicators = ['chat', 'conversation', 'cascade', 'session', 'dialogue', 'transcript']
+        const contentIndicators = ['user:', 'assistant:', 'human:', 'ai:', 'claude:']
+        
+        const isChat = chatIndicators.some(indicator => filename.includes(indicator)) ||
+                      contentIndicators.some(indicator => contentStr.includes(indicator))
+        setIsChatRecord(isChat)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error')
       } finally {
@@ -91,20 +103,29 @@ export function ArtifactReader({ artifactId, artifactType, fileFormat: propFileF
   }
 
   const renderContent = () => {
+    if (loading) return <div className="flex items-center justify-center h-32"><Loader2 className="animate-spin" size={24} /></div>
+    if (error) return <div className="p-4 text-red-400">Error: {error}</div>
+    if (!content) return <div className="p-4 text-zinc-500">No content available</div>
+
     try {
-      // Route based on file format - schema-driven, no hardcoded interfaces
+      // Chat record - use specialized viewer
+      if (isChatRecord) {
+        return <ChatRecordViewer artifactId={artifactId} className="h-full" />
+      }
+      
+      // Markdown content
       if (fileFormat === 'markdown') {
         const contentStr = typeof content === 'string' ? content : JSON.stringify(content, null, 2)
         return <MarkdownRenderer content={contentStr} />
       }
       
-      // Python files use CodeRenderer
+      // Python code
       if (fileFormat === 'python' || artifactType === 'contract') {
         const contentStr = typeof content === 'string' ? content : JSON.stringify(content, null, 2)
         return <CodeRenderer code={contentStr} language="python" />
       }
       
-      // JSON files use SchemaInterpreter - renders UI from JSON Schema
+      // JSON schema-based content (ADR, SPEC, etc.)
       if (fileFormat === 'json' || fileFormat === 'unknown') {
         const data = typeof content === 'string' ? JSON.parse(content) : content
         // Map artifact type to schema type
