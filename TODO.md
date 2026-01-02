@@ -1,12 +1,18 @@
 # AI Dev Orchestrator - TODO & Roadmap
 
-> Extracted from engineering-tools on December 30, 2025
+> Extracted from engineering-tools on December 30-31, 2025
 
 ---
 
 ## Origin & Motivation
 
 This project was born from **EXP-001: L1 vs L3 Plan Granularity Experiment**, which tested 8 AI models across two plan granularity levels to determine optimal cost/quality tradeoffs.
+
+Additionally, it extracts the **full AI workflow infrastructure** from engineering-tools including:
+- **xAI/Grok integration** with LangChain-compatible adapters
+- **RAG system** with SQLite-backed knowledge archive
+- **Phoenix observability** for LLM call tracing
+- **Enhanced RAG** with query enhancement and LLM re-ranking
 
 ### Key Findings That Motivated This Project
 
@@ -22,6 +28,9 @@ Create a **standalone framework** for structured AI-assisted code development th
 - Provides tiered plan granularity (L1/L2/L3) matched to model capability
 - Enables A/B testing of AI models with reproducible experiments
 - Tracks session continuity across AI conversations
+- **Full xAI/Grok integration** with structured output
+- **RAG-powered knowledge retrieval** for context-aware generation
+- **Phoenix observability** for debugging and cost tracking
 
 ---
 
@@ -29,12 +38,53 @@ Create a **standalone framework** for structured AI-assisted code development th
 
 ### ✅ Core Infrastructure
 
-- [x] Project structure created
-- [x] `contracts/plan_schema.py` - Full L1/L2/L3 system with EXP-001 improvements
+- [x] Project structure created (`src/ai_dev_orchestrator/`)
 - [x] `AGENTS.md` - Global AI instructions
-- [x] `README.md` - Getting started guide
-- [x] `pyproject.toml` - Minimal dependencies (just pydantic)
+- [x] `README.md` - Getting started guide with feature examples
+- [x] `pyproject.toml` - Full dependencies with optional extras
 - [x] `.gitignore` - Standard Python ignores
+
+### ✅ LLM Module (`src/ai_dev_orchestrator/llm/`)
+
+- [x] `service.py` - xAI integration with structured output generation
+  - [x] Pydantic schema validation with retry logic
+  - [x] SQLite logging for all API calls
+  - [x] Cost estimation and usage tracking
+  - [x] Model management (10+ Grok models)
+- [x] `xai_langchain.py` - LangChain-compatible XAIChatModel
+- [x] `rag_chain.py` - RAG chain with knowledge archive integration
+
+### ✅ Knowledge Module (`src/ai_dev_orchestrator/knowledge/`)
+
+- [x] `database.py` - SQLite schema with FTS5 and vector storage
+- [x] `search_service.py` - FTS, vector, and hybrid search (RRF)
+- [x] `embedding_service.py` - sentence-transformers with auto-fallback
+- [x] `context_builder.py` - Token-budgeted context building
+- [x] `enhanced_rag.py` - 3-level enhanced RAG (query enhancement, LLM re-ranking, graph expansion)
+- [x] `sanitizer.py` - PII/secret redaction before LLM exposure
+
+### ✅ Observability Module (`src/ai_dev_orchestrator/observability/`)
+
+- [x] `phoenix_tracer.py` - Phoenix/OpenTelemetry integration
+  - [x] LangChain instrumentation
+  - [x] OpenAI SDK instrumentation (works with xAI)
+  - [x] Custom trace spans
+
+### ✅ Workflow Module (`src/ai_dev_orchestrator/workflow/`)
+
+- [x] `plan_manager.py` - L1/L2/L3 plan creation and management
+- [x] `discussion_manager.py` - Design discussion management
+- [x] `session_manager.py` - AI session continuity tracking
+
+### ✅ CLI (`src/ai_dev_orchestrator/cli.py`)
+
+- [x] `ai-dev new-plan` - Create plans with granularity selection
+- [x] `ai-dev new-discussion` - Create discussions
+- [x] `ai-dev new-session` - Create session logs
+- [x] `ai-dev health` - Check xAI API health
+- [x] `ai-dev stats` - Show LLM usage statistics
+- [x] `ai-dev models` - List available xAI models
+- [x] `ai-dev init-db` - Initialize knowledge database
 
 ### ✅ Workflow Infrastructure
 
@@ -44,82 +94,70 @@ Create a **standalone framework** for structured AI-assisted code development th
 - [x] `.questions/` - Open questions directory with README
 - [x] `.adrs/` - ADR directory with INDEX.md
 
-### ✅ Experiment Framework
-
-- [x] `.experiments/EXP-001_L1-vs-L3/` - Complete experiment with:
-  - [x] `FINAL_REPORT.md` - Comprehensive analysis
-  - [x] `SCORECARD_V2.json` - Enhanced scoring rubric
-  - [x] `scripts/save_results.py` - Automated results collection
-  - [x] `scripts/aggregate_results.py` - Results aggregation
-  - [x] All 8 model instruction files (L1 and L3)
-
 ---
 
 ## What Needs to Be Completed
 
-### 🔴 Priority 1: Core Functionality
+### 🔴 Priority 1: Testing & Validation
 
-- [ ] **CLI Scripts**
-  - [ ] `scripts/new_plan.py` - Create new plan from template
-  - [ ] `scripts/new_discussion.py` - Create new discussion
-  - [ ] `scripts/new_experiment.py` - Bootstrap experiment structure
-  - [ ] `scripts/verify_plan.py` - Run all verification commands
+- [ ] **Tests**
+  - [ ] `tests/test_llm_service.py` - LLM service tests (mocked)
+  - [ ] `tests/test_knowledge.py` - Knowledge/RAG tests
+  - [ ] `tests/test_workflow.py` - Workflow manager tests
+  - [ ] `tests/test_cli.py` - CLI script tests
+
+- [ ] **Validation**
+  - [ ] Verify all imports work correctly
+  - [ ] Test xAI integration with real API key
+  - [ ] Test Phoenix observability startup
+
+### 🟡 Priority 2: Documentation & Templates
 
 - [ ] **Templates**
   - [ ] `.plans/.templates/PLAN_TEMPLATE.json` - Plan JSON template
   - [ ] `.discussions/.templates/DISC_TEMPLATE.md` - Discussion template
   - [ ] `.adrs/.templates/ADR_TEMPLATE.json` - ADR JSON template
-  - [ ] `.experiments/.templates/` - Experiment bootstrap template
-
-### 🟡 Priority 2: Documentation
-
-- [ ] **ADRs to Copy/Adapt from engineering-tools**
-  - [ ] ADR-0001: AI Development Workflow Orchestration (was ADR-0041)
-  - [ ] ADR-0002: AI-Assisted Development Patterns (was ADR-0033)
-  - [ ] ADR-0003: 3-Tier Document Model (was ADR-0015)
-  - [ ] ADR-0004: Plan Granularity Levels (NEW - from EXP-001)
-  - [ ] ADR-0005: Contract Discipline (was ADR-0009)
 
 - [ ] **Guides**
   - [ ] `docs/guides/GETTING_STARTED.md` - Step-by-step tutorial
-  - [ ] `docs/guides/PLAN_AUTHORING.md` - How to write L1/L2/L3 plans
-  - [ ] `docs/guides/EXPERIMENT_DESIGN.md` - How to run model experiments
-  - [ ] `docs/guides/SESSION_MANAGEMENT.md` - Cross-session handoff
-
-- [ ] **SPECs**
-  - [ ] `docs/specs/SPEC-001_Plan-Schema.json` - Plan schema specification
+  - [ ] `docs/guides/XAI_INTEGRATION.md` - xAI setup and usage
+  - [ ] `docs/guides/RAG_SETUP.md` - Knowledge archive setup
+  - [ ] `docs/guides/PHOENIX_OBSERVABILITY.md` - Tracing setup
 
 ### 🟢 Priority 3: Examples & Polish
 
 - [ ] **Example Projects**
-  - [ ] `examples/simple_crud_app/` - Simple REST API plan
-  - [ ] `examples/api_refactor/` - Refactoring existing code plan
-  - [ ] `examples/new_feature/` - Full workflow from discussion to code
-
-- [ ] **Tests**
-  - [ ] `tests/test_plan_schema.py` - Schema validation tests
-  - [ ] `tests/test_cli.py` - CLI script tests
+  - [ ] `examples/simple_rag/` - Basic RAG usage
+  - [ ] `examples/structured_output/` - Pydantic schema generation
+  - [ ] `examples/full_workflow/` - Discussion → Plan → Execution
 
 - [ ] **CI/CD**
   - [ ] `.github/workflows/test.yml` - Run tests on PR
   - [ ] `.github/workflows/lint.yml` - Ruff linting
 
-### 🔵 Priority 4: Product Features (Future)
+### 🔵 Priority 4: Future Features
 
-- [ ] **Web UI** (if building SaaS)
+- [ ] **Google Gemini Integration** (TODO)
+  - [ ] Add `gemini_langchain.py` adapter
+  - [ ] Multi-provider support in RAG chain
+
+- [ ] **LangFuse Integration** (TODO - alternative to Phoenix)
+  - [ ] Add LangFuse tracer option
+  - [ ] Cloud-based observability
+
+- [ ] **LangGraph Integration** (TODO)
+  - [ ] State machine workflows
+  - [ ] Multi-step agent patterns
+
+- [ ] **Memory System** (TODO)
+  - [ ] Short-term conversation memory
+  - [ ] Long-term knowledge persistence
+  - [ ] Self-reflection capabilities
+
+- [ ] **Web UI**
   - [ ] Plan editor with L1/L2/L3 toggle
-  - [ ] Experiment dashboard
-  - [ ] Model comparison charts
-
-- [ ] **Integrations**
-  - [ ] VS Code extension
-  - [ ] Windsurf deep integration
-  - [ ] GitHub Actions for plan verification
-
-- [ ] **Advanced Features**
-  - [ ] Plan version history
-  - [ ] Team collaboration
-  - [ ] Model cost tracking
+  - [ ] Knowledge archive browser
+  - [ ] Phoenix dashboard integration
 
 ---
 

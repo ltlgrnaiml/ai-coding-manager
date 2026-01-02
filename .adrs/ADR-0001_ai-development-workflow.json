@@ -1,0 +1,66 @@
+{
+  "schema_type": "adr",
+  "id": "ADR-0001",
+  "title": "AI Development Workflow Orchestration",
+  "status": "active",
+  "date": "2025-12-31",
+  "review_date": "2026-06-30",
+  "author": "Mycahya Eggleston",
+  "scope": "core",
+  "origin": "Extracted from engineering-tools ADR-0043",
+  "context": {
+    "description": "As AI-assisted development matures, ad-hoc 'vibe coding' produces inconsistent results. Industry best practices show that structured spec-driven development with explicit planning phases significantly improves code quality and reduces rework.",
+    "problem": "Need a structured workflow that: (1) captures design conversations before coding, (2) breaks work into verifiable fragments, (3) tracks execution state across sessions, (4) enforces verification gates before marking complete, (5) supports tiered granularity for different AI model capabilities."
+  },
+  "decision": {
+    "summary": "Implement a 6-tier hierarchical AI Development Workflow with Discussion (T0), Decision/ADR (T1), Specification/SPEC (T2), Contract (T3), Plan (T4), and Fragment (T5) tiers.",
+    "tier_hierarchy": [
+      {"tier": "T0", "name": "Discussion", "path": ".discussions/DISC-XXX.md", "purpose": "Capture AI ↔ Human design conversation"},
+      {"tier": "T1", "name": "ADR", "path": ".adrs/ADR-XXXX.json", "purpose": "Record WHY architectural decisions were made"},
+      {"tier": "T2", "name": "SPEC", "path": "docs/specs/SPEC-XXXX.json", "purpose": "Define WHAT to build"},
+      {"tier": "T3", "name": "Contract", "path": "contracts/*.py", "purpose": "Pydantic data shapes (SSOT)"},
+      {"tier": "T4", "name": "Plan", "path": ".plans/PLAN-XXX.json", "purpose": "Milestones, tasks, verification"},
+      {"tier": "T5", "name": "Fragment", "path": ".sessions/SESSION_XXX.md", "purpose": "Single verifiable work unit"}
+    ],
+    "plan_granularity_levels": {
+      "L1_STANDARD": {
+        "target_models": ["Claude Opus", "Claude Sonnet 3.5+", "GPT-4o", "Grok-4"],
+        "description": "Context + verification commands. Premium models infer implementation."
+      },
+      "L2_ENHANCED": {
+        "target_models": ["Claude Sonnet 3.5", "GPT-4o-mini", "Gemini 1.5 Flash", "Grok-2"],
+        "description": "L1 + explicit constraints, hints, references."
+      },
+      "L3_PROCEDURAL": {
+        "target_models": ["Claude Haiku", "Gemini Flash 8B", "Grok-fast"],
+        "description": "L2 + step-by-step instructions with code snippets."
+      }
+    },
+    "fragment_execution_protocol": {
+      "steps": ["IMPLEMENT one task", "VERIFY with command", "DOCUMENT evidence", "UPDATE status"],
+      "anti_patterns": [
+        "Touching multiple milestones before completing one",
+        "Marking complete without running verification",
+        "Creating code without wiring it into execution path"
+      ]
+    }
+  },
+  "consequences": {
+    "positive": [
+      "Consistent, traceable development process across AI sessions",
+      "Reduced rework from incomplete implementations",
+      "Clear handoff between AI sessions",
+      "Tiered granularity enables cost-effective AI usage"
+    ],
+    "negative": [
+      "Additional overhead for small changes",
+      "Learning curve for new workflow"
+    ]
+  },
+  "guardrails": [
+    {"id": "fragment-verification-required", "rule": "No task may be marked 'complete' without verification"},
+    {"id": "session-required-for-plans", "rule": "All Plan execution MUST create a session file"},
+    {"id": "l3-stop-on-failure", "rule": "L3 plans MUST stop and escalate on verification failure"}
+  ],
+  "tags": ["workflow", "ai-assisted", "planning", "verification", "session-management"]
+}

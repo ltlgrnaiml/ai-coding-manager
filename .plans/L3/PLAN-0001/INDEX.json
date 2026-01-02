@@ -1,0 +1,129 @@
+{
+  "plan_id": "PLAN-0001",
+  "title": "Frontend Migration from Engineering-Tools",
+  "disc_ref": "DISC-0001",
+  "granularity": "L3",
+  "status": "ready",
+  "created": "2026-01-01",
+  "description": "Migrate fully functional UI/UX from engineering-tools to ai-coding-manager",
+  
+  "execution_strategy": {
+    "approach": "bulk_copy_then_modify",
+    "parallelization": true,
+    "tracks": ["A_FRONTEND", "B_BACKEND"],
+    "notes": "Run copy script first, then execute tracks in parallel"
+  },
+
+  "prerequisites": [
+    {
+      "step": "Run bulk copy script",
+      "command": "bash scripts/migrate_from_engineering_tools.sh",
+      "verification": "ls frontend/src/components/workflow | head -5"
+    },
+    {
+      "step": "Install npm dependencies",
+      "command": "cd frontend && npm install @monaco-editor/react @tanstack/react-query react-force-graph-2d react-force-graph-3d three @types/three",
+      "verification": "grep react-force-graph frontend/package.json"
+    }
+  ],
+
+  "tracks": {
+    "A_FRONTEND": {
+      "description": "Modify all frontend files to work with AICM",
+      "chunks": ["CHUNK-A1", "CHUNK-A2"],
+      "can_parallel_with": ["B_BACKEND"],
+      "files_owned": [
+        "frontend/src/**/*"
+      ]
+    },
+    "B_BACKEND": {
+      "description": "Modify all backend files to work with AICM",
+      "chunks": ["CHUNK-B1", "CHUNK-B2"],
+      "can_parallel_with": ["A_FRONTEND"],
+      "files_owned": [
+        "backend/**/*",
+        "contracts/**/*"
+      ]
+    }
+  },
+
+  "chunks": {
+    "CHUNK-A1": {
+      "title": "Frontend Core: App, Routing, Hooks, Types",
+      "chunk_file": "CHUNK-A1.json",
+      "track": "A_FRONTEND",
+      "estimated_lines": 800,
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/lib/utils.ts",
+        "frontend/src/hooks/useWorkflowApi.ts",
+        "frontend/src/components/workflow/types.ts",
+        "frontend/src/pages/WorkflowManagerPage.tsx"
+      ]
+    },
+    "CHUNK-A2": {
+      "title": "Frontend Components: All Workflow Components",
+      "chunk_file": "CHUNK-A2.json",
+      "track": "A_FRONTEND",
+      "depends_on": ["CHUNK-A1"],
+      "estimated_lines": 1200,
+      "files": [
+        "frontend/src/components/workflow/*.tsx",
+        "frontend/src/components/workflow/index.ts"
+      ]
+    },
+    "CHUNK-B1": {
+      "title": "Backend Services: DevTools, Workflow, LLM",
+      "chunk_file": "CHUNK-B1.json",
+      "track": "B_BACKEND",
+      "estimated_lines": 1000,
+      "files": [
+        "backend/main.py",
+        "backend/services/devtools_service.py",
+        "backend/services/workflow_service.py",
+        "backend/services/llm_service.py"
+      ]
+    },
+    "CHUNK-B2": {
+      "title": "Backend Knowledge/RAG + Contracts",
+      "chunk_file": "CHUNK-B2.json",
+      "track": "B_BACKEND",
+      "depends_on": ["CHUNK-B1"],
+      "estimated_lines": 800,
+      "files": [
+        "backend/services/knowledge/*.py",
+        "contracts/devtools/*.py"
+      ]
+    }
+  },
+
+  "current_chunk": null,
+  "last_completed_task": null,
+  
+  "continuation_context": {
+    "api_base_frontend": "http://localhost:8000/api",
+    "api_base_backend": "/api",
+    "key_changes": [
+      "API_BASE URL from engineering-tools gateway to AICM backend",
+      "Import paths from apps/homepage structure to flat AICM structure",
+      "Router mounts in backend/main.py"
+    ]
+  },
+
+  "execution_history": [],
+
+  "final_verification": {
+    "commands": [
+      "cd frontend && npm run build",
+      "cd frontend && npm run lint",
+      "cd backend && python -c \"from main import app; print('Backend OK')\"",
+      "pytest tests/ -v"
+    ],
+    "acceptance_criteria": [
+      "Frontend builds without errors",
+      "Backend imports without errors",
+      "/workflow route renders WorkflowManagerPage",
+      "All existing tests pass"
+    ]
+  }
+}

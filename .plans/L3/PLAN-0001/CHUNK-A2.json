@@ -1,0 +1,108 @@
+{
+  "chunk_id": "CHUNK-A2",
+  "plan_id": "PLAN-0001",
+  "title": "Frontend Components: All Workflow Components",
+  "track": "A_FRONTEND",
+  "status": "ready",
+  "depends_on": ["CHUNK-A1"],
+  "estimated_lines": 1200,
+  
+  "context": [
+    "PREREQUISITE: CHUNK-A1 completed - core routing and hooks working",
+    "COMPONENTS: 30+ workflow components need import path fixes",
+    "PATTERN: Most components import from './types' or '../hooks/useWorkflowApi' - verify paths"
+  ],
+
+  "files_to_modify": [
+    "frontend/src/components/workflow/index.ts",
+    "frontend/src/components/workflow/ArtifactGraph.tsx",
+    "frontend/src/components/workflow/ArtifactGraph3D.tsx",
+    "frontend/src/components/workflow/WorkflowSidebar.tsx",
+    "frontend/src/components/workflow/ArtifactReader.tsx",
+    "frontend/src/components/workflow/ArtifactEditor.tsx",
+    "frontend/src/components/workflow/WorkflowHeader.tsx",
+    "frontend/src/components/workflow/CommandPalette.tsx",
+    "frontend/src/components/workflow/WorkflowStepper.tsx",
+    "frontend/src/components/workflow/*.tsx"
+  ],
+
+  "tasks": [
+    {
+      "task_id": "A2-01",
+      "description": "Verify/fix frontend/src/components/workflow/index.ts - barrel exports",
+      "action": "VERIFY_OR_FIX",
+      "file": "frontend/src/components/workflow/index.ts",
+      "expected": "All component exports should resolve to local .tsx files",
+      "verification_hint": "head -30 frontend/src/components/workflow/index.ts"
+    },
+    {
+      "task_id": "A2-02",
+      "description": "Fix ArtifactGraph.tsx imports - cn utility, types, lucide icons",
+      "action": "MODIFY",
+      "file": "frontend/src/components/workflow/ArtifactGraph.tsx",
+      "changes": [
+        {
+          "pattern": "import { cn } from '@/lib/utils'",
+          "replace_with": "import { cn } from '../../lib/utils'"
+        },
+        {
+          "pattern": "Verify react-force-graph imports work after npm install"
+        }
+      ],
+      "verification_hint": "grep -n \"import { cn }\" frontend/src/components/workflow/ArtifactGraph.tsx"
+    },
+    {
+      "task_id": "A2-03",
+      "description": "Fix ArtifactGraph3D.tsx imports",
+      "action": "MODIFY",
+      "file": "frontend/src/components/workflow/ArtifactGraph3D.tsx",
+      "changes": [
+        {
+          "pattern": "import { cn } from '@/lib/utils'",
+          "replace_with": "import { cn } from '../../lib/utils'"
+        }
+      ],
+      "verification_hint": "grep -n \"import\" frontend/src/components/workflow/ArtifactGraph3D.tsx | head -10"
+    },
+    {
+      "task_id": "A2-04",
+      "description": "Batch fix all remaining components - find and replace @/ paths",
+      "action": "BATCH_MODIFY",
+      "pattern": "All files in frontend/src/components/workflow/*.tsx",
+      "changes": [
+        {
+          "find": "from '@/lib/utils'",
+          "replace": "from '../../lib/utils'"
+        },
+        {
+          "find": "from '@/hooks/",
+          "replace": "from '../../hooks/"
+        },
+        {
+          "find": "from '@/components/",
+          "replace": "from '../"
+        }
+      ],
+      "verification_hint": "grep -r \"@/\" frontend/src/components/workflow/ | wc -l"
+    },
+    {
+      "task_id": "A2-05",
+      "description": "Final verification - all imports resolve",
+      "action": "VERIFY",
+      "verification_hint": "cd frontend && npx tsc --noEmit 2>&1 | grep -c 'error' || echo '0 errors'"
+    }
+  ],
+
+  "chunk_verification": {
+    "commands": [
+      "cd frontend && npx tsc --noEmit",
+      "cd frontend && npm run build"
+    ],
+    "success_criteria": "TypeScript compiles, build succeeds, /workflow route renders"
+  },
+
+  "handoff_notes": {
+    "next_chunk": null,
+    "context_for_next": "Frontend track complete. Await CHUNK-B2 for full integration."
+  }
+}

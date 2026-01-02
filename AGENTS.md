@@ -1,197 +1,252 @@
-# AI Dev Orchestrator - AI Coding Guide
+# Global Rules for AI Coding Assistants (Solo-Dev Edition)
 
-> **Windsurf Auto-Discovery**: This file applies globally to all files in the repository.
-
----
-
-## Project Philosophy
-
-This is an **AI-assisted development framework** that helps you get consistent, high-quality code from AI coding assistants.
-
-| Principle | Rule |
-|-----------|------|
-| **Quality > Speed** | Take the correct architectural path, never the shortcut |
-| **First-Principles** | Question every decision. No legacy assumptions. |
-| **Plan Granularity** | Match plan detail (L1/L2/L3) to model capability |
-| **Verify Everything** | Never mark a task complete without running verification |
+> **Context**: Solo-developer, greenfield project, AI-assisted development.
+> Full control over codebase. No external consumers. First-principles approach.
 
 ---
 
-## Plan Granularity Levels
+## Rule 0 — Quality Over Speed
 
-### L1: Standard (Premium Models)
+**Take the correct architectural path, never the shortcut.**
 
-For Opus, Sonnet, GPT-5.2 - models that handle ambiguity well.
+- Prefer clean designs over quick fixes
+- Avoid wrappers, shims, indirection unless truly necessary
+- Leave the codebase better than you found it
+- Future-you inherits today's decisions — choose debt-free solutions
 
-```json
-"context": [
-  "ARCHITECTURE: Functional style, no classes",
-  "FILE: Create services/my_service.py",
-  "ENUM: Status: pending, active, completed"
-]
-```
-
-### L2: Enhanced (Mid-Tier Models)
-
-For Gemini Pro, GPT-5.1 - need explicit constraints.
-
-```json
-"context": [...],
-"constraints": [
-  "DO NOT use class-based architecture",
-  "MUST place tests in tests/unit/"
-],
-"existing_patterns": [
-  "Follow pattern in services/user_service.py"
-]
-```
-
-### L3: Procedural (Budget Models)
-
-For Haiku, Flash, Grok - need step-by-step instructions.
-
-```json
-"context": [...],
-"constraints": [...],
-"steps": [
-  {
-    "step_number": 1,
-    "instruction": "Create the file services/my_service.py",
-    "code_snippet": "# Contents here...",
-    "verification_hint": "test -f services/my_service.py"
-  }
-]
-```
+**Good > Fast. Always.**
 
 ---
 
-## 6-Tier Workflow
+## Rule 1 — First-Principles Thinking
 
-| Tier | Artifact | Purpose |
-|------|----------|---------|
-| T0 | `.discussions/DISC-XXX.md` | Capture design conversation |
-| T1 | `.adrs/ADR-XXXX.json` | Record WHY decisions were made |
-| T2 | `docs/specs/SPEC-XXX.json` | Define WHAT to build |
-| T3 | `contracts/*.py` | Define data shapes (Pydantic) |
-| T4 | `.plans/PLAN-XXX.json` | Milestones, tasks, acceptance criteria |
-| T5 | Fragment execution | One verifiable unit of work |
+**Question every decision. Hold no legacy assumptions.**
 
----
+Before implementing anything:
 
-## Session Discipline
+1. Ask: "Is this the RIGHT solution given current circumstances?"
+2. Ask: "Am I carrying forward a pattern just because it existed before?"
+3. Ask: "Would I design it this way if starting fresh today?"
 
-Every AI session must:
+If the answer to #2 is yes and #3 is no — redesign it.
 
-1. Check `.sessions/` for recent session logs
-2. Claim next session number and create session file
-3. Read the active plan in `.plans/`
-4. Ensure tests pass before making changes
-5. Update session file with progress
-6. Document remaining work before ending
+No sacred cows. No "we've always done it this way."
 
 ---
 
-## Code Patterns
+## Rule 2 — Single Source of Truth (SSOT)
 
-### Naming Conventions
+Every project must define one canonical location for:
 
-| Element | Pattern | Example |
-|---------|---------|---------|
-| Files | `{domain}_{action}.py` | `plan_loader.py` |
-| Functions | `{verb}_{noun}()` | `load_plan()` |
-| Classes | `PascalCase` | `PlanSchema` |
+- Architecture decisions (`.adrs/`)
+- Technical specifications (`docs/specs/`)
+- Contracts (`shared/contracts/`)
+- Session logs (`.sessions/`)
+- Open questions (`.questions/`)
 
-### Required Docstring Format (Google Style)
+**Rule:** Never duplicate definitions. Never fragment planning. One source per concern.
+
+---
+
+## Rule 3 — Session Identity & Continuity
+
+**Every AI conversation = one session.**
+
+### Session ID
+
+- Check `.sessions/` for highest existing SESSION_XXX number
+- Your session = highest + 1
+- Create `.sessions/SESSION_XXX_<brief_summary>.md` as your session log
+
+### Code Comments (when helpful)
 
 ```python
-def compute_task_id(inputs: dict[str, Any]) -> str:
-    """Compute deterministic task ID from inputs.
-
-    Args:
-        inputs: Dictionary of task inputs to hash.
-
-    Returns:
-        8-character SHA-256 hash prefix.
-
-    Raises:
-        ValueError: If inputs is empty.
-    """
+# SESSION_XXX: Reason for change
 ```
 
+This enables traceability across AI sessions.
+
 ---
 
-## Verification First
+## Rule 4 — Before Starting Work
 
-**CRITICAL**: Never mark a task complete without verification.
+Every session must:
 
-```text
-1. IMPLEMENT one task
-2. VERIFY with command (grep, pytest, import check)
-3. DOCUMENT evidence in plan
-4. ONLY THEN mark complete
+1. Read `docs/AI_CODING_GUIDE.md` (if exists)
+2. Check `.sessions/` for recent session logs
+3. Check `.questions/` for open issues
+4. Claim session number and create session file
+5. Ensure tests pass before making changes
+6. Only then begin implementation
+
+**Start informed, not blind.**
+
+---
+
+## Rule 5 — Behavioral Regression Protection
+
+Define baseline outputs for critical behavior (snapshots, golden files, fixtures, deterministic logs).
+
+**Before modifying behavior-critical logic:**
+
+1. Run baseline tests — they must pass
+2. Make changes
+3. Re-run baseline tests
+4. If results differ → regression → fix it
+
+**Never modify baseline data without explicit USER approval.**
+
+---
+
+## Rule 6 — Breaking Changes > Fragile Compatibility
+
+**Favor clean breaks over compatibility hacks.**
+
+Since this is greenfield with no external consumers:
+
+1. Rename/move the type/function directly
+2. Let the compiler/linter fail
+3. Fix all import sites
+4. Delete legacy names immediately
+
+**No adapters. No shims. No "temporary" re-exports. Fix the source.**
+
+---
+
+## Rule 7 — No Dead Code
+
+**Remove immediately:**
+
+- Unused functions and modules
+- Commented-out code
+- "Kept for reference" logic (git history exists)
+- Deprecated patterns
+
+**The repository contains only living, active code.**
+
+---
+
+## Rule 8 — Modular Architecture
+
+When organizing code:
+
+- Each module owns its own state
+- Keep fields private — expose intentional APIs
+- Avoid deep relative imports
+- File size: < 500 lines preferred, < 1000 max
+- Organize by responsibility, not convenience
+- Clear inputs/outputs for every component
+
+---
+
+## Rule 9 — Deterministic System Design
+
+**Every component must have:**
+
+- Clear single responsibility
+- Defined inputs (typed, validated)
+- Defined outputs (typed, contracted)
+- Explicit error handling
+- Predictable behavior
+
+**Upstream providers and downstream consumers must have clear expectations.**
+
+---
+
+## Rule 10 — Documentation is Automated
+
+**Automate documentation generation:**
+
+- Pydantic models → JSON Schema (auto-generated)
+- FastAPI → OpenAPI spec (auto-generated)
+- Docstrings → API docs (mkdocstrings)
+- Commits → Changelog (git-cliff)
+
+**Manual documentation = documentation that rots. Automate it.**
+
+---
+
+## Rule 11 — Code Quality Standards
+
+All code must be:
+
+- **Modern**: Use current language features and patterns
+- **Modular**: Clear boundaries, single responsibility
+- **Clean**: Readable, well-formatted, consistent style
+- **Efficient**: No premature optimization, but no waste
+- **Type-safe**: Full type hints (Python), typed props (TypeScript)
+- **Documented**: Google-style docstrings on all public functions
+
+---
+
+## Rule 12 — Ask Questions
+
+**If ANY of the following occur:**
+
+- Requirements conflict
+- Plans seem incomplete
+
+Create a question file under `.questions/` and ask the USER.
+
+**Never guess on architectural decisions.**
+
+---
+
+## Rule 13 — Maximize Context Window
+
+While context is fresh:
+
+- Complete as much aligned work as possible
+- Don't stop mid-task if more progress is obvious
+- Minimize context re-initialization for next session
+
+If a task grows too large: split into sub-tasks and document in session file.
+
+---
+
+## Rule 14 — Before Finishing Session
+
+Every session must:
+
+1. Update session file with progress
+2. Ensure project builds
+3. Ensure all tests pass
+4. Document remaining work, blockers, or next steps
+5. Write handoff notes for next session
+
+### Session Handoff Checklist
+
+- [ ] Project builds cleanly
+- [ ] All tests pass
+- [ ] Regression tests pass (if applicable)
+- [ ] Session file updated
+- [ ] Remaining TODOs documented
+
+---
+
+## Rule 15 — TODO Tracking
+
+Any incomplete work must be tracked:
+
+### In Code
+
+```python
+# TODO(SESSIONS_XXX): Description of what's missing
 ```
 
----
+### In Global TODO List
 
-## L3 Execution Protocol (Budget Models)
+Add to project TODO file with file path + description.
 
-L3 plans are chunked for smaller context windows. Target: 600 lines, Soft limit: 800 lines.
-
-**Before Starting Any Chunk:**
-
-1. Read `.plans/L3/<PLAN>/INDEX.json` first
-2. Check `current_chunk` field to know which chunk to execute
-3. Read the chunk file specified in `chunks[current_chunk].chunk_file`
-4. Create session file: `.sessions/SESSION_XXX_<plan>_<chunk>_<summary>.md`
-5. Run baseline tests and document result in session file
-6. If baseline fails with unrelated errors, document and proceed
-7. If baseline fails with related errors, create `.questions/` file and STOP
-
-**During Execution:**
-
-1. Follow each step in order - do not skip steps
-2. Copy code snippets EXACTLY - do not modify
-3. Run `verification_hint` after each step
-4. If any step fails, create `.questions/` file and STOP (L3 is strict)
-5. After every 5 tasks, update session file with progress
-
-**Self-Reflection Checkpoint (every 5 tasks):**
-
-```text
-CHECKPOINT:
-- [ ] Am I following established patterns from continuation_context?
-- [ ] Did I create files in the correct locations?
-- [ ] Did I run verification commands for completed tasks?
-- [ ] Should I escalate any blockers to .questions/?
-```
-
-**After Completing Chunk:**
-
-1. Run all acceptance criteria verification commands
-2. Update INDEX.json: `current_chunk`, `last_completed_task`, `continuation_context`
-3. Add entry to `execution_history` with your model name (self-report!)
-4. Update session file with handoff notes
-5. Commit: `git add -A && git commit -m 'PLAN-XXX <chunk>: <summary>'`
-
-**Verification Strictness by Granularity:**
-
-| Granularity | On Failure |
-|-------------|------------|
-| L1 (Premium) | Log and continue - models can self-correct |
-| L2 (Mid-tier) | Log failure, continue with caution |
-| L3 (Budget) | STOP and create `.questions/` file |
+**Future sessions must know what remains.**
 
 ---
 
-## Quick Commands
+## Solo-Dev Principles Summary
 
-| Command | Purpose |
-|---------|---------|
-| `pip install -e .` | Install package |
-| `ruff check .` | Run linting |
-| `ruff format .` | Auto-format code |
-| `pytest tests/ -v` | Run all tests |
-
----
-
-*This AGENTS.md follows Windsurf's hierarchical pattern.*
+1. **First-Principles**: Question everything, no legacy baggage
+2. **Full Control**: Break things freely, fix them completely
+3. **AI-Assisted**: Optimize for AI     comprehension and continuity
+4. **Automate Everything**: Documentation, tests, validation
+5. **Deterministic Design**: Clear contracts, predictable behavior
+6. **Quality First**: Modern, clean, efficient, industry-leading

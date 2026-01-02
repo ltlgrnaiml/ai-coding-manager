@@ -1,15 +1,18 @@
 # AI Dev Orchestrator
 
-> A framework for structured, AI-assisted code development with tiered plan granularity.
+> A comprehensive framework for structured, AI-assisted code development with **xAI integration**, **RAG**, and **observability**.
 
 ## What is This?
 
 AI Dev Orchestrator helps you get **consistent, high-quality code** from AI coding assistants by providing:
 
-1. **Plan Granularity System (L1/L2/L3)** - Match plan detail to model capability
-2. **6-Tier Workflow** - Discussion → ADR → SPEC → Contract → Plan → Fragment
-3. **Experiment Framework** - A/B test AI models, measure stochastic variation
-4. **Session Continuity** - Handoff context between AI sessions
+1. **🤖 xAI/Grok Integration** - Full LangChain-compatible chat models with structured output
+2. **📚 RAG System** - SQLite-backed knowledge archive with hybrid search (FTS + vector)
+3. **👁️ Phoenix Observability** - OpenTelemetry tracing for all LLM calls
+4. **📋 Plan Granularity (L1/L2/L3)** - Match plan detail to model capability
+5. **🔄 6-Tier Workflow** - Discussion → ADR → SPEC → Contract → Plan → Fragment
+6. **🧪 Experiment Framework** - A/B test AI models, measure stochastic variation
+7. **📝 Session Continuity** - Handoff context between AI sessions
 
 ## Quick Start
 
@@ -18,11 +21,71 @@ AI Dev Orchestrator helps you get **consistent, high-quality code** from AI codi
 git clone https://github.com/your-org/ai-dev-orchestrator.git
 cd ai-dev-orchestrator
 
-# Install dependencies
+# Install with all features
+pip install -e ".[all]"
+
+# Or minimal install
 pip install -e .
 
+# Set your xAI API key
+export XAI_API_KEY="your-key-from-console.x.ai"
+
+# Check LLM health
+ai-dev health
+
 # Create your first plan
-python scripts/new_plan.py "My Feature"
+ai-dev new-plan "My Feature" -g L1
+```
+
+## Core Features
+
+### 🤖 xAI/Grok Integration
+
+```python
+from ai_dev_orchestrator import get_xai_chat_model, generate_structured
+from pydantic import BaseModel
+
+# LangChain-compatible chat model
+llm = get_xai_chat_model(model="grok-4-fast-reasoning")
+response = llm.invoke("Explain RAG in one sentence.")
+
+# Structured output with Pydantic validation
+class TaskOutput(BaseModel):
+    title: str
+    steps: list[str]
+
+result = generate_structured("Create a deployment task", TaskOutput)
+if result.success:
+    print(result.data)
+```
+
+### 📚 RAG System
+
+```python
+from ai_dev_orchestrator import init_database, create_rag_chain
+
+# Initialize knowledge database
+init_database()
+
+# Create RAG chain
+chain = create_rag_chain()
+response = chain.invoke("What ADRs relate to authentication?")
+print(response.answer)
+print(f"Sources: {response.sources}")
+```
+
+### 👁️ Phoenix Observability
+
+```python
+from ai_dev_orchestrator import init_phoenix, shutdown_phoenix
+
+# Initialize at app startup - Phoenix UI at http://localhost:6006
+init_phoenix()
+
+# All LangChain/OpenAI calls are now automatically traced!
+
+# Cleanup at shutdown
+shutdown_phoenix()
 ```
 
 ## Plan Granularity Levels

@@ -1,0 +1,104 @@
+{
+  "chunk_id": "CHUNK-B2",
+  "plan_id": "PLAN-0001",
+  "title": "Backend Knowledge/RAG + Contracts",
+  "track": "B_BACKEND",
+  "status": "ready",
+  "depends_on": ["CHUNK-B1"],
+  "estimated_lines": 800,
+  
+  "context": [
+    "PREREQUISITE: CHUNK-B1 completed - core services importable",
+    "KNOWLEDGE: RAG subsystem files need import path fixes",
+    "CONTRACTS: Pydantic models need to be importable from contracts/"
+  ],
+
+  "files_to_modify": [
+    "backend/services/knowledge/__init__.py",
+    "backend/services/knowledge/database.py",
+    "backend/services/knowledge/embedding_service.py",
+    "backend/services/knowledge/search_service.py",
+    "backend/services/knowledge/context_builder.py",
+    "backend/services/knowledge/chunking.py",
+    "backend/services/knowledge/parsers.py",
+    "backend/services/knowledge/sanitizer.py",
+    "contracts/devtools/__init__.py",
+    "contracts/devtools/api.py",
+    "contracts/devtools/workflow.py"
+  ],
+
+  "tasks": [
+    {
+      "task_id": "B2-01",
+      "description": "Create backend/services/knowledge/__init__.py if not exists",
+      "action": "CREATE_IF_MISSING",
+      "file": "backend/services/knowledge/__init__.py",
+      "content": "# Knowledge/RAG services\nfrom .database import *\nfrom .search_service import *\nfrom .context_builder import *\n",
+      "verification_hint": "test -f backend/services/knowledge/__init__.py && echo 'exists'"
+    },
+    {
+      "task_id": "B2-02",
+      "description": "Fix all knowledge service imports",
+      "action": "BATCH_MODIFY",
+      "pattern": "All files in backend/services/knowledge/*.py",
+      "changes": [
+        {
+          "find": "from shared.contracts",
+          "replace": "from contracts"
+        },
+        {
+          "find": "from gateway.services",
+          "replace": "from backend.services"
+        }
+      ],
+      "verification_hint": "grep -r 'from shared' backend/services/knowledge/ | wc -l"
+    },
+    {
+      "task_id": "B2-03",
+      "description": "Create contracts/devtools/__init__.py",
+      "action": "CREATE_IF_MISSING",
+      "file": "contracts/devtools/__init__.py",
+      "content": "# DevTools contracts\nfrom .api import *\n",
+      "verification_hint": "test -f contracts/devtools/__init__.py && echo 'exists'"
+    },
+    {
+      "task_id": "B2-04",
+      "description": "Fix contracts/devtools/api.py imports",
+      "action": "MODIFY",
+      "file": "contracts/devtools/api.py",
+      "changes": [
+        {
+          "note": "Should mostly be standalone Pydantic models",
+          "verify": "Check for any relative imports that need fixing"
+        }
+      ],
+      "verification_hint": "head -30 contracts/devtools/api.py"
+    },
+    {
+      "task_id": "B2-05",
+      "description": "Final verification - all Python imports resolve",
+      "action": "VERIFY",
+      "commands": [
+        "cd backend && python -c \"from services.knowledge.database import *; print('DB OK')\"",
+        "cd backend && python -c \"from services.knowledge.search_service import *; print('Search OK')\"",
+        "python -c \"from contracts.devtools import *; print('Contracts OK')\""
+      ],
+      "verification_hint": "python -c \"from contracts.devtools.api import *; print('OK')\""
+    }
+  ],
+
+  "chunk_verification": {
+    "commands": [
+      "python -c \"from contracts.devtools import *\"",
+      "cd backend && python -c \"from services.knowledge import *\"",
+      "cd backend && python -c \"from main import app\"",
+      "pytest tests/ -v"
+    ],
+    "success_criteria": "All Python imports resolve, existing tests pass"
+  },
+
+  "handoff_notes": {
+    "next_chunk": null,
+    "context_for_next": "Backend track complete. Full integration ready."
+  }
+}

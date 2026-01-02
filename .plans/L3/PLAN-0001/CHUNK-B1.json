@@ -1,0 +1,114 @@
+{
+  "chunk_id": "CHUNK-B1",
+  "plan_id": "PLAN-0001",
+  "title": "Backend Services: DevTools, Workflow, LLM",
+  "track": "B_BACKEND",
+  "status": "ready",
+  "estimated_lines": 1000,
+  "can_run_parallel_with": "CHUNK-A1",
+  
+  "context": [
+    "PREREQUISITE: Copy script has already run - files exist but need modification",
+    "ROUTER: Mount devtools router in backend/main.py",
+    "IMPORTS: Fix import paths from gateway structure to AICM backend structure",
+    "CONTRACTS: Update Pydantic model imports to use contracts/ directory"
+  ],
+
+  "files_to_modify": [
+    "backend/main.py",
+    "backend/services/devtools_service.py",
+    "backend/services/workflow_service.py",
+    "backend/services/llm_service.py"
+  ],
+
+  "tasks": [
+    {
+      "task_id": "B1-01",
+      "description": "Create backend/services/__init__.py if not exists",
+      "action": "CREATE_IF_MISSING",
+      "file": "backend/services/__init__.py",
+      "content": "# Backend services\n",
+      "verification_hint": "test -f backend/services/__init__.py && echo 'exists'"
+    },
+    {
+      "task_id": "B1-02",
+      "description": "Update backend/services/devtools_service.py - fix imports",
+      "action": "MODIFY",
+      "file": "backend/services/devtools_service.py",
+      "changes": [
+        {
+          "pattern": "from shared.contracts.devtools",
+          "replace_with": "from contracts.devtools",
+          "note": "Update all shared.contracts imports to contracts"
+        },
+        {
+          "pattern": "from gateway.services",
+          "replace_with": "from backend.services",
+          "note": "Update internal service imports"
+        },
+        {
+          "pattern": "from services.knowledge",
+          "replace_with": "from backend.services.knowledge",
+          "note": "Update knowledge service imports"
+        }
+      ],
+      "verification_hint": "grep -n 'from contracts' backend/services/devtools_service.py | head -5"
+    },
+    {
+      "task_id": "B1-03",
+      "description": "Update backend/services/workflow_service.py - fix imports",
+      "action": "MODIFY",
+      "file": "backend/services/workflow_service.py",
+      "changes": [
+        {
+          "pattern": "from shared.contracts",
+          "replace_with": "from contracts"
+        }
+      ],
+      "verification_hint": "head -20 backend/services/workflow_service.py"
+    },
+    {
+      "task_id": "B1-04",
+      "description": "Update backend/services/llm_service.py - fix imports",
+      "action": "MODIFY", 
+      "file": "backend/services/llm_service.py",
+      "changes": [
+        {
+          "pattern": "from shared.contracts",
+          "replace_with": "from contracts"
+        }
+      ],
+      "verification_hint": "head -20 backend/services/llm_service.py"
+    },
+    {
+      "task_id": "B1-05",
+      "description": "Update backend/main.py - mount devtools router",
+      "action": "MODIFY",
+      "file": "backend/main.py",
+      "changes": [
+        {
+          "description": "Import devtools router",
+          "code": "from backend.services.devtools_service import router as devtools_router"
+        },
+        {
+          "description": "Mount router",
+          "code": "app.include_router(devtools_router, prefix='/api/devtools', tags=['devtools'])"
+        }
+      ],
+      "verification_hint": "grep -n 'devtools' backend/main.py"
+    }
+  ],
+
+  "chunk_verification": {
+    "commands": [
+      "cd backend && python -c \"from services.devtools_service import router; print('DevTools OK')\"",
+      "cd backend && python -c \"from main import app; print('Main OK')\""
+    ],
+    "success_criteria": "All Python imports resolve without errors"
+  },
+
+  "handoff_notes": {
+    "next_chunk": "CHUNK-B2",
+    "context_for_next": "Core services are importable. CHUNK-B2 handles knowledge/RAG services and contracts."
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "schema_type": "adr",
+  "id": "ADR-XXXX",
+  "title": "{ADR Title}",
+  "status": "draft",
+  "date": "YYYY-MM-DD",
+  "review_date": "YYYY-MM-DD",
+  "author": "{Author Name}",
+  "scope": "core",
+  "context": {
+    "description": "{Background and why this decision is needed}",
+    "problem": "{Specific problem this ADR addresses}"
+  },
+  "decision": {
+    "summary": "{One-line summary of the decision}",
+    "details": {
+      "approach": "{High-level approach}",
+      "constraints": [
+        "{Constraint 1}",
+        "{Constraint 2}"
+      ]
+    }
+  },
+  "consequences": {
+    "positive": [
+      "{Positive consequence 1}",
+      "{Positive consequence 2}"
+    ],
+    "negative": [
+      "{Negative consequence 1}"
+    ]
+  },
+  "alternatives_considered": [
+    {
+      "name": "{Alternative Name}",
+      "description": "{Brief description}",
+      "pros": ["{Pro 1}"],
+      "cons": ["{Con 1}"],
+      "rejected_reason": "{Why this was not chosen}"
+    }
+  ],
+  "guardrails": [
+    {
+      "id": "{guardrail-id}",
+      "rule": "{Rule description}",
+      "enforcement": "{How this is enforced}"
+    }
+  ],
+  "references": [
+    "{Reference 1}",
+    "{Reference 2}"
+  ],
+  "tags": [
+    "{tag1}",
+    "{tag2}"
+  ]
+}

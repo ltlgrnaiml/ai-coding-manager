@@ -1,16 +1,19 @@
 # ADR Index: AI Dev Orchestrator
 
 > Architecture Decision Records for the AI-assisted development framework.
+> 
+> **Origin**: Core ADRs extracted and adapted from engineering-tools (2025-12-31).
 
 ## Core ADRs
 
-| ID | Title | Status |
-|----|-------|--------|
-| ADR-0001 | AI Development Workflow Orchestration | Active |
-| ADR-0002 | AI-Assisted Development Patterns | Active |
-| ADR-0003 | 3-Tier Document Model | Active |
-| ADR-0004 | Plan Granularity Levels (L1/L2/L3) | Active |
-| ADR-0005 | Contract Discipline (Pydantic SSOT) | Active |
+| ID | Title | Status | Origin |
+|----|-------|--------|--------|
+| ADR-0001 | AI Development Workflow Orchestration | Active | eng-tools ADR-0043 |
+| ADR-0002 | Knowledge Archive & RAG System | Active | eng-tools ADR-0047 |
+| ADR-0003 | AI-Assisted Development Patterns | Active | eng-tools ADR-0034 |
+| ADR-0004 | Observability & Debugging First | Active | eng-tools ADR-0037 |
+| ADR-0005 | Type-Safety & Contract Discipline | Active | eng-tools ADR-0010 |
+| ADR-0006 | 3-Tier Document Model | Active | eng-tools ADR-0016 |
 
 ## ADR Structure
 

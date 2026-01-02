@@ -1,0 +1,109 @@
+{
+  "chunk_id": "CHUNK-A1",
+  "plan_id": "PLAN-0001",
+  "title": "Frontend Core: App, Routing, Hooks, Types",
+  "track": "A_FRONTEND",
+  "status": "ready",
+  "estimated_lines": 800,
+  
+  "context": [
+    "PREREQUISITE: Copy script has already run - files exist but need modification",
+    "API_BASE: Change from 'http://localhost:8000/api/devtools' to 'http://localhost:8000/api/devtools'",
+    "IMPORTS: engineering-tools uses '@/components/workflow/' - AICM uses '../components/workflow/'",
+    "ROUTING: Mount WorkflowManagerPage at /workflow route"
+  ],
+
+  "files_to_modify": [
+    "frontend/src/App.tsx",
+    "frontend/src/lib/utils.ts", 
+    "frontend/src/hooks/useWorkflowApi.ts",
+    "frontend/src/components/workflow/types.ts",
+    "frontend/src/pages/WorkflowManagerPage.tsx"
+  ],
+
+  "tasks": [
+    {
+      "task_id": "A1-01",
+      "description": "Update frontend/src/lib/utils.ts - verify cn() utility exists and works",
+      "action": "VERIFY_OR_FIX",
+      "file": "frontend/src/lib/utils.ts",
+      "expected": "Export cn() function using clsx and tailwind-merge",
+      "verification_hint": "grep -n 'export function cn' frontend/src/lib/utils.ts"
+    },
+    {
+      "task_id": "A1-02", 
+      "description": "Update frontend/src/components/workflow/types.ts - no changes needed, verify copy",
+      "action": "VERIFY",
+      "file": "frontend/src/components/workflow/types.ts",
+      "verification_hint": "grep -n 'ArtifactType' frontend/src/components/workflow/types.ts"
+    },
+    {
+      "task_id": "A1-03",
+      "description": "Update frontend/src/hooks/useWorkflowApi.ts - fix API_BASE URL",
+      "action": "MODIFY",
+      "file": "frontend/src/hooks/useWorkflowApi.ts",
+      "changes": [
+        {
+          "find": "const API_BASE = 'http://localhost:8000/api/devtools'",
+          "replace": "const API_BASE = 'http://localhost:8000/api/devtools'",
+          "note": "URL should match - verify it's correct for AICM backend"
+        },
+        {
+          "find": "import type {",
+          "action": "Ensure imports reference local types.ts not engineering-tools paths"
+        }
+      ],
+      "verification_hint": "grep -n 'API_BASE' frontend/src/hooks/useWorkflowApi.ts"
+    },
+    {
+      "task_id": "A1-04",
+      "description": "Update frontend/src/pages/WorkflowManagerPage.tsx - fix all imports",
+      "action": "MODIFY",
+      "file": "frontend/src/pages/WorkflowManagerPage.tsx",
+      "changes": [
+        {
+          "pattern": "All imports from '../components/workflow' should work as-is",
+          "verify": "Check relative paths are correct for AICM structure"
+        },
+        {
+          "pattern": "Import useWorkflowApi hooks",
+          "expected": "import { useArtifacts, useArtifactGraph, ... } from '../hooks/useWorkflowApi'"
+        }
+      ],
+      "verification_hint": "head -30 frontend/src/pages/WorkflowManagerPage.tsx"
+    },
+    {
+      "task_id": "A1-05",
+      "description": "Update frontend/src/App.tsx - integrate WorkflowManagerPage into routing",
+      "action": "MODIFY",
+      "file": "frontend/src/App.tsx",
+      "changes": [
+        {
+          "description": "Add import for WorkflowManagerPage",
+          "code": "import { WorkflowManagerPage } from './pages/WorkflowManagerPage'"
+        },
+        {
+          "description": "Update /workflow route to use WorkflowManagerPage instead of WorkflowView",
+          "code": "<Route path=\"/workflow\" element={<WorkflowManagerPage />} />"
+        },
+        {
+          "description": "Remove or keep WorkflowView based on preference - can delete if not needed"
+        }
+      ],
+      "verification_hint": "grep -n 'WorkflowManagerPage' frontend/src/App.tsx"
+    }
+  ],
+
+  "chunk_verification": {
+    "commands": [
+      "cd frontend && npx tsc --noEmit 2>&1 | head -20",
+      "cd frontend && npm run build 2>&1 | tail -10"
+    ],
+    "success_criteria": "TypeScript compiles without errors, build succeeds"
+  },
+
+  "handoff_notes": {
+    "next_chunk": "CHUNK-A2",
+    "context_for_next": "Core routing and hooks are working. CHUNK-A2 handles individual component fixes."
+  }
+}

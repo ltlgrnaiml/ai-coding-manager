@@ -1,0 +1,48 @@
+version: '3.8'
+
+# AI Dev Orchestrator - Standalone Workflow & Chat App
+# Uses ports 8100/3100 to avoid conflicts with engineering-tools (8000/3000)
+
+services:
+  aidev-backend:
+    container_name: aidev-backend
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    ports:
+      - "8100:8000"  # External 8100, internal 8000
+    environment:
+      - XAI_API_KEY=${XAI_API_KEY}
+      - WORKSPACE_ROOT=/workspace
+    volumes:
+      - ./.adrs:/workspace/.adrs:ro
+      - ./.discussions:/workspace/.discussions:ro
+      - ./.plans:/workspace/.plans:ro
+      - ./.sessions:/workspace/.sessions:ro
+      - ./.questions:/workspace/.questions:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - aidev-network
+
+  aidev-frontend:
+    container_name: aidev-frontend
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+    ports:
+      - "3100:80"  # External 3100, internal 80
+    depends_on:
+      - aidev-backend
+    environment:
+      - VITE_API_URL=http://aidev-backend:8000
+    networks:
+      - aidev-network
+
+networks:
+  aidev-network:
+    name: aidev-network
+    driver: bridge

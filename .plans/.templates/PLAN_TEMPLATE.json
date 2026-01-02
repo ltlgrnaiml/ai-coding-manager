@@ -1,0 +1,62 @@
+{
+  "id": "PLAN-XXX",
+  "title": "{Plan Title}",
+  "status": "draft",
+  "granularity": "L1",
+  "created_at": "YYYY-MM-DD",
+  "updated_at": "YYYY-MM-DD",
+  "source": {
+    "discussion": "DISC-XXX",
+    "spec": "SPEC-XXXX"
+  },
+  "objective": "{What this plan accomplishes}",
+  "context": [
+    "ARCHITECTURE: {Key architectural context}",
+    "FILE: {Key files involved}"
+  ],
+  "milestones": [
+    {
+      "id": "M1",
+      "name": "{Milestone Name}",
+      "description": "{What this milestone delivers}",
+      "status": "pending",
+      "acceptance_criteria": [
+        {
+          "id": "AC-M1-01",
+          "description": "{Acceptance criterion}",
+          "verification_command": "{Command to verify}"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-M1-01",
+          "description": "{Task description}",
+          "status": "pending",
+          "verification_command": "{grep/pytest/python -c command}",
+          "context": [
+            "FILE: {Relevant file}"
+          ],
+          "notes": ""
+        }
+      ]
+    }
+  ],
+  "global_acceptance_criteria": [
+    {
+      "id": "AC-GLOBAL-01",
+      "description": "All tests pass",
+      "verification_command": "pytest tests/ -v"
+    },
+    {
+      "id": "AC-GLOBAL-02",
+      "description": "No lint errors",
+      "verification_command": "ruff check ."
+    }
+  ],
+  "completion": {
+    "type": null,
+    "date": null,
+    "known_bugs": [],
+    "deferred_to": null
+  }
+}
