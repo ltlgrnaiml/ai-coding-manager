@@ -1,0 +1,46 @@
+{
+  "total_sessions": 31,
+  "total_messages": 483,
+  "total_user_messages": 483,
+  "total_assistant_messages": 0,
+  "avg_messages_per_session": 15.580645161290322,
+  "max_messages_session": {
+    "id": "chat_03ae464287df",
+    "title": "Extract Ai Dev System",
+    "count": 62
+  },
+  "min_messages_session": {
+    "id": "chat_df2283330adb",
+    "title": "Disc Summary Prerefactor For Aicm",
+    "count": 2
+  },
+  "message_length_stats": {
+    "min": 63,
+    "max": 119750,
+    "avg": 4712.476190476191,
+    "total_chars": 2276126
+  },
+  "sessions_by_day": {},
+  "topic_distribution": {
+    "documentation": 6,
+    "refactor": 4,
+    "plan": 3,
+    "workflow": 3,
+    "aicm": 2,
+    "reference": 2,
+    "drift": 2,
+    "implementation": 2,
+    "change": 2,
+    "disc": 2,
+    "enhance": 2,
+    "compliance": 2,
+    "refining": 2,
+    "native": 1,
+    "strategy": 1,
+    "repo": 1,
+    "migration": 1,
+    "versioning": 1,
+    "naming": 1,
+    "author": 1
+  }
+}

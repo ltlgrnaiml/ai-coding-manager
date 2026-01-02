@@ -381,3 +381,195 @@ class ScoreHistory(BaseModel):
 ---
 
 *This DISC was converted from shell to resolved during SESSION_021.*
+
+---
+
+## SESSION_007 Addendum: Chat Log & Conversation Quality Grading
+
+**Date**: 2026-01-02
+**Session**: SESSION_007
+**Trigger**: User request to grade all chat logs with "EVERYTHING gets graded and gets a score mentality"
+
+### Research Foundation
+
+Based on latest research in LLM evaluation (ACL 2024, EMNLP 2024, NAACL 2024):
+
+| Source | Key Finding | Application |
+|--------|-------------|-------------|
+| LLM-RUBRIC (ACL 2024) | Multidimensional calibrated scoring | Use weighted multi-criteria rubrics |
+| G-Eval Framework | CoT prompting improves accuracy to 85% human alignment | Chain-of-thought scoring prompts |
+| LLM-as-a-Judge | Few-shot prompting increases consistency from 65% to 77.5% | Include scoring examples |
+| Dialogue Quality Measurement (NAACL 2024) | Multi-dimensional empathetic response evaluation | Separate user/assistant quality metrics |
+
+### Conversation Quality Rubric v1.0
+
+#### User Input Quality Dimensions
+
+| Criterion | Weight | Description | Score Range |
+|-----------|--------|-------------|-------------|
+| **Clarity** | 20% | How clear and unambiguous is the request? | 1-5 |
+| **Specificity** | 20% | Does it provide necessary context and constraints? | 1-5 |
+| **Actionability** | 20% | Can the request be acted upon immediately? | 1-5 |
+| **Scope** | 15% | Is the scope appropriate (not too broad/narrow)? | 1-5 |
+| **Context Provision** | 15% | Does user provide relevant background? | 1-5 |
+| **Follow-up Quality** | 10% | Quality of follow-up questions/refinements | 1-5 |
+
+#### Assistant Response Quality Dimensions
+
+| Criterion | Weight | Description | Score Range |
+|-----------|--------|-------------|-------------|
+| **Accuracy** | 25% | Is the response factually correct and verified? | 1-5 |
+| **Completeness** | 20% | Does it fully address the user's request? | 1-5 |
+| **Clarity** | 15% | Is the response clear and well-structured? | 1-5 |
+| **Actionability** | 15% | Can user act on the response immediately? | 1-5 |
+| **Code Quality** | 15% | If code is provided, is it correct and idiomatic? | 1-5 |
+| **Efficiency** | 10% | Does it avoid unnecessary verbosity/repetition? | 1-5 |
+
+#### Conversation-Level Quality Dimensions
+
+| Criterion | Weight | Description | Score Range |
+|-----------|--------|-------------|-------------|
+| **Task Completion** | 30% | Was the primary objective achieved? | 1-5 |
+| **Efficiency** | 20% | Messages required vs optimal path | 1-5 |
+| **Collaboration** | 15% | Quality of user-AI interaction | 1-5 |
+| **Learning** | 15% | Did conversation build on previous context? | 1-5 |
+| **Documentation** | 10% | Were decisions/outcomes documented? | 1-5 |
+| **Error Recovery** | 10% | How well were mistakes handled? | 1-5 |
+
+### Grade Boundaries (Conversation Quality)
+
+| Grade | Percentage | Description |
+|-------|------------|-------------|
+| **A** | 90-100% | Exceptional - minimal friction, excellent outcomes |
+| **B** | 80-89% | Good - achieved goals with minor inefficiencies |
+| **C** | 70-79% | Satisfactory - goals met with notable friction |
+| **D** | 60-69% | Below Average - partial success, significant issues |
+| **F** | <60% | Failing - goals not met, major problems |
+
+### Implementation: Chat Quality Scoring Contract
+
+```python
+class ChatMessageQuality(BaseModel):
+    """Quality score for individual message."""
+    
+    message_id: str
+    role: Literal["user", "assistant"]
+    
+    # Dimension scores (1-5 scale)
+    clarity: int = Field(ge=1, le=5)
+    specificity: int = Field(ge=1, le=5, default=None)  # User only
+    actionability: int = Field(ge=1, le=5)
+    accuracy: int = Field(ge=1, le=5, default=None)  # Assistant only
+    completeness: int = Field(ge=1, le=5, default=None)  # Assistant only
+    code_quality: int = Field(ge=1, le=5, default=None)  # If code present
+    
+    # Computed
+    weighted_score: float  # 0-100%
+    grade: Grade
+
+
+class ConversationQuality(BaseModel):
+    """Quality score for entire conversation."""
+    
+    session_id: str
+    
+    # Aggregate scores
+    user_input_quality: float  # Avg of user message scores
+    assistant_response_quality: float  # Avg of assistant scores
+    
+    # Conversation-level dimensions
+    task_completion: int = Field(ge=1, le=5)
+    efficiency: int = Field(ge=1, le=5)
+    collaboration: int = Field(ge=1, le=5)
+    learning: int = Field(ge=1, le=5)
+    documentation: int = Field(ge=1, le=5)
+    error_recovery: int = Field(ge=1, le=5)
+    
+    # Computed
+    overall_score: float  # 0-100%
+    grade: Grade
+    
+    # Provenance (per DISC-013 Score Provenance Chain)
+    score_id: str  # SHA256(rubric_hash + content_hash)
+    rubric_version: str
+    computed_at: datetime
+    computed_by: str  # "ai:model" or "human:username"
+
+
+class ChatQualityReport(BaseModel):
+    """Comprehensive quality report for chat log corpus."""
+    
+    report_id: str
+    generated_at: datetime
+    
+    # Statistics
+    total_sessions: int
+    total_messages: int
+    total_user_messages: int
+    total_assistant_messages: int
+    
+    # Quality Distribution
+    grade_distribution: dict[Grade, int]  # {"A": 5, "B": 12, ...}
+    avg_user_quality: float
+    avg_assistant_quality: float
+    avg_conversation_quality: float
+    
+    # Per-session scores
+    session_scores: list[ConversationQuality]
+    
+    # Insights
+    best_conversations: list[str]  # Top 5 session_ids
+    needs_improvement: list[str]  # Bottom 5 session_ids
+    common_issues: list[str]  # Recurring quality problems
+```
+
+### Automation: LLM-as-a-Judge Implementation
+
+```python
+CONVERSATION_GRADING_PROMPT = """
+You are evaluating the quality of an AI-human conversation.
+Follow these steps for accurate scoring:
+
+1. Read the full conversation
+2. For each USER message, score: clarity, specificity, actionability, scope, context
+3. For each ASSISTANT message, score: accuracy, completeness, clarity, actionability, code_quality
+4. Score the conversation overall: task_completion, efficiency, collaboration, learning, documentation, error_recovery
+
+Scoring Scale:
+5 = Excellent - Exceeds expectations
+4 = Good - Meets expectations well
+3 = Satisfactory - Meets basic expectations
+2 = Below Average - Does not fully meet expectations
+1 = Poor - Significantly below expectations
+
+Example Scores:
+- User: "Please fix the bug in auth.py line 45" → Clarity: 5, Specificity: 5, Actionability: 5
+- User: "Something is wrong" → Clarity: 2, Specificity: 1, Actionability: 1
+- Assistant with working code → Code Quality: 5, Accuracy: 5
+- Assistant with syntax error → Code Quality: 2, Accuracy: 3
+
+Conversation:
+{conversation}
+
+Provide scores in JSON format.
+"""
+```
+
+### Integration with Existing Quality System
+
+This conversation quality rubric integrates with the existing DISC-013 Score Provenance Chain:
+
+1. **Content Hash**: SHA256 of conversation content
+2. **Rubric Hash**: SHA256 of rubric definition (v1.0)
+3. **Score ID**: SHA256(rubric_hash + content_hash)
+4. **History**: Embedded in chat session metadata
+5. **Scorer Tracking**: "ai:claude-sonnet" or "human:mycahya"
+
+### Resulting Artifacts
+
+| Artifact | Status | Description |
+|----------|--------|-------------|
+| `shared/contracts/devtools/chat_quality_rubrics.py` | `pending` | Contract definitions |
+| `scripts/grade_conversations.py` | `pending` | LLM-as-a-Judge grading script |
+| `scripts/chat_quality_report.py` | `pending` | Generate quality reports |
+| CLI: `ai-dev chats grade` | `pending` | CLI command for grading |

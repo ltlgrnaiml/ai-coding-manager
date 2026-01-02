@@ -1,0 +1,83 @@
+================================================================================
+COMPREHENSIVE CHAT LOG STATISTICS REPORT
+Generated: 2026-01-02T11:38:40.861446
+================================================================================
+
+## OVERVIEW
+  Total Sessions:           31
+  Total Messages:           483
+  User Messages:            483
+  Assistant Messages:       0
+  Avg Messages/Session:     15.6
+
+## SESSION SIZE EXTREMES
+  Largest:  Extract Ai Dev System (62 msgs)
+  Smallest: Disc Summary Prerefactor For Aicm (2 msgs)
+
+## MESSAGE LENGTH STATISTICS
+  Min Length:     63 chars
+  Max Length:     119,750 chars
+  Avg Length:     4,712 chars
+  Total Content:  2,276,126 chars (2222.8 KB)
+
+## SESSION SIZE DISTRIBUTION (Messages per Session)
+------------------------------------------------------------
+  1-5      | ███████████████████████████████████ 8
+  6-10     | ████████████████████████████████████████ 9
+  11-20    | ███████████████████████████████ 7
+  21-30    | ████████ 2
+  31-50    | █████████████ 3
+  50+      | ████████ 2
+
+## TOP TOPIC KEYWORDS
+----------------------------------------
+  documentation        6
+  refactor             4
+  plan                 3
+  workflow             3
+  aicm                 2
+  reference            2
+  drift                2
+  implementation       2
+  change               2
+  disc                 2
+
+## ALL SESSIONS (Sorted by Message Count)
+--------------------------------------------------------------------------------
+  ID                   Title                                 Msgs  Grade
+--------------------------------------------------------------------------------
+  chat_03ae464287df    Extract Ai Dev System                   62      A
+  chat_4caa0e61ed9a    Enhance Rag Context Building            58      A
+  chat_73a859f45be4    Debugging Graph Clipping                45      A
+  chat_3899ec8155b0    Ai Native Documentation Strategy        43      A
+  chat_f39614ed37e8    Refining Plan Closure Documentati       32      B
+  chat_8abff9254df8    Chat Memory Implementation              27      B
+  chat_b8267dd8aa81    Api Versioning And Naming Adr           23      B
+  chat_ef502cea012f    Finalizing Documentation And Spec       20      B
+  chat_070c49a2d35b    Enhance Reference Drift Validatio       15      C
+  chat_39d7458a1f19    Full Etl Compliance Implementatio       14      C
+  chat_8e30cb1c921b    Refine Sync Tool & Disc Creation        13      C
+  chat_6a383966816c    Refining Stage Management Archite       12      C
+  chat_e37fafb80747    Author All L3 Chunks                    11      C
+  chat_71fc391193fa    Workflow Feature Development            11      C
+  chat_b3299ee44a22    Dat Ui Ux And Adapter Design            10      C
+  chat_197694bdf722    Pptx Compliance  Workflow & Pagin        9      D
+  chat_110b179804fd    Ci Reference Drift Detector              8      D
+  chat_4099c0d50521    Resolve Python Environment Issues        8      D
+  chat_1256c4604797    Aicm Repo Migration                      7      D
+  chat_6df0f9a20b01    Mcp Configs And Permissions              7      D
+  chat_2f6632700734    Restructure Docs For Ai                  7      D
+  chat_a7b402640792    Docker Multiple Containers               6      D
+  chat_4beaaf521b92    Update Workflow Documentation            6      D
+  chat_5b2b20cb126e    Dat Refactor Change Plan   Gpt5.2        5      D
+  chat_9b5cee367a34    Rag Db Cross Linking                     5      D
+  chat_64cb9a57fff6    Documentation Audit And Cleanup          4      F
+  chat_133d9dc7e12b    Refactor Rag Documentation               4      F
+  chat_512f19922416    Dat Refactor Change Plan   Gemini        3      F
+  chat_35a350f6f632    Dat Refactor Findings Aggregation        3      F
+  chat_d4c17e0b15bd    Migrate Ui Ux Components                 3      F
+  chat_df2283330adb    Disc Summary Prerefactor For Aicm        2      F
+
+================================================================================
+END OF REPORT
+================================================================================
