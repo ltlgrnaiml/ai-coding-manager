@@ -45,6 +45,18 @@ Thumbs.db
 workspace/
 *.log
 
+# Environment variables and secrets
+.env
+.env.local
+.env.production
+.env.staging
+
+# Database files (may contain sensitive data)
+.workspace/
+*.db
+*.db-shm
+*.db-wal
+
 # Frontend
 frontend/dist/
 frontend/node_modules/
