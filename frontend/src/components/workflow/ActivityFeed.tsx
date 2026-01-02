@@ -1,5 +1,5 @@
 import { Clock, FileJson, FileText, MessageSquare, ListTodo, Code2 } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 import type { ArtifactType, ArtifactSummary } from './types'
 
 const TYPE_ICONS: Record<ArtifactType, React.ReactNode> = {

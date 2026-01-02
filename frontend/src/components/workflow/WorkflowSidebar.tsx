@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 import { SidebarTabs } from './SidebarTabs'
 import { ArtifactList } from './ArtifactList'
 import type { ArtifactType, ArtifactSummary } from './types'

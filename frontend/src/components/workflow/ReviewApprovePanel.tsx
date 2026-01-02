@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Check, X, Edit, Eye, CheckCircle } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 import type { ArtifactType, ArtifactStatus } from './types'
 
 interface GeneratedArtifact {

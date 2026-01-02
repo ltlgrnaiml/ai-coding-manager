@@ -1,5 +1,5 @@
 import { Search, Settings } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 import { NewWorkflowDropdown } from './NewWorkflowDropdown'
 
 interface WorkflowHeaderProps {

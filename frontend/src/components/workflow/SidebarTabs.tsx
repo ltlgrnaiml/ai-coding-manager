@@ -1,5 +1,5 @@
 import { MessageSquare, FileJson, FileText, ListTodo, Code2 } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 import type { ArtifactType } from './types'
 
 const TABS: { type: ArtifactType; icon: React.ReactNode; label: string }[] = [

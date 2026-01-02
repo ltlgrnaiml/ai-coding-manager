@@ -1,5 +1,5 @@
 import { Plus, FileJson, FileText, MessageSquare, ListTodo, Code2, Sparkles, ArrowRight } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 import type { ArtifactType } from './types'
 import type { WorkflowStage, WorkflowType } from './workflowUtils'
 

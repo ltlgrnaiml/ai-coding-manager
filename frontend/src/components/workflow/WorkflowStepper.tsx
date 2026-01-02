@@ -1,5 +1,5 @@
 import { Check, ArrowRight } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 import { ALL_STAGES, WORKFLOW_STAGES, type WorkflowStage, type WorkflowType } from './workflowUtils'
 
 interface WorkflowStepperProps {

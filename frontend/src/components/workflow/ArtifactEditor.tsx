@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { X, Save, Loader2 } from 'lucide-react'
 import Editor from '@monaco-editor/react'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 import { ADREditorForm } from './ADREditorForm'
 import { SpecEditorForm } from './SpecEditorForm'
 import { DiscussionEditorForm } from './DiscussionEditorForm'

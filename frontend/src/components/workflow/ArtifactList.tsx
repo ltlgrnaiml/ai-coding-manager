@@ -1,6 +1,6 @@
 import { Search, Loader2 } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { useArtifacts } from '@/hooks/useWorkflowApi'
+import { cn } from '../../lib/utils'
+import { useArtifacts } from '../../hooks/useWorkflowApi'
 import type { ArtifactType, ArtifactSummary } from './types'
 
 interface ArtifactListProps {

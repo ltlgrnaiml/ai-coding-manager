@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { Edit, Copy, Link, Loader2, Sparkles } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 import { MarkdownRenderer } from './MarkdownRenderer'
 import { CodeRenderer } from './CodeRenderer'
 import { SchemaInterpreter } from './SchemaInterpreter'
-import { usePrompt } from '@/hooks/useWorkflowApi'
+import { usePrompt } from '../../hooks/useWorkflowApi'
 import type { ArtifactType, FileFormat } from './types'
 
 const API_BASE = 'http://localhost:8000/api/devtools'

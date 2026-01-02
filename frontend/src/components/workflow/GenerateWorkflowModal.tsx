@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { X, Sparkles, Loader2, CheckCircle, AlertTriangle, RefreshCw, ChevronDown, Cpu, Zap, DollarSign } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { useWorkflow, useGeneration, useLLMHealth } from '@/hooks/useWorkflowApi'
+import { cn } from '../../lib/utils'
+import { useWorkflow, useGeneration, useLLMHealth } from '../../hooks/useWorkflowApi'
 import type { ArtifactType, WorkflowScenario } from './types'
 
 interface GenerateWorkflowModalProps {

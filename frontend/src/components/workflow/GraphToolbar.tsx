@@ -1,5 +1,5 @@
 import { ZoomIn, ZoomOut, Maximize2, Download, Box } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 
 interface GraphToolbarProps {
   onZoomIn: () => void

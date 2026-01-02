@@ -2,8 +2,8 @@ import { useRef, useCallback, useState, useEffect, useMemo } from 'react'
 import ForceGraph2D from 'react-force-graph-2d'
 import ForceGraph3D from 'react-force-graph-3d'
 import { Layers, Box, Settings, X, RotateCcw } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { useArtifactGraph } from '@/hooks/useWorkflowApi'
+import { cn } from '../../lib/utils'
+import { useArtifactGraph } from '../../hooks/useWorkflowApi'
 import type { ArtifactType, GraphNode, GraphEdge } from './types'
 
 // Tier colors per DISC-001

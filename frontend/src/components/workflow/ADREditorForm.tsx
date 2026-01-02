@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 
 interface ADRFormData {
   id?: string

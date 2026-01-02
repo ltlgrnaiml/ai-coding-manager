@@ -1,7 +1,7 @@
 import { lazy, Suspense, useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { Layers, Box } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { useArtifactGraph } from '@/hooks/useWorkflowApi'
+import { cn } from '../../lib/utils'
+import { useArtifactGraph } from '../../hooks/useWorkflowApi'
 import type { ArtifactType, GraphNode, GraphEdge } from './types'
 
 // Lazy load 3D component to avoid bundle bloat

@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 import { Calendar, Users, Tag, AlertTriangle, CheckCircle, Link as LinkIcon } from 'lucide-react'
 
 interface BadgeProps {
