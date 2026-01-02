@@ -314,6 +314,109 @@ SELECT * FROM documents;
 - [x] Phoenix observability integration ✅
 - [x] LangChain + xAI adapter ✅
 
+---
+
+## SESSION_004 Update: Chat Log Deduplication Enhancement
+
+**Date**: 2026-01-02  
+**Session**: SESSION_004_Enhanced-Chat-Log-Dedup-Tool  
+
+### Problem Addressed
+User saves chat logs incrementally (same conversation + new messages as separate files), causing:
+- File-level deduplication insufficient for incremental saves
+- No structured field extraction (e.g., "### User Input" sections)
+- No timeline/comparison capabilities across conversations
+- Manual effort to find similar user inputs or response patterns
+
+### Solution Implemented
+Extended the existing Knowledge Archive with **message-level chat log management**:
+
+#### 1. Enhanced Database Schema
+```sql
+-- Chat Sessions (canonical session spanning multiple files)
+CREATE TABLE chat_sessions (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    first_message_at TEXT,
+    last_message_at TEXT,
+    message_count INTEGER DEFAULT 0,
+    user_message_count INTEGER DEFAULT 0,
+    assistant_message_count INTEGER DEFAULT 0,
+    topics TEXT,  -- JSON array
+    summary TEXT
+);
+
+-- Chat Messages (individual messages with dedup via content_hash)
+CREATE TABLE chat_messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id TEXT NOT NULL REFERENCES chat_sessions(id),
+    content_hash TEXT NOT NULL,  -- SHA256(role:normalized_content)
+    role TEXT NOT NULL,  -- 'user' or 'assistant'
+    content TEXT NOT NULL,
+    sequence_num INTEGER NOT NULL,
+    timestamp TEXT,
+    source_file TEXT,
+    UNIQUE(session_id, content_hash)  -- Prevents duplicates
+);
+
+-- Chat Source Files (tracks which files contributed to sessions)
+CREATE TABLE chat_source_files (
+    session_id TEXT NOT NULL,
+    file_path TEXT NOT NULL,
+    file_hash TEXT NOT NULL,
+    message_count INTEGER DEFAULT 0,
+    new_messages INTEGER DEFAULT 0,  -- New vs duplicate messages
+    imported_at TEXT DEFAULT (datetime('now'))
+);
+```
+
+#### 2. Message-Level Deduplication
+- **Content Hashing**: Each message hashed as `SHA256(role:normalized_content)`
+- **Session Merging**: Overlapping files auto-merge into canonical sessions
+- **Incremental Import**: Only new messages added, duplicates skipped
+
+#### 3. Multi-Format Parsing
+Supports multiple chat log formats:
+- **Markdown Headers**: `### User Input`, `### Assistant`
+- **Inline Markers**: `User: ...`, `Assistant: ...`
+- **JSON**: Standard conversation JSON formats
+
+#### 4. New CLI Commands
+```bash
+ai-dev chats import /path/to/ChatLogs -r -v    # Import with dedup
+ai-dev chats sessions                           # List all sessions
+ai-dev chats view <session_id> --role user      # View user messages
+ai-dev chats inputs                             # All user inputs across sessions
+ai-dev chats search "authentication"            # Search content
+ai-dev chats timeline --role user               # Chronological view
+ai-dev chats stats                              # Dedup statistics
+```
+
+#### 5. Field Extraction & Analysis
+- Parses structured chat formats (### User Input sections)
+- Extracts user inputs for comparison across sessions
+- Timeline view for chronological analysis
+- Search and filtering by role (user/assistant)
+
+### Integration with Existing RAG System
+- Chat messages stored as additional document type in `knowledge.db`
+- Leverages existing FTS5 search and embedding infrastructure
+- Compatible with existing context builder for RAG injection
+- Maintains relationship tracking between chat sessions and other artifacts
+
+### Files Modified
+- `src/ai_dev_orchestrator/knowledge/database.py` - Extended schema
+- `src/ai_dev_orchestrator/knowledge/chat_log_manager.py` - NEW: Core logic
+- `src/ai_dev_orchestrator/cli_commands/chat_commands.py` - NEW: CLI
+- `src/ai_dev_orchestrator/cli.py` - Registered new commands
+
+### Validation
+- All 48 existing tests pass
+- Manual validation confirms deduplication works correctly
+- Tested with incremental file saves (4 messages → 6 messages, 4 duplicates skipped, 2 new added)
+
+---
+
 ## Resulting Artifacts
 
 | Type | ID | Title | Status |
@@ -323,4 +426,5 @@ SELECT * FROM documents;
 | Plan | PLAN-002 | Knowledge Archive Implementation | `complete` |
 | Session | SESSION_021 | PLAN-002 M1-M4 Execution | `complete` |
 | Session | SESSION_022 | Phoenix + LangChain Integration | `complete` |
+| **Session** | **SESSION_004** | **Enhanced Chat Log Deduplication Tool** | **`complete`** |
 

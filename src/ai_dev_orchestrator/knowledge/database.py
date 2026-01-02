@@ -99,6 +99,69 @@ CREATE INDEX IF NOT EXISTS idx_documents_type ON documents(type);
 CREATE INDEX IF NOT EXISTS idx_documents_archived ON documents(archived_at);
 CREATE INDEX IF NOT EXISTS idx_chunks_doc_id ON chunks(doc_id);
 CREATE INDEX IF NOT EXISTS idx_embeddings_chunk_id ON embeddings(chunk_id);
+
+-- Chat Sessions table (canonical session, may span multiple source files)
+CREATE TABLE IF NOT EXISTS chat_sessions (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    first_message_at TEXT,
+    last_message_at TEXT,
+    message_count INTEGER DEFAULT 0,
+    user_message_count INTEGER DEFAULT 0,
+    assistant_message_count INTEGER DEFAULT 0,
+    topics TEXT,  -- JSON array of topics
+    summary TEXT,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+);
+
+-- Chat Messages table (individual messages with dedup via content_hash)
+CREATE TABLE IF NOT EXISTS chat_messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id TEXT NOT NULL REFERENCES chat_sessions(id) ON DELETE CASCADE,
+    content_hash TEXT NOT NULL,  -- SHA256 of normalized(role + content) for dedup
+    role TEXT NOT NULL,  -- 'user' or 'assistant'
+    content TEXT NOT NULL,
+    sequence_num INTEGER NOT NULL,  -- Order within session
+    timestamp TEXT,
+    source_file TEXT,  -- Which file this was imported from
+    created_at TEXT DEFAULT (datetime('now')),
+    UNIQUE(session_id, content_hash)  -- Prevent duplicate messages in same session
+);
+
+-- Chat Source Files table (track which files contributed to which sessions)
+CREATE TABLE IF NOT EXISTS chat_source_files (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id TEXT NOT NULL REFERENCES chat_sessions(id) ON DELETE CASCADE,
+    file_path TEXT NOT NULL,
+    file_hash TEXT NOT NULL,
+    message_count INTEGER DEFAULT 0,
+    new_messages INTEGER DEFAULT 0,  -- Messages added from this file (vs duplicates)
+    imported_at TEXT DEFAULT (datetime('now')),
+    UNIQUE(session_id, file_path)
+);
+
+-- Message embeddings for similarity search
+CREATE TABLE IF NOT EXISTS message_embeddings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    message_id INTEGER NOT NULL REFERENCES chat_messages(id) ON DELETE CASCADE,
+    vector BLOB NOT NULL,
+    model TEXT NOT NULL,
+    created_at TEXT DEFAULT (datetime('now')),
+    UNIQUE(message_id, model)
+);
+
+-- Chat indexes
+CREATE INDEX IF NOT EXISTS idx_chat_messages_session ON chat_messages(session_id);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_role ON chat_messages(role);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_hash ON chat_messages(content_hash);
+CREATE INDEX IF NOT EXISTS idx_chat_source_files_session ON chat_source_files(session_id);
+CREATE INDEX IF NOT EXISTS idx_message_embeddings_message ON message_embeddings(message_id);
+
+-- Trigger to update chat_sessions.updated_at
+CREATE TRIGGER IF NOT EXISTS update_chat_sessions_timestamp AFTER UPDATE ON chat_sessions BEGIN
+    UPDATE chat_sessions SET updated_at = datetime('now') WHERE id = new.id;
+END;
 """
 
 

@@ -104,6 +104,57 @@ def cmd_models(args):
         print()
 
 
+def cmd_chats(args):
+    """Handle chats commands."""
+    from ai_dev_orchestrator.cli_commands import chat_commands
+    from ai_dev_orchestrator.knowledge.database import init_database
+    
+    if args.chats_command == "import":
+        chat_commands.import_logs.callback(
+            path=args.path,
+            pattern=args.pattern,
+            recursive=args.recursive,
+            verbose=args.verbose,
+            init_db=args.init_db
+        )
+    elif args.chats_command == "sessions":
+        chat_commands.sessions.callback(
+            limit=args.limit,
+            verbose=args.verbose
+        )
+    elif args.chats_command == "view":
+        chat_commands.view.callback(
+            session_id=args.session_id,
+            role=args.role,
+            limit=args.limit,
+            truncate=args.truncate
+        )
+    elif args.chats_command == "inputs":
+        chat_commands.inputs.callback(
+            role=args.role or 'user',
+            limit=args.limit,
+            truncate=args.truncate
+        )
+    elif args.chats_command == "search":
+        chat_commands.search.callback(
+            query=args.query,
+            role=args.role,
+            limit=args.limit
+        )
+    elif args.chats_command == "timeline":
+        chat_commands.timeline.callback(
+            start=args.start,
+            end=args.end,
+            role=args.role,
+            limit=args.limit
+        )
+    elif args.chats_command == "stats":
+        chat_commands.stats.callback(verbose=args.verbose)
+    else:
+        print("Usage: ai-dev chats {import|sessions|view|inputs|search|timeline|stats}")
+        print("Use 'ai-dev chats --help' for more information.")
+
+
 def cmd_archive(args):
     """Handle archive commands."""
     from ai_dev_orchestrator.cli_commands.archive_artifacts import (
@@ -212,6 +263,55 @@ def main():
     p_archive_status.add_argument("-v", "--verbose", action="store_true", help="Show detailed statistics")
     
     p_archive.set_defaults(func=cmd_archive)
+    
+    # chats
+    p_chats = subparsers.add_parser("chats", help="Manage chat logs with deduplication")
+    chats_subparsers = p_chats.add_subparsers(dest="chats_command", help="Chat commands")
+    
+    # chats import
+    p_chats_import = chats_subparsers.add_parser("import", help="Import chat logs from file/directory")
+    p_chats_import.add_argument("path", help="File or directory path")
+    p_chats_import.add_argument("-p", "--pattern", default="*.md", help="File pattern (default: *.md)")
+    p_chats_import.add_argument("-r", "--recursive", action="store_true", help="Process subdirectories")
+    p_chats_import.add_argument("-v", "--verbose", action="store_true", help="Show detailed results")
+    p_chats_import.add_argument("--init-db", action="store_true", help="Initialize database first")
+    
+    # chats sessions
+    p_chats_sessions = chats_subparsers.add_parser("sessions", help="List chat sessions")
+    p_chats_sessions.add_argument("-n", "--limit", type=int, default=20, help="Number to show")
+    p_chats_sessions.add_argument("-v", "--verbose", action="store_true", help="Show details")
+    
+    # chats view
+    p_chats_view = chats_subparsers.add_parser("view", help="View session messages")
+    p_chats_view.add_argument("session_id", help="Session ID")
+    p_chats_view.add_argument("-r", "--role", choices=["user", "assistant"], help="Filter by role")
+    p_chats_view.add_argument("-n", "--limit", type=int, default=50, help="Max messages")
+    p_chats_view.add_argument("-t", "--truncate", type=int, default=200, help="Truncate at N chars")
+    
+    # chats inputs
+    p_chats_inputs = chats_subparsers.add_parser("inputs", help="List all user inputs")
+    p_chats_inputs.add_argument("-r", "--role", choices=["user", "assistant"], help="Role to show")
+    p_chats_inputs.add_argument("-n", "--limit", type=int, default=30, help="Max messages")
+    p_chats_inputs.add_argument("-t", "--truncate", type=int, default=150, help="Truncate at N chars")
+    
+    # chats search
+    p_chats_search = chats_subparsers.add_parser("search", help="Search messages")
+    p_chats_search.add_argument("query", help="Search query")
+    p_chats_search.add_argument("-r", "--role", choices=["user", "assistant"], help="Filter by role")
+    p_chats_search.add_argument("-n", "--limit", type=int, default=20, help="Max results")
+    
+    # chats timeline
+    p_chats_timeline = chats_subparsers.add_parser("timeline", help="View chronological timeline")
+    p_chats_timeline.add_argument("-s", "--start", help="Start date (YYYY-MM-DD)")
+    p_chats_timeline.add_argument("-e", "--end", help="End date (YYYY-MM-DD)")
+    p_chats_timeline.add_argument("-r", "--role", choices=["user", "assistant"], help="Filter by role")
+    p_chats_timeline.add_argument("-n", "--limit", type=int, default=50, help="Max messages")
+    
+    # chats stats
+    p_chats_stats = chats_subparsers.add_parser("stats", help="Show statistics")
+    p_chats_stats.add_argument("-v", "--verbose", action="store_true", help="Show detailed stats")
+    
+    p_chats.set_defaults(func=cmd_chats)
     
     args = parser.parse_args()
     
