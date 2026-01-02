@@ -1,0 +1,148 @@
+{
+  "schema_type": "adr",
+  "id": "ADR-0049",
+  "title": "Code Attribution & Intellectual Property Policy",
+  "status": "active",
+  "date": "2026-01-02",
+  "review_date": "2026-07-02",
+  "author": "Mycahya Eggleston",
+  "scope": "core",
+  "origin": "SESSION_011",
+  "context": {
+    "description": "As AI-generated code, open-source integration, and research-derived implementations increase, we need clear practices for respecting intellectual property, ensuring legal compliance, and maintaining maintainability without bloating the codebase.",
+    "problem": "Without explicit code attribution standards: (1) legal exposure from unattributed code/algorithms, (2) inability to audit IP provenance, (3) lost context for why specific implementations were chosen, (4) compliance gaps for enterprise deployment (GDPR, licensing)."
+  },
+  "decision": {
+    "summary": "Implement 4-tier code attribution system: in-code comments, LICENSE/NOTICE files, documentation, and version control tracking.",
+    "attribution_tiers": {
+      "tier_1_in_code": {
+        "scope": "Function/class/algorithm level",
+        "format": "# Inspired by [Citation]: Brief one-liner on what was adapted.",
+        "python_example": "# Inspired by Ge et al. (2023) for token efficiency in LLM context compression",
+        "docstring_format": {
+          "style": "Google-style",
+          "section": "References",
+          "example": "References:\n    Hierarchical memory from Sun & Zeng (2025): Long-term reasoning optimizations\n    arXiv:2508.00083 - CC-BY 4.0"
+        },
+        "languages": {
+          "python": "Docstrings with References section",
+          "java": "Javadoc @see tags",
+          "cpp": "Doxygen @cite tags",
+          "typescript": "JSDoc @see tags"
+        }
+      },
+      "tier_2_legal_files": {
+        "scope": "Project-level third-party code/models/datasets",
+        "files": {
+          "LICENSE": "Primary project license",
+          "NOTICE": "Third-party attributions with licenses",
+          "THIRD_PARTY_LICENSES.txt": "Auto-generated from dependency scanning"
+        },
+        "format_example": "Portions derived from arXiv:2508.00083 under CC-BY 4.0\nHierarchical memory implementation adapted from Sun & Zeng (2025)",
+        "automation": "Use license scanners: FOSSology, Dependabot, ORT (Open Runtime)"
+      },
+      "tier_3_documentation": {
+        "scope": "Architectural patterns and design influences",
+        "locations": ["README.md", "docs/architecture.md", "CONTRIBUTING.md"],
+        "format": "Markdown with links",
+        "example": "- Memory Hierarchy: See Sun & Zeng (2025) for long-term reasoning optimizations\n- RAG Chunking: Implemented per Tao et al. (2025)",
+        "research_code": "Full BibTeX in docs/references.bib for reproducibility"
+      },
+      "tier_4_version_control": {
+        "scope": "Commit-level attribution",
+        "format": "git commit -m 'Implement RAG chunking per Tao et al. (2025) #issue-42'",
+        "purpose": "Audit trail for IP disputes, GDPR compliance",
+        "tagging": "Use issue/ticket numbers for traceability"
+      }
+    },
+    "license_compliance_workflow": {
+      "step_1": "Check source license BEFORE using (arXiv: usually CC-BY, GitHub: respect MIT/BSD/Apache)",
+      "step_2": "Verify compatibility with project license",
+      "step_3": "Retain original copyright notices if copying code",
+      "step_4": "Document in appropriate tier (in-code + NOTICE + docs as needed)",
+      "prohibited": "Verbatim copying without attribution = plagiarism"
+    },
+    "ai_generated_code_policy": {
+      "tools": ["GitHub Copilot", "Claude", "GPT-4", "Windsurf Cascade"],
+      "rule": "ALWAYS vet AI suggestions and cite probable origins",
+      "verification": "Mandatory peer review for external-inspired code",
+      "model_cards": "For ML models: cite training data influences per Hugging Face standards"
+    },
+    "ci_enforcement": {
+      "license_scanning": "Run ORT or equivalent in CI/CD pipeline",
+      "validation": "Fail build if unlicensed/incompatible dependencies detected",
+      "automated_notice_generation": "Auto-update THIRD_PARTY_LICENSES.txt on dependency changes"
+    }
+  },
+  "consequences": {
+    "positive": [
+      "Legal defensibility for IP disputes and commercial deployment",
+      "Clear audit trail for compliance (GDPR, licensing)",
+      "Context preservation for future maintainers",
+      "Respectful collaboration with open-source community",
+      "Enables reproducible research-derived implementations"
+    ],
+    "negative": [
+      "Initial overhead for attribution documentation",
+      "CI pipeline complexity from license scanning",
+      "Potential dependency rejections from license incompatibility"
+    ]
+  },
+  "alternatives_considered": [
+    {
+      "name": "Minimal Attribution (comments only)",
+      "description": "Only add in-code comments, skip legal files",
+      "pros": ["Lowest overhead", "Faster implementation"],
+      "cons": ["Legal exposure", "No audit trail", "Non-compliant for enterprise"],
+      "rejected_reason": "Insufficient for commercial deployment and compliance requirements"
+    },
+    {
+      "name": "Manual License Tracking",
+      "description": "Human-maintained spreadsheet of dependencies",
+      "pros": ["No CI integration needed"],
+      "cons": ["Stale immediately", "Error-prone", "Doesn't scale"],
+      "rejected_reason": "Violates automation principles (Rule 10)"
+    }
+  ],
+  "guardrails": [
+    {
+      "id": "research-code-citation-required",
+      "rule": "ALL code implementing academic papers/research MUST include citation comment at function/class level",
+      "enforcement": "Peer review checklist + code review guidelines"
+    },
+    {
+      "id": "license-check-mandatory",
+      "rule": "Check source license BEFORE using any external code/algorithm/dataset",
+      "enforcement": "Pre-integration checklist"
+    },
+    {
+      "id": "no-verbatim-copying",
+      "rule": "Never copy code verbatim without attribution and license compliance",
+      "enforcement": "Peer review + plagiarism detection tools"
+    },
+    {
+      "id": "ai-code-review",
+      "rule": "AI-generated code MUST undergo peer review for attribution verification",
+      "enforcement": "Mandatory code review for AI-assisted PRs"
+    },
+    {
+      "id": "notice-file-required",
+      "rule": "Projects with third-party dependencies MUST maintain NOTICE file",
+      "enforcement": "CI validation checks for NOTICE file presence"
+    }
+  ],
+  "implementation_notes": {
+    "small_team_policy": "Mandatory peer review for external-inspired code",
+    "prototype_exception": "Prototypes MAY defer NOTICE file until productionization gate",
+    "license_scanning_tools": ["FOSSology", "Dependabot", "ORT", "licensee", "scancode-toolkit"],
+    "model_card_template": "Use Hugging Face model card format for ML artifacts"
+  },
+  "references": [
+    "Apache License 2.0 NOTICE requirements: https://www.apache.org/licenses/LICENSE-2.0",
+    "MIT License text: https://opensource.org/licenses/MIT",
+    "Hugging Face Model Cards: https://huggingface.co/docs/hub/model-cards",
+    "SPDX License List: https://spdx.org/licenses/",
+    "DISC-015: AI-Native Documentation Architecture (mandates research citation)"
+  ],
+  "tags": ["legal", "compliance", "intellectual-property", "attribution", "licensing", "open-source", "ai-generated-code"]
+}

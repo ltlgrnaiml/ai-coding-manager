@@ -176,6 +176,7 @@ All code must be:
 - **Efficient**: No premature optimization, but no waste
 - **Type-safe**: Full type hints (Python), typed props (TypeScript)
 - **Documented**: Google-style docstrings on all public functions
+- **Attributed**: Research-derived code cited per ADR-0049
 
 ---
 
@@ -246,7 +247,8 @@ Add to project TODO file with file path + description.
 
 1. **First-Principles**: Question everything, no legacy baggage
 2. **Full Control**: Break things freely, fix them completely
-3. **AI-Assisted**: Optimize for AI     comprehension and continuity
+3. **AI-Assisted**: Optimize for AI comprehension and continuity
 4. **Automate Everything**: Documentation, tests, validation
 5. **Deterministic Design**: Clear contracts, predictable behavior
 6. **Quality First**: Modern, clean, efficient, industry-leading
+7. **Legal Compliance**: Respect IP, cite sources (ADR-0049)

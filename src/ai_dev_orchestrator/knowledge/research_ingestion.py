@@ -38,20 +38,23 @@ class ResearchPaperIngestion:
     def __init__(self, 
                  research_db_path: Optional[Path] = None,
                  chunk_size: int = 1000,
-                 chunk_overlap: int = 200):
+                 chunk_overlap: int = 200,
+                 skip_embeddings: bool = False):
         """Initialize ingestion pipeline.
         
         Args:
             research_db_path: Optional custom research database path.
             chunk_size: Size of text chunks for embeddings.
             chunk_overlap: Overlap between chunks.
+            skip_embeddings: Skip embedding generation for faster ingestion.
         """
         self.research_db_path = research_db_path
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
+        self.skip_embeddings = skip_embeddings
         
-        # Initialize services
-        self.embedding_service = EmbeddingService()
+        # Initialize services (lazy load embedding service if needed)
+        self._embedding_service = None
         self.chunking_service = ChunkingService(
             chunk_size=chunk_size,
             chunk_overlap=chunk_overlap
@@ -59,6 +62,13 @@ class ResearchPaperIngestion:
         
         # Initialize research database
         self.research_conn = init_research_database(research_db_path)
+    
+    @property
+    def embedding_service(self):
+        """Lazy load embedding service only when needed."""
+        if self._embedding_service is None:
+            self._embedding_service = EmbeddingService()
+        return self._embedding_service
     
     def ingest_pdf(self, 
                    pdf_path: str, 
@@ -198,12 +208,13 @@ class ResearchPaperIngestion:
                 chunk.start_char, chunk.end_char, chunk.token_count
             )
             
-            # Generate and store embedding
-            try:
-                embedding_result = self.embedding_service.embed(chunk.content)
-                self._insert_paper_embedding(chunk_id, embedding_result.vector)
-            except Exception as e:
-                logger.error(f"Failed to generate embedding for chunk {chunk_id}: {e}")
+            # Generate and store embedding (unless skipped)
+            if not self.skip_embeddings:
+                try:
+                    embedding_result = self.embedding_service.embed(chunk.content)
+                    self._insert_paper_embedding(chunk_id, embedding_result.vector)
+                except Exception as e:
+                    logger.error(f"Failed to generate embedding for chunk {chunk_id}: {e}")
         
         # Process abstract separately if available
         abstract = paper_dict.get("metadata", {}).get("abstract")
@@ -238,11 +249,12 @@ class ResearchPaperIngestion:
                 chunk_type=section_name.lower()
             )
             
-            try:
-                embedding_result = self.embedding_service.embed(chunk.content)
-                self._insert_paper_embedding(chunk_id, embedding_result.vector)
-            except Exception as e:
-                logger.error(f"Failed to generate embedding for {section_name} chunk: {e}")
+            if not self.skip_embeddings:
+                try:
+                    embedding_result = self.embedding_service.embed(chunk.content)
+                    self._insert_paper_embedding(chunk_id, embedding_result.vector)
+                except Exception as e:
+                    logger.error(f"Failed to generate embedding for {section_name} chunk: {e}")
     
     def _insert_paper_chunk(self, 
                            paper_id: str, 

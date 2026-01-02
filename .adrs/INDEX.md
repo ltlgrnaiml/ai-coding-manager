@@ -14,6 +14,7 @@
 | ADR-0004 | Observability & Debugging First | Active | eng-tools ADR-0037 |
 | ADR-0005 | Type-Safety & Contract Discipline | Active | eng-tools ADR-0010 |
 | ADR-0006 | 3-Tier Document Model | Active | eng-tools ADR-0016 |
+| ADR-0049 | Code Attribution & Intellectual Property Policy | Active | SESSION_011 |
 
 ## ADR Structure
 
