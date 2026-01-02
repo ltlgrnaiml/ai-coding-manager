@@ -57,6 +57,14 @@ workspace/
 *.db-shm
 *.db-wal
 
+# Research paper extraction artifacts
+extracted_papers/
+research_papers/
+*.pdf_extracted/
+*_extraction.json
+*_summary.md
+*_fulltext.txt
+
 # Frontend
 frontend/dist/
 frontend/node_modules/

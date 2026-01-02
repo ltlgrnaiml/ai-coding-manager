@@ -996,6 +996,207 @@ async def generate_all_endpoint(
 
 
 # =============================================================================
+# Research Paper API Endpoints
+# =============================================================================
+
+from .research_service import research_service
+
+
+@router.get("/research/search", response_model=List[Dict[str, Any]])
+async def search_research_papers(
+    query: str,
+    method: str = "hybrid",
+    limit: int = 10,
+    category: Optional[str] = None
+) -> List[Dict[str, Any]]:
+    """Search research papers using various methods.
+    
+    Args:
+        query: Search query.
+        method: Search method (semantic, fulltext, hybrid).
+        limit: Maximum results to return.
+        category: Optional category filter.
+        
+    Returns:
+        List of search results.
+    """
+    return research_service.search_papers(query, method, limit, category)
+
+
+@router.get("/research/papers/{paper_id}", response_model=Dict[str, Any])
+async def get_research_paper(
+    paper_id: str,
+    query: Optional[str] = None
+) -> Dict[str, Any]:
+    """Get detailed information about a research paper.
+    
+    Args:
+        paper_id: Paper ID.
+        query: Optional query for relevant chunks.
+        
+    Returns:
+        Paper details with metadata and content.
+    """
+    return research_service.get_paper_details(paper_id, query)
+
+
+@router.get("/research/papers/{paper_id}/context", response_model=Dict[str, Any])
+async def get_paper_rag_context(
+    paper_id: str,
+    query: str,
+    max_chunks: int = 3
+) -> Dict[str, Any]:
+    """Get paper context optimized for RAG usage.
+    
+    Args:
+        paper_id: Paper ID.
+        query: Query for finding relevant chunks.
+        max_chunks: Maximum chunks to return.
+        
+    Returns:
+        RAG-optimized context.
+    """
+    return research_service.get_paper_context_for_rag(paper_id, query, max_chunks)
+
+
+@router.get("/research/categories", response_model=List[Dict[str, Any]])
+async def get_research_categories() -> List[Dict[str, Any]]:
+    """Get all research paper categories.
+    
+    Returns:
+        List of categories with paper counts.
+    """
+    return research_service.get_categories()
+
+
+@router.get("/research/categories/{category}/papers", response_model=List[Dict[str, Any]])
+async def get_papers_by_category(
+    category: str,
+    limit: int = 20
+) -> List[Dict[str, Any]]:
+    """Get papers in a specific category.
+    
+    Args:
+        category: Category name.
+        limit: Maximum results to return.
+        
+    Returns:
+        List of papers in the category.
+    """
+    return research_service.list_papers_by_category(category, limit)
+
+
+@router.get("/research/stats", response_model=Dict[str, Any])
+async def get_research_stats() -> Dict[str, Any]:
+    """Get research database statistics.
+    
+    Returns:
+        Database statistics including paper counts, categories, etc.
+    """
+    return research_service.get_database_stats()
+
+
+@router.post("/research/ingest", response_model=Dict[str, Any])
+async def ingest_research_paper(
+    pdf_path: str,
+    category: Optional[str] = None
+) -> Dict[str, Any]:
+    """Ingest a research paper from file path.
+    
+    Args:
+        pdf_path: Path to PDF file.
+        category: Optional category for the paper.
+        
+    Returns:
+        Ingestion result with paper details.
+    """
+    return research_service.ingest_paper_from_path(pdf_path, category)
+
+
+@router.get("/research/papers/{paper_id}/pdf")
+async def get_paper_pdf(paper_id: str):
+    """Get PDF file for a research paper.
+    
+    Args:
+        paper_id: Paper ID.
+        
+    Returns:
+        PDF file as binary response.
+    """
+    from fastapi.responses import Response
+    
+    pdf_data = research_service.get_paper_pdf(paper_id)
+    if not pdf_data:
+        raise HTTPException(status_code=404, detail="PDF not found")
+    
+    return Response(
+        content=pdf_data['file_data'],
+        media_type=pdf_data['mime_type'],
+        headers={
+            "Content-Disposition": f"inline; filename=\"{pdf_data['file_name']}\"",
+            "Content-Length": str(pdf_data['file_size'])
+        }
+    )
+
+
+@router.get("/research/papers/{paper_id}/images", response_model=List[Dict[str, Any]])
+async def get_paper_images(
+    paper_id: str,
+    plots_only: bool = False
+) -> List[Dict[str, Any]]:
+    """Get images for a research paper.
+    
+    Args:
+        paper_id: Paper ID.
+        plots_only: If True, only return plots/graphs.
+        
+    Returns:
+        List of image metadata (without BLOB data).
+    """
+    return research_service.get_paper_images_list(paper_id, plots_only)
+
+
+@router.get("/research/papers/{paper_id}/images/{image_id}")
+async def get_paper_image(paper_id: str, image_id: int):
+    """Get specific image data for a research paper.
+    
+    Args:
+        paper_id: Paper ID.
+        image_id: Image ID.
+        
+    Returns:
+        Image file as binary response.
+    """
+    from fastapi.responses import Response
+    
+    image_data = research_service.get_paper_image_data(paper_id, image_id)
+    if not image_data:
+        raise HTTPException(status_code=404, detail="Image not found")
+    
+    return Response(
+        content=image_data['image_data'],
+        media_type=image_data['mime_type'],
+        headers={
+            "Content-Length": str(image_data['file_size']),
+            "Cache-Control": "public, max-age=3600"  # Cache images for 1 hour
+        }
+    )
+
+
+@router.get("/research/papers/{paper_id}/plots", response_model=List[Dict[str, Any]])
+async def get_paper_plots(paper_id: str) -> List[Dict[str, Any]]:
+    """Get plots/graphs for a research paper.
+    
+    Args:
+        paper_id: Paper ID.
+        
+    Returns:
+        List of plot metadata.
+    """
+    return research_service.get_paper_images_list(paper_id, plots_only=True)
+
+
+# =============================================================================
 # LLM Health Check
 # =============================================================================
 
