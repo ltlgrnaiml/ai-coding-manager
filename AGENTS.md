@@ -243,6 +243,30 @@ Add to project TODO file with file path + description.
 
 ---
 
+## Rule 16 — MCP Server Hygiene
+
+**Clean up Docker MCP containers at session end.**
+
+The MCP SQLite servers run as Docker containers. Each reconnect spawns a new container but doesn't kill old ones.
+
+### Before Ending Session
+If you used MCP tools (`mcp1_*` or `mcp2_*`), clean up orphaned containers:
+
+```bash
+# Stop old mcp/sqlite containers (keeps most recent)
+docker ps -q --filter "ancestor=mcp/sqlite" | tail -n +2 | xargs -r docker stop
+```
+
+### Quick Check
+```bash
+# Count running MCP containers (should be ≤2)
+docker ps --filter "ancestor=mcp/sqlite" --format "{{.Names}}" | wc -l
+```
+
+**Rule:** Never leave more than 2 MCP SQLite containers running.
+
+---
+
 ## Solo-Dev Principles Summary
 
 1. **First-Principles**: Question everything, no legacy baggage

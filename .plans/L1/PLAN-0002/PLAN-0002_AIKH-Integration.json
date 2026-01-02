@@ -1,0 +1,135 @@
+{
+  "id": "PLAN-0002",
+  "title": "AI Knowledge Hub (AIKH) Integration Sprint",
+  "status": "in_progress",
+  "granularity": "L1",
+  "created_at": "2026-01-02",
+  "updated_at": "2026-01-02",
+  "source": {
+    "discussion": "DISC-0022",
+    "spec": null
+  },
+  "objective": "Integrate AIKH into AICM with dockable research panel, autocomplete, and context enrichment",
+  "style_decisions": {
+    "panel_system": "Panels with tabs, pop-out/re-dock capability",
+    "pane_position": "right",
+    "default_state": "collapsed",
+    "citation_format": "bibtex",
+    "library_additions": ["react-mosaic-component"]
+  },
+  "context": [
+    "ARCHITECTURE: React 18 + TailwindCSS + Vite frontend",
+    "ARCHITECTURE: FastAPI backend with SQLite AIKH database",
+    "FILE: backend/services/research_api.py - Existing API",
+    "FILE: frontend/src/components/ - UI components",
+    "DISC: DISC-0022_AI-Knowledge-Hub-Architecture.md"
+  ],
+  "milestones": [
+    {
+      "id": "M1",
+      "name": "Backend Integration",
+      "description": "Unified schema, context enrichment service, autocomplete API",
+      "status": "pending",
+      "acceptance_criteria": [
+        {
+          "id": "AC-M1-01",
+          "description": "Context enrichment endpoint returns relevant papers for query",
+          "verification_command": "curl -s localhost:8001/api/aikh/enrich -X POST -H 'Content-Type: application/json' -d '{\"message\":\"context compression\"}' | jq '.papers | length'"
+        },
+        {
+          "id": "AC-M1-02",
+          "description": "Autocomplete endpoint returns suggestions within 200ms",
+          "verification_command": "curl -w '%{time_total}' -s localhost:8001/api/aikh/autocomplete?prefix=trans | head -1"
+        },
+        {
+          "id": "AC-M1-03",
+          "description": "Cross-reference tables exist in database",
+          "verification_command": "sqlite3 .workspace/research_papers.db '.tables' | grep -E 'artifact_knowledge_refs|knowledge_annotations'"
+        }
+      ],
+      "tasks": [
+        {"id": "T-M1-01", "description": "Add cross-reference tables to schema", "status": "pending"},
+        {"id": "T-M1-02", "description": "Create context enrichment endpoint", "status": "pending"},
+        {"id": "T-M1-03", "description": "Create autocomplete endpoint", "status": "pending"},
+        {"id": "T-M1-04", "description": "Add BibTeX citation generator", "status": "pending"}
+      ]
+    },
+    {
+      "id": "M2",
+      "name": "Core Frontend",
+      "description": "Research Papers pane with docking, paper detail view, citation copy",
+      "status": "pending",
+      "acceptance_criteria": [
+        {
+          "id": "AC-M2-01",
+          "description": "ResearchPane component renders without errors",
+          "verification_command": "grep -l 'ResearchPane' frontend/src/components/*.tsx"
+        },
+        {
+          "id": "AC-M2-02",
+          "description": "Paper search returns results from API",
+          "verification_command": "grep -A5 'searchPapers' frontend/src/hooks/useResearch.ts"
+        },
+        {
+          "id": "AC-M2-03",
+          "description": "BibTeX copy function exists",
+          "verification_command": "grep 'copyBibtex' frontend/src/components/PaperCard.tsx"
+        }
+      ],
+      "tasks": [
+        {"id": "T-M2-01", "description": "Create ResearchPane component with collapse/expand", "status": "pending"},
+        {"id": "T-M2-02", "description": "Create PaperCard component with actions", "status": "pending"},
+        {"id": "T-M2-03", "description": "Create PaperDetailModal component", "status": "pending"},
+        {"id": "T-M2-04", "description": "Create useResearch hook for API calls", "status": "pending"},
+        {"id": "T-M2-05", "description": "Add pop-out/re-dock capability", "status": "pending"}
+      ]
+    },
+    {
+      "id": "M3",
+      "name": "Autocomplete & Integration",
+      "description": "Chat autocomplete, artifact integration, keyboard shortcuts",
+      "status": "pending",
+      "acceptance_criteria": [
+        {
+          "id": "AC-M3-01",
+          "description": "Autocomplete triggers on @ prefix in chat",
+          "verification_command": "grep '@paper:' frontend/src/components/ChatInput.tsx"
+        },
+        {
+          "id": "AC-M3-02",
+          "description": "Keyboard shortcut Ctrl+Shift+P registered",
+          "verification_command": "grep 'Ctrl.*Shift.*P' frontend/src/hooks/useKeyboardShortcuts.ts"
+        },
+        {
+          "id": "AC-M3-03",
+          "description": "Insert reference function works in editor",
+          "verification_command": "grep 'insertReference' frontend/src/components/ResearchPane.tsx"
+        }
+      ],
+      "tasks": [
+        {"id": "T-M3-01", "description": "Create AutocompletePopup component", "status": "pending"},
+        {"id": "T-M3-02", "description": "Integrate autocomplete into ChatInput", "status": "pending"},
+        {"id": "T-M3-03", "description": "Create useKeyboardShortcuts hook", "status": "pending"},
+        {"id": "T-M3-04", "description": "Add insert reference to artifact editors", "status": "pending"}
+      ]
+    }
+  ],
+  "global_acceptance_criteria": [
+    {
+      "id": "AC-GLOBAL-01",
+      "description": "Backend API starts without errors",
+      "verification_command": ".venv/bin/python -c 'from backend.services.research_api import app; print(\"OK\")'"
+    },
+    {
+      "id": "AC-GLOBAL-02",
+      "description": "Frontend builds without TypeScript errors",
+      "verification_command": "cd frontend && npm run build"
+    }
+  ],
+  "completion": {
+    "type": null,
+    "date": null,
+    "known_bugs": [],
+    "deferred_to": null
+  }
+}

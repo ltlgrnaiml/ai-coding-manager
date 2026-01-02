@@ -1,0 +1,217 @@
+{
+  "id": "PLAN-0003",
+  "title": "Research Papers First-Class Feature",
+  "status": "in_progress",
+  "granularity": "L1",
+  "created_at": "2026-01-02",
+  "updated_at": "2026-01-02",
+  "source": {
+    "discussion": "DISC-0022",
+    "spec": null
+  },
+  "objective": "Create a standalone, first-class Research Papers page with GPU-accelerated 2D/3D visualization, feature-rich reader, and relationship exploration tools",
+  "context": [
+    "ARCHITECTURE: GPU-first with fallbacks per DISC-0022 GPU Policy",
+    "FILE: frontend/src/pages/ResearchPage.tsx - New page",
+    "FILE: frontend/src/components/research/* - Research components",
+    "TECH: Sigma.js (2D WebGL), deck.gl (3D WebGL2/WebGPU)"
+  ],
+  "milestones": [
+    {
+      "id": "M1",
+      "name": "Navigation & Page Structure",
+      "description": "Add Research Papers as first-class nav item with dedicated page route",
+      "status": "pending",
+      "acceptance_criteria": [
+        {
+          "id": "AC-M1-01",
+          "description": "Research Papers nav icon visible in sidebar",
+          "verification_command": "grep -r 'BookOpen' frontend/src/App.tsx"
+        },
+        {
+          "id": "AC-M1-02",
+          "description": "Route /research renders ResearchPage",
+          "verification_command": "grep -r '/research' frontend/src/App.tsx"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-M1-01",
+          "description": "Add Research nav item to App.tsx sidebar",
+          "status": "pending",
+          "verification_command": "grep 'path.*research' frontend/src/App.tsx",
+          "context": ["FILE: frontend/src/App.tsx"],
+          "notes": ""
+        },
+        {
+          "id": "T-M1-02",
+          "description": "Create ResearchPage.tsx with basic structure",
+          "status": "pending",
+          "verification_command": "test -f frontend/src/pages/ResearchPage.tsx",
+          "context": ["FILE: frontend/src/pages/ResearchPage.tsx"],
+          "notes": ""
+        },
+        {
+          "id": "T-M1-03",
+          "description": "Add route to App.tsx",
+          "status": "pending",
+          "verification_command": "grep 'ResearchPage' frontend/src/App.tsx",
+          "context": ["FILE: frontend/src/App.tsx"],
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "id": "M2",
+      "name": "Paper Reader Component",
+      "description": "Feature-rich paper reader with metadata, abstract, sections, and citations",
+      "status": "pending",
+      "acceptance_criteria": [
+        {
+          "id": "AC-M2-01",
+          "description": "PaperReader component displays full paper content",
+          "verification_command": "grep -r 'PaperReader' frontend/src/components/research/"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-M2-01",
+          "description": "Create PaperReader.tsx with tabs (Abstract, Sections, Citations, BibTeX)",
+          "status": "pending",
+          "verification_command": "test -f frontend/src/components/research/PaperReader.tsx",
+          "context": ["FILE: frontend/src/components/research/PaperReader.tsx"],
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "id": "M3",
+      "name": "GPU-Accelerated 2D Graph",
+      "description": "Sigma.js WebGL graph for paper relationships",
+      "status": "pending",
+      "acceptance_criteria": [
+        {
+          "id": "AC-M3-01",
+          "description": "Sigma.js dependencies installed",
+          "verification_command": "grep 'sigma' frontend/package.json"
+        },
+        {
+          "id": "AC-M3-02",
+          "description": "PaperGraph2D component renders WebGL graph",
+          "verification_command": "grep -r 'SigmaContainer' frontend/src/components/research/"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-M3-01",
+          "description": "Install @react-sigma/core, sigma, graphology",
+          "status": "pending",
+          "verification_command": "grep '@react-sigma' frontend/package.json",
+          "context": ["FILE: frontend/package.json"],
+          "notes": ""
+        },
+        {
+          "id": "T-M3-02",
+          "description": "Create PaperGraph2D.tsx with Sigma.js",
+          "status": "pending",
+          "verification_command": "test -f frontend/src/components/research/PaperGraph2D.tsx",
+          "context": ["FILE: frontend/src/components/research/PaperGraph2D.tsx"],
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "id": "M4",
+      "name": "GPU-Accelerated 3D Graph",
+      "description": "deck.gl WebGL2/WebGPU graph for immersive exploration",
+      "status": "pending",
+      "acceptance_criteria": [
+        {
+          "id": "AC-M4-01",
+          "description": "deck.gl dependencies installed",
+          "verification_command": "grep 'deck.gl' frontend/package.json"
+        },
+        {
+          "id": "AC-M4-02",
+          "description": "PaperGraph3D component renders WebGL2 graph",
+          "verification_command": "grep -r 'DeckGL' frontend/src/components/research/"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-M4-01",
+          "description": "Install deck.gl packages",
+          "status": "pending",
+          "verification_command": "grep '@deck.gl' frontend/package.json",
+          "context": ["FILE: frontend/package.json"],
+          "notes": ""
+        },
+        {
+          "id": "T-M4-02",
+          "description": "Create PaperGraph3D.tsx with deck.gl",
+          "status": "pending",
+          "verification_command": "test -f frontend/src/components/research/PaperGraph3D.tsx",
+          "context": ["FILE: frontend/src/components/research/PaperGraph3D.tsx"],
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "id": "M5",
+      "name": "GPU Fallback & Detection",
+      "description": "Auto-detect GPU capabilities and gracefully degrade",
+      "status": "pending",
+      "acceptance_criteria": [
+        {
+          "id": "AC-M5-01",
+          "description": "useGPUCapabilities hook detects WebGL2/WebGPU support",
+          "verification_command": "grep -r 'useGPUCapabilities' frontend/src/"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-M5-01",
+          "description": "Create useGPUCapabilities.ts hook",
+          "status": "pending",
+          "verification_command": "test -f frontend/src/hooks/useGPUCapabilities.ts",
+          "context": ["FILE: frontend/src/hooks/useGPUCapabilities.ts"],
+          "notes": ""
+        },
+        {
+          "id": "T-M5-02",
+          "description": "Add fallback logic to ResearchPage",
+          "status": "pending",
+          "verification_command": "grep 'fallback' frontend/src/pages/ResearchPage.tsx",
+          "context": ["FILE: frontend/src/pages/ResearchPage.tsx"],
+          "notes": ""
+        }
+      ]
+    }
+  ],
+  "global_acceptance_criteria": [
+    {
+      "id": "AC-GLOBAL-01",
+      "description": "Frontend builds without errors",
+      "verification_command": "cd frontend && npm run build"
+    },
+    {
+      "id": "AC-GLOBAL-02",
+      "description": "Research page accessible at /research",
+      "verification_command": "curl -s http://localhost:3100/research | head -c 100"
+    }
+  ],
+  "definition_of_done": [
+    "Research Papers is a first-class nav item with dedicated page",
+    "Paper reader displays full content with tabs",
+    "2D graph uses Sigma.js (WebGL) for relationship visualization",
+    "3D graph uses deck.gl (WebGL2/WebGPU) for immersive exploration",
+    "GPU capabilities auto-detected with graceful fallback to 2D-only",
+    "Frontend builds and deploys without errors"
+  ],
+  "completion": {
+    "type": null,
+    "date": null,
+    "known_bugs": [],
+    "deferred_to": null
+  }
+}

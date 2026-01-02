@@ -1,0 +1,2126 @@
+{
+  "nodes": [
+    {
+      "id": "agentic",
+      "type": "techniques",
+      "freq": 515
+    },
+    {
+      "id": "bert",
+      "type": "models",
+      "freq": 18
+    },
+    {
+      "id": "bertscore",
+      "type": "metrics",
+      "freq": 2
+    },
+    {
+      "id": "bleu",
+      "type": "metrics",
+      "freq": 103
+    },
+    {
+      "id": "chain-of-thought",
+      "type": "techniques",
+      "freq": 36
+    },
+    {
+      "id": "claude",
+      "type": "models",
+      "freq": 205
+    },
+    {
+      "id": "clip",
+      "type": "models",
+      "freq": 11
+    },
+    {
+      "id": "codellama",
+      "type": "models",
+      "freq": 15
+    },
+    {
+      "id": "codex",
+      "type": "models",
+      "freq": 29
+    },
+    {
+      "id": "context compression",
+      "type": "techniques",
+      "freq": 43
+    },
+    {
+      "id": "copilot",
+      "type": "models",
+      "freq": 58
+    },
+    {
+      "id": "cot",
+      "type": "techniques",
+      "freq": 138
+    },
+    {
+      "id": "faiss",
+      "type": "tools",
+      "freq": 5
+    },
+    {
+      "id": "few-shot",
+      "type": "techniques",
+      "freq": 37
+    },
+    {
+      "id": "gemini",
+      "type": "models",
+      "freq": 28
+    },
+    {
+      "id": "gpt",
+      "type": "models",
+      "freq": 435
+    },
+    {
+      "id": "gpt-4",
+      "type": "models",
+      "freq": 145
+    },
+    {
+      "id": "gpt-4o",
+      "type": "models",
+      "freq": 92
+    },
+    {
+      "id": "gsm8k",
+      "type": "datasets",
+      "freq": 22
+    },
+    {
+      "id": "huggingface",
+      "type": "tools",
+      "freq": 3
+    },
+    {
+      "id": "humaneval",
+      "type": "datasets",
+      "freq": 61
+    },
+    {
+      "id": "imagenet",
+      "type": "datasets",
+      "freq": 2
+    },
+    {
+      "id": "in-context learning",
+      "type": "techniques",
+      "freq": 21
+    },
+    {
+      "id": "langchain",
+      "type": "tools",
+      "freq": 17
+    },
+    {
+      "id": "llama",
+      "type": "models",
+      "freq": 102
+    },
+    {
+      "id": "llama-3",
+      "type": "models",
+      "freq": 6
+    },
+    {
+      "id": "lora",
+      "type": "techniques",
+      "freq": 26
+    },
+    {
+      "id": "mbpp",
+      "type": "datasets",
+      "freq": 37
+    },
+    {
+      "id": "mistral",
+      "type": "models",
+      "freq": 28
+    },
+    {
+      "id": "mmlu",
+      "type": "datasets",
+      "freq": 14
+    },
+    {
+      "id": "multi-agent",
+      "type": "techniques",
+      "freq": 169
+    },
+    {
+      "id": "pass@1",
+      "type": "metrics",
+      "freq": 22
+    },
+    {
+      "id": "pass@k",
+      "type": "metrics",
+      "freq": 7
+    },
+    {
+      "id": "perplexity",
+      "type": "metrics",
+      "freq": 42
+    },
+    {
+      "id": "pinecone",
+      "type": "tools",
+      "freq": 6
+    },
+    {
+      "id": "pytorch",
+      "type": "frameworks",
+      "freq": 3
+    },
+    {
+      "id": "rag",
+      "type": "techniques",
+      "freq": 118
+    },
+    {
+      "id": "react",
+      "type": "techniques",
+      "freq": 268
+    },
+    {
+      "id": "rlhf",
+      "type": "techniques",
+      "freq": 6
+    },
+    {
+      "id": "rouge",
+      "type": "metrics",
+      "freq": 32
+    },
+    {
+      "id": "starcoder",
+      "type": "models",
+      "freq": 9
+    },
+    {
+      "id": "swe-bench",
+      "type": "datasets",
+      "freq": 45
+    },
+    {
+      "id": "tool use",
+      "type": "techniques",
+      "freq": 27
+    },
+    {
+      "id": "transformer",
+      "type": "models",
+      "freq": 42
+    }
+  ],
+  "links": [
+    {
+      "source": "agentic",
+      "target": "gpt-4",
+      "value": 10
+    },
+    {
+      "source": "gpt-4",
+      "target": "react",
+      "value": 9
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "gpt-4",
+      "value": 10
+    },
+    {
+      "source": "gpt",
+      "target": "gpt-4",
+      "value": 25
+    },
+    {
+      "source": "agentic",
+      "target": "react",
+      "value": 6
+    },
+    {
+      "source": "agentic",
+      "target": "chain-of-thought",
+      "value": 8
+    },
+    {
+      "source": "agentic",
+      "target": "gpt",
+      "value": 23
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "react",
+      "value": 6
+    },
+    {
+      "source": "gpt",
+      "target": "react",
+      "value": 11
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "gpt",
+      "value": 15
+    },
+    {
+      "source": "few-shot",
+      "target": "tool use",
+      "value": 7
+    },
+    {
+      "source": "in-context learning",
+      "target": "tool use",
+      "value": 3
+    },
+    {
+      "source": "gpt",
+      "target": "tool use",
+      "value": 11
+    },
+    {
+      "source": "few-shot",
+      "target": "perplexity",
+      "value": 3
+    },
+    {
+      "source": "in-context learning",
+      "target": "perplexity",
+      "value": 3
+    },
+    {
+      "source": "gpt",
+      "target": "perplexity",
+      "value": 4
+    },
+    {
+      "source": "few-shot",
+      "target": "in-context learning",
+      "value": 8
+    },
+    {
+      "source": "few-shot",
+      "target": "gpt",
+      "value": 13
+    },
+    {
+      "source": "gpt",
+      "target": "in-context learning",
+      "value": 11
+    },
+    {
+      "source": "claude",
+      "target": "starcoder",
+      "value": 3
+    },
+    {
+      "source": "copilot",
+      "target": "starcoder",
+      "value": 4
+    },
+    {
+      "source": "agentic",
+      "target": "starcoder",
+      "value": 3
+    },
+    {
+      "source": "gpt",
+      "target": "starcoder",
+      "value": 4
+    },
+    {
+      "source": "gemini",
+      "target": "starcoder",
+      "value": 4
+    },
+    {
+      "source": "codex",
+      "target": "starcoder",
+      "value": 4
+    },
+    {
+      "source": "gpt-4o",
+      "target": "rag",
+      "value": 4
+    },
+    {
+      "source": "claude",
+      "target": "rag",
+      "value": 9
+    },
+    {
+      "source": "copilot",
+      "target": "rag",
+      "value": 3
+    },
+    {
+      "source": "agentic",
+      "target": "rag",
+      "value": 9
+    },
+    {
+      "source": "gpt",
+      "target": "rag",
+      "value": 13
+    },
+    {
+      "source": "rag",
+      "target": "swe-bench",
+      "value": 2
+    },
+    {
+      "source": "gemini",
+      "target": "rag",
+      "value": 5
+    },
+    {
+      "source": "codex",
+      "target": "rag",
+      "value": 2
+    },
+    {
+      "source": "codellama",
+      "target": "rag",
+      "value": 4
+    },
+    {
+      "source": "claude",
+      "target": "gpt-4o",
+      "value": 10
+    },
+    {
+      "source": "copilot",
+      "target": "gpt-4o",
+      "value": 3
+    },
+    {
+      "source": "agentic",
+      "target": "gpt-4o",
+      "value": 12
+    },
+    {
+      "source": "gpt",
+      "target": "gpt-4o",
+      "value": 15
+    },
+    {
+      "source": "gpt-4o",
+      "target": "swe-bench",
+      "value": 3
+    },
+    {
+      "source": "gemini",
+      "target": "gpt-4o",
+      "value": 3
+    },
+    {
+      "source": "codellama",
+      "target": "gpt-4o",
+      "value": 2
+    },
+    {
+      "source": "claude",
+      "target": "copilot",
+      "value": 9
+    },
+    {
+      "source": "agentic",
+      "target": "claude",
+      "value": 18
+    },
+    {
+      "source": "claude",
+      "target": "gpt",
+      "value": 20
+    },
+    {
+      "source": "claude",
+      "target": "swe-bench",
+      "value": 5
+    },
+    {
+      "source": "claude",
+      "target": "gemini",
+      "value": 8
+    },
+    {
+      "source": "claude",
+      "target": "codex",
+      "value": 6
+    },
+    {
+      "source": "claude",
+      "target": "codellama",
+      "value": 3
+    },
+    {
+      "source": "agentic",
+      "target": "copilot",
+      "value": 7
+    },
+    {
+      "source": "copilot",
+      "target": "gpt",
+      "value": 6
+    },
+    {
+      "source": "copilot",
+      "target": "swe-bench",
+      "value": 2
+    },
+    {
+      "source": "copilot",
+      "target": "gemini",
+      "value": 6
+    },
+    {
+      "source": "codex",
+      "target": "copilot",
+      "value": 6
+    },
+    {
+      "source": "agentic",
+      "target": "swe-bench",
+      "value": 4
+    },
+    {
+      "source": "agentic",
+      "target": "gemini",
+      "value": 7
+    },
+    {
+      "source": "agentic",
+      "target": "codex",
+      "value": 6
+    },
+    {
+      "source": "agentic",
+      "target": "codellama",
+      "value": 2
+    },
+    {
+      "source": "gpt",
+      "target": "swe-bench",
+      "value": 4
+    },
+    {
+      "source": "gemini",
+      "target": "gpt",
+      "value": 9
+    },
+    {
+      "source": "codex",
+      "target": "gpt",
+      "value": 6
+    },
+    {
+      "source": "codellama",
+      "target": "gpt",
+      "value": 4
+    },
+    {
+      "source": "codex",
+      "target": "swe-bench",
+      "value": 2
+    },
+    {
+      "source": "codellama",
+      "target": "swe-bench",
+      "value": 2
+    },
+    {
+      "source": "codex",
+      "target": "gemini",
+      "value": 4
+    },
+    {
+      "source": "codellama",
+      "target": "codex",
+      "value": 2
+    },
+    {
+      "source": "agentic",
+      "target": "tool use",
+      "value": 8
+    },
+    {
+      "source": "tool use",
+      "target": "transformer",
+      "value": 2
+    },
+    {
+      "source": "multi-agent",
+      "target": "tool use",
+      "value": 8
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "tool use",
+      "value": 5
+    },
+    {
+      "source": "agentic",
+      "target": "transformer",
+      "value": 4
+    },
+    {
+      "source": "agentic",
+      "target": "multi-agent",
+      "value": 16
+    },
+    {
+      "source": "agentic",
+      "target": "cot",
+      "value": 4
+    },
+    {
+      "source": "agentic",
+      "target": "few-shot",
+      "value": 5
+    },
+    {
+      "source": "multi-agent",
+      "target": "transformer",
+      "value": 3
+    },
+    {
+      "source": "cot",
+      "target": "transformer",
+      "value": 3
+    },
+    {
+      "source": "gpt",
+      "target": "transformer",
+      "value": 9
+    },
+    {
+      "source": "few-shot",
+      "target": "transformer",
+      "value": 2
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "multi-agent",
+      "value": 9
+    },
+    {
+      "source": "cot",
+      "target": "multi-agent",
+      "value": 4
+    },
+    {
+      "source": "gpt",
+      "target": "multi-agent",
+      "value": 17
+    },
+    {
+      "source": "few-shot",
+      "target": "multi-agent",
+      "value": 8
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "cot",
+      "value": 11
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "few-shot",
+      "value": 10
+    },
+    {
+      "source": "cot",
+      "target": "gpt",
+      "value": 12
+    },
+    {
+      "source": "cot",
+      "target": "few-shot",
+      "value": 6
+    },
+    {
+      "source": "claude",
+      "target": "multi-agent",
+      "value": 13
+    },
+    {
+      "source": "claude",
+      "target": "llama",
+      "value": 14
+    },
+    {
+      "source": "agentic",
+      "target": "llama",
+      "value": 9
+    },
+    {
+      "source": "llama",
+      "target": "multi-agent",
+      "value": 9
+    },
+    {
+      "source": "gemini",
+      "target": "multi-agent",
+      "value": 6
+    },
+    {
+      "source": "gemini",
+      "target": "llama",
+      "value": 7
+    },
+    {
+      "source": "gpt",
+      "target": "llama",
+      "value": 19
+    },
+    {
+      "source": "gpt-4",
+      "target": "tool use",
+      "value": 7
+    },
+    {
+      "source": "react",
+      "target": "tool use",
+      "value": 5
+    },
+    {
+      "source": "gpt-4",
+      "target": "multi-agent",
+      "value": 9
+    },
+    {
+      "source": "multi-agent",
+      "target": "react",
+      "value": 6
+    },
+    {
+      "source": "gpt-4",
+      "target": "rlhf",
+      "value": 3
+    },
+    {
+      "source": "llama",
+      "target": "rlhf",
+      "value": 2
+    },
+    {
+      "source": "in-context learning",
+      "target": "rlhf",
+      "value": 2
+    },
+    {
+      "source": "gpt",
+      "target": "rlhf",
+      "value": 3
+    },
+    {
+      "source": "rlhf",
+      "target": "rouge",
+      "value": 2
+    },
+    {
+      "source": "bleu",
+      "target": "rlhf",
+      "value": 2
+    },
+    {
+      "source": "gpt-4",
+      "target": "llama",
+      "value": 16
+    },
+    {
+      "source": "gpt-4",
+      "target": "in-context learning",
+      "value": 9
+    },
+    {
+      "source": "gpt-4",
+      "target": "rouge",
+      "value": 4
+    },
+    {
+      "source": "bleu",
+      "target": "gpt-4",
+      "value": 4
+    },
+    {
+      "source": "in-context learning",
+      "target": "multi-agent",
+      "value": 4
+    },
+    {
+      "source": "multi-agent",
+      "target": "rouge",
+      "value": 2
+    },
+    {
+      "source": "bleu",
+      "target": "multi-agent",
+      "value": 2
+    },
+    {
+      "source": "in-context learning",
+      "target": "llama",
+      "value": 6
+    },
+    {
+      "source": "llama",
+      "target": "rouge",
+      "value": 5
+    },
+    {
+      "source": "bleu",
+      "target": "llama",
+      "value": 6
+    },
+    {
+      "source": "in-context learning",
+      "target": "rouge",
+      "value": 4
+    },
+    {
+      "source": "bleu",
+      "target": "in-context learning",
+      "value": 2
+    },
+    {
+      "source": "gpt",
+      "target": "rouge",
+      "value": 7
+    },
+    {
+      "source": "bleu",
+      "target": "gpt",
+      "value": 10
+    },
+    {
+      "source": "bleu",
+      "target": "rouge",
+      "value": 7
+    },
+    {
+      "source": "lora",
+      "target": "transformer",
+      "value": 4
+    },
+    {
+      "source": "gpt",
+      "target": "lora",
+      "value": 5
+    },
+    {
+      "source": "imagenet",
+      "target": "transformer",
+      "value": 2
+    },
+    {
+      "source": "rag",
+      "target": "transformer",
+      "value": 4
+    },
+    {
+      "source": "clip",
+      "target": "transformer",
+      "value": 2
+    },
+    {
+      "source": "gpt",
+      "target": "imagenet",
+      "value": 2
+    },
+    {
+      "source": "clip",
+      "target": "gpt",
+      "value": 3
+    },
+    {
+      "source": "humaneval",
+      "target": "rag",
+      "value": 4
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "humaneval",
+      "value": 7
+    },
+    {
+      "source": "cot",
+      "target": "humaneval",
+      "value": 6
+    },
+    {
+      "source": "humaneval",
+      "target": "in-context learning",
+      "value": 3
+    },
+    {
+      "source": "bleu",
+      "target": "humaneval",
+      "value": 3
+    },
+    {
+      "source": "humaneval",
+      "target": "rouge",
+      "value": 3
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "rag",
+      "value": 3
+    },
+    {
+      "source": "cot",
+      "target": "rag",
+      "value": 2
+    },
+    {
+      "source": "in-context learning",
+      "target": "rag",
+      "value": 2
+    },
+    {
+      "source": "bleu",
+      "target": "rag",
+      "value": 4
+    },
+    {
+      "source": "rag",
+      "target": "rouge",
+      "value": 2
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "in-context learning",
+      "value": 5
+    },
+    {
+      "source": "bleu",
+      "target": "chain-of-thought",
+      "value": 2
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "rouge",
+      "value": 3
+    },
+    {
+      "source": "cot",
+      "target": "in-context learning",
+      "value": 5
+    },
+    {
+      "source": "bleu",
+      "target": "cot",
+      "value": 2
+    },
+    {
+      "source": "cot",
+      "target": "rouge",
+      "value": 3
+    },
+    {
+      "source": "rag",
+      "target": "react",
+      "value": 5
+    },
+    {
+      "source": "multi-agent",
+      "target": "rag",
+      "value": 7
+    },
+    {
+      "source": "few-shot",
+      "target": "rag",
+      "value": 3
+    },
+    {
+      "source": "few-shot",
+      "target": "react",
+      "value": 7
+    },
+    {
+      "source": "in-context learning",
+      "target": "react",
+      "value": 5
+    },
+    {
+      "source": "claude",
+      "target": "tool use",
+      "value": 6
+    },
+    {
+      "source": "langchain",
+      "target": "tool use",
+      "value": 6
+    },
+    {
+      "source": "rag",
+      "target": "tool use",
+      "value": 5
+    },
+    {
+      "source": "claude",
+      "target": "langchain",
+      "value": 6
+    },
+    {
+      "source": "agentic",
+      "target": "langchain",
+      "value": 8
+    },
+    {
+      "source": "langchain",
+      "target": "multi-agent",
+      "value": 8
+    },
+    {
+      "source": "langchain",
+      "target": "rag",
+      "value": 6
+    },
+    {
+      "source": "gpt",
+      "target": "langchain",
+      "value": 10
+    },
+    {
+      "source": "gpt-4",
+      "target": "lora",
+      "value": 3
+    },
+    {
+      "source": "gpt-4",
+      "target": "transformer",
+      "value": 3
+    },
+    {
+      "source": "context compression",
+      "target": "lora",
+      "value": 4
+    },
+    {
+      "source": "llama",
+      "target": "lora",
+      "value": 3
+    },
+    {
+      "source": "bleu",
+      "target": "lora",
+      "value": 2
+    },
+    {
+      "source": "context compression",
+      "target": "transformer",
+      "value": 2
+    },
+    {
+      "source": "llama",
+      "target": "transformer",
+      "value": 3
+    },
+    {
+      "source": "bleu",
+      "target": "transformer",
+      "value": 3
+    },
+    {
+      "source": "context compression",
+      "target": "llama",
+      "value": 2
+    },
+    {
+      "source": "bleu",
+      "target": "context compression",
+      "value": 2
+    },
+    {
+      "source": "llama",
+      "target": "llama-3",
+      "value": 3
+    },
+    {
+      "source": "llama",
+      "target": "rag",
+      "value": 8
+    },
+    {
+      "source": "codellama",
+      "target": "llama",
+      "value": 2
+    },
+    {
+      "source": "bleu",
+      "target": "codellama",
+      "value": 2
+    },
+    {
+      "source": "gpt-4",
+      "target": "mistral",
+      "value": 5
+    },
+    {
+      "source": "gpt-4",
+      "target": "langchain",
+      "value": 8
+    },
+    {
+      "source": "gpt-4",
+      "target": "pytorch",
+      "value": 2
+    },
+    {
+      "source": "gpt-4",
+      "target": "rag",
+      "value": 7
+    },
+    {
+      "source": "langchain",
+      "target": "mistral",
+      "value": 3
+    },
+    {
+      "source": "mistral",
+      "target": "react",
+      "value": 4
+    },
+    {
+      "source": "mistral",
+      "target": "pytorch",
+      "value": 2
+    },
+    {
+      "source": "llama",
+      "target": "mistral",
+      "value": 6
+    },
+    {
+      "source": "mistral",
+      "target": "rag",
+      "value": 2
+    },
+    {
+      "source": "gpt",
+      "target": "mistral",
+      "value": 6
+    },
+    {
+      "source": "langchain",
+      "target": "react",
+      "value": 4
+    },
+    {
+      "source": "langchain",
+      "target": "llama",
+      "value": 7
+    },
+    {
+      "source": "llama",
+      "target": "react",
+      "value": 7
+    },
+    {
+      "source": "llama",
+      "target": "pytorch",
+      "value": 2
+    },
+    {
+      "source": "pytorch",
+      "target": "rag",
+      "value": 2
+    },
+    {
+      "source": "gpt",
+      "target": "pytorch",
+      "value": 2
+    },
+    {
+      "source": "claude",
+      "target": "react",
+      "value": 5
+    },
+    {
+      "source": "copilot",
+      "target": "react",
+      "value": 3
+    },
+    {
+      "source": "copilot",
+      "target": "llama",
+      "value": 5
+    },
+    {
+      "source": "react",
+      "target": "swe-bench",
+      "value": 2
+    },
+    {
+      "source": "llama",
+      "target": "swe-bench",
+      "value": 3
+    },
+    {
+      "source": "codex",
+      "target": "react",
+      "value": 4
+    },
+    {
+      "source": "codex",
+      "target": "llama",
+      "value": 3
+    },
+    {
+      "source": "gpt-4o",
+      "target": "tool use",
+      "value": 2
+    },
+    {
+      "source": "pass@k",
+      "target": "tool use",
+      "value": 2
+    },
+    {
+      "source": "llama",
+      "target": "tool use",
+      "value": 6
+    },
+    {
+      "source": "swe-bench",
+      "target": "tool use",
+      "value": 2
+    },
+    {
+      "source": "gpt-4",
+      "target": "gpt-4o",
+      "value": 5
+    },
+    {
+      "source": "claude",
+      "target": "gpt-4",
+      "value": 11
+    },
+    {
+      "source": "gpt-4",
+      "target": "pass@k",
+      "value": 2
+    },
+    {
+      "source": "few-shot",
+      "target": "gpt-4",
+      "value": 9
+    },
+    {
+      "source": "gpt-4",
+      "target": "swe-bench",
+      "value": 3
+    },
+    {
+      "source": "gpt-4o",
+      "target": "langchain",
+      "value": 3
+    },
+    {
+      "source": "gpt-4o",
+      "target": "multi-agent",
+      "value": 5
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "gpt-4o",
+      "value": 4
+    },
+    {
+      "source": "gpt-4o",
+      "target": "llama",
+      "value": 5
+    },
+    {
+      "source": "claude",
+      "target": "pass@k",
+      "value": 2
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "claude",
+      "value": 8
+    },
+    {
+      "source": "claude",
+      "target": "few-shot",
+      "value": 8
+    },
+    {
+      "source": "llama",
+      "target": "pass@k",
+      "value": 2
+    },
+    {
+      "source": "pass@k",
+      "target": "swe-bench",
+      "value": 2
+    },
+    {
+      "source": "gpt",
+      "target": "pass@k",
+      "value": 3
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "langchain",
+      "value": 4
+    },
+    {
+      "source": "few-shot",
+      "target": "langchain",
+      "value": 4
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "llama",
+      "value": 6
+    },
+    {
+      "source": "few-shot",
+      "target": "llama",
+      "value": 8
+    },
+    {
+      "source": "cot",
+      "target": "react",
+      "value": 3
+    },
+    {
+      "source": "bert",
+      "target": "mistral",
+      "value": 2
+    },
+    {
+      "source": "bert",
+      "target": "react",
+      "value": 2
+    },
+    {
+      "source": "bert",
+      "target": "few-shot",
+      "value": 4
+    },
+    {
+      "source": "bert",
+      "target": "in-context learning",
+      "value": 3
+    },
+    {
+      "source": "bert",
+      "target": "gpt",
+      "value": 6
+    },
+    {
+      "source": "bert",
+      "target": "clip",
+      "value": 2
+    },
+    {
+      "source": "few-shot",
+      "target": "mistral",
+      "value": 3
+    },
+    {
+      "source": "in-context learning",
+      "target": "mistral",
+      "value": 4
+    },
+    {
+      "source": "clip",
+      "target": "few-shot",
+      "value": 2
+    },
+    {
+      "source": "clip",
+      "target": "in-context learning",
+      "value": 2
+    },
+    {
+      "source": "gpt-4",
+      "target": "humaneval",
+      "value": 5
+    },
+    {
+      "source": "claude",
+      "target": "humaneval",
+      "value": 7
+    },
+    {
+      "source": "agentic",
+      "target": "humaneval",
+      "value": 4
+    },
+    {
+      "source": "humaneval",
+      "target": "react",
+      "value": 2
+    },
+    {
+      "source": "humaneval",
+      "target": "multi-agent",
+      "value": 4
+    },
+    {
+      "source": "humaneval",
+      "target": "llama",
+      "value": 5
+    },
+    {
+      "source": "humaneval",
+      "target": "mbpp",
+      "value": 7
+    },
+    {
+      "source": "gpt",
+      "target": "humaneval",
+      "value": 9
+    },
+    {
+      "source": "cot",
+      "target": "gpt-4",
+      "value": 7
+    },
+    {
+      "source": "gpt-4",
+      "target": "mbpp",
+      "value": 2
+    },
+    {
+      "source": "mbpp",
+      "target": "rag",
+      "value": 2
+    },
+    {
+      "source": "claude",
+      "target": "cot",
+      "value": 5
+    },
+    {
+      "source": "claude",
+      "target": "mbpp",
+      "value": 5
+    },
+    {
+      "source": "agentic",
+      "target": "mbpp",
+      "value": 3
+    },
+    {
+      "source": "mbpp",
+      "target": "react",
+      "value": 2
+    },
+    {
+      "source": "mbpp",
+      "target": "multi-agent",
+      "value": 4
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "mbpp",
+      "value": 5
+    },
+    {
+      "source": "cot",
+      "target": "llama",
+      "value": 3
+    },
+    {
+      "source": "llama",
+      "target": "mbpp",
+      "value": 2
+    },
+    {
+      "source": "cot",
+      "target": "mbpp",
+      "value": 4
+    },
+    {
+      "source": "gpt",
+      "target": "mbpp",
+      "value": 6
+    },
+    {
+      "source": "lora",
+      "target": "perplexity",
+      "value": 2
+    },
+    {
+      "source": "perplexity",
+      "target": "rouge",
+      "value": 3
+    },
+    {
+      "source": "lora",
+      "target": "rouge",
+      "value": 4
+    },
+    {
+      "source": "context compression",
+      "target": "rouge",
+      "value": 3
+    },
+    {
+      "source": "few-shot",
+      "target": "rouge",
+      "value": 3
+    },
+    {
+      "source": "gemini",
+      "target": "humaneval",
+      "value": 4
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "gemini",
+      "value": 3
+    },
+    {
+      "source": "gemini",
+      "target": "mbpp",
+      "value": 2
+    },
+    {
+      "source": "few-shot",
+      "target": "gemini",
+      "value": 5
+    },
+    {
+      "source": "copilot",
+      "target": "humaneval",
+      "value": 4
+    },
+    {
+      "source": "few-shot",
+      "target": "humaneval",
+      "value": 3
+    },
+    {
+      "source": "copilot",
+      "target": "multi-agent",
+      "value": 5
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "copilot",
+      "value": 3
+    },
+    {
+      "source": "copilot",
+      "target": "mbpp",
+      "value": 3
+    },
+    {
+      "source": "copilot",
+      "target": "few-shot",
+      "value": 3
+    },
+    {
+      "source": "few-shot",
+      "target": "mbpp",
+      "value": 2
+    },
+    {
+      "source": "bert",
+      "target": "gpt-4",
+      "value": 3
+    },
+    {
+      "source": "bert",
+      "target": "gsm8k",
+      "value": 2
+    },
+    {
+      "source": "bert",
+      "target": "llama",
+      "value": 4
+    },
+    {
+      "source": "bert",
+      "target": "gemini",
+      "value": 2
+    },
+    {
+      "source": "humaneval",
+      "target": "mmlu",
+      "value": 3
+    },
+    {
+      "source": "gpt-4",
+      "target": "mmlu",
+      "value": 4
+    },
+    {
+      "source": "mistral",
+      "target": "mmlu",
+      "value": 2
+    },
+    {
+      "source": "llama",
+      "target": "mmlu",
+      "value": 3
+    },
+    {
+      "source": "gemini",
+      "target": "mmlu",
+      "value": 2
+    },
+    {
+      "source": "in-context learning",
+      "target": "mmlu",
+      "value": 2
+    },
+    {
+      "source": "gpt",
+      "target": "mmlu",
+      "value": 4
+    },
+    {
+      "source": "humaneval",
+      "target": "mistral",
+      "value": 2
+    },
+    {
+      "source": "huggingface",
+      "target": "humaneval",
+      "value": 2
+    },
+    {
+      "source": "gsm8k",
+      "target": "humaneval",
+      "value": 3
+    },
+    {
+      "source": "gemini",
+      "target": "gpt-4",
+      "value": 6
+    },
+    {
+      "source": "gemini",
+      "target": "mistral",
+      "value": 5
+    },
+    {
+      "source": "huggingface",
+      "target": "lora",
+      "value": 2
+    },
+    {
+      "source": "in-context learning",
+      "target": "lora",
+      "value": 2
+    },
+    {
+      "source": "gemini",
+      "target": "huggingface",
+      "value": 2
+    },
+    {
+      "source": "gpt",
+      "target": "huggingface",
+      "value": 3
+    },
+    {
+      "source": "gpt",
+      "target": "gsm8k",
+      "value": 3
+    },
+    {
+      "source": "gemini",
+      "target": "in-context learning",
+      "value": 3
+    },
+    {
+      "source": "bert",
+      "target": "transformer",
+      "value": 4
+    },
+    {
+      "source": "bert",
+      "target": "rag",
+      "value": 3
+    },
+    {
+      "source": "gpt-4",
+      "target": "perplexity",
+      "value": 2
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "perplexity",
+      "value": 2
+    },
+    {
+      "source": "cot",
+      "target": "perplexity",
+      "value": 2
+    },
+    {
+      "source": "bertscore",
+      "target": "gpt-4",
+      "value": 2
+    },
+    {
+      "source": "bertscore",
+      "target": "cot",
+      "value": 2
+    },
+    {
+      "source": "bertscore",
+      "target": "in-context learning",
+      "value": 2
+    },
+    {
+      "source": "bertscore",
+      "target": "gpt",
+      "value": 2
+    },
+    {
+      "source": "starcoder",
+      "target": "tool use",
+      "value": 2
+    },
+    {
+      "source": "in-context learning",
+      "target": "starcoder",
+      "value": 2
+    },
+    {
+      "source": "gpt-4",
+      "target": "starcoder",
+      "value": 2
+    },
+    {
+      "source": "mistral",
+      "target": "starcoder",
+      "value": 2
+    },
+    {
+      "source": "langchain",
+      "target": "starcoder",
+      "value": 2
+    },
+    {
+      "source": "react",
+      "target": "starcoder",
+      "value": 2
+    },
+    {
+      "source": "multi-agent",
+      "target": "starcoder",
+      "value": 2
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "starcoder",
+      "value": 2
+    },
+    {
+      "source": "llama",
+      "target": "starcoder",
+      "value": 2
+    },
+    {
+      "source": "few-shot",
+      "target": "starcoder",
+      "value": 2
+    },
+    {
+      "source": "gemini",
+      "target": "tool use",
+      "value": 4
+    },
+    {
+      "source": "gemini",
+      "target": "langchain",
+      "value": 4
+    },
+    {
+      "source": "gemini",
+      "target": "react",
+      "value": 3
+    },
+    {
+      "source": "mistral",
+      "target": "tool use",
+      "value": 3
+    },
+    {
+      "source": "copilot",
+      "target": "tool use",
+      "value": 3
+    },
+    {
+      "source": "codex",
+      "target": "tool use",
+      "value": 2
+    },
+    {
+      "source": "claude",
+      "target": "in-context learning",
+      "value": 4
+    },
+    {
+      "source": "copilot",
+      "target": "in-context learning",
+      "value": 2
+    },
+    {
+      "source": "agentic",
+      "target": "in-context learning",
+      "value": 2
+    },
+    {
+      "source": "in-context learning",
+      "target": "langchain",
+      "value": 2
+    },
+    {
+      "source": "codex",
+      "target": "in-context learning",
+      "value": 3
+    },
+    {
+      "source": "copilot",
+      "target": "gpt-4",
+      "value": 3
+    },
+    {
+      "source": "codex",
+      "target": "gpt-4",
+      "value": 3
+    },
+    {
+      "source": "claude",
+      "target": "mistral",
+      "value": 3
+    },
+    {
+      "source": "copilot",
+      "target": "mistral",
+      "value": 3
+    },
+    {
+      "source": "agentic",
+      "target": "mistral",
+      "value": 3
+    },
+    {
+      "source": "mistral",
+      "target": "multi-agent",
+      "value": 2
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "mistral",
+      "value": 2
+    },
+    {
+      "source": "codex",
+      "target": "mistral",
+      "value": 2
+    },
+    {
+      "source": "copilot",
+      "target": "langchain",
+      "value": 3
+    },
+    {
+      "source": "codex",
+      "target": "langchain",
+      "value": 2
+    },
+    {
+      "source": "codex",
+      "target": "multi-agent",
+      "value": 4
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "codex",
+      "value": 3
+    },
+    {
+      "source": "codex",
+      "target": "few-shot",
+      "value": 3
+    },
+    {
+      "source": "claude",
+      "target": "mmlu",
+      "value": 2
+    },
+    {
+      "source": "gpt-4o",
+      "target": "humaneval",
+      "value": 4
+    },
+    {
+      "source": "bleu",
+      "target": "gpt-4o",
+      "value": 6
+    },
+    {
+      "source": "agentic",
+      "target": "bleu",
+      "value": 5
+    },
+    {
+      "source": "llama",
+      "target": "perplexity",
+      "value": 2
+    },
+    {
+      "source": "claude",
+      "target": "transformer",
+      "value": 3
+    },
+    {
+      "source": "huggingface",
+      "target": "transformer",
+      "value": 2
+    },
+    {
+      "source": "humaneval",
+      "target": "pass@1",
+      "value": 5
+    },
+    {
+      "source": "gpt-4o",
+      "target": "pass@1",
+      "value": 3
+    },
+    {
+      "source": "claude",
+      "target": "pass@1",
+      "value": 4
+    },
+    {
+      "source": "copilot",
+      "target": "pass@1",
+      "value": 2
+    },
+    {
+      "source": "llama",
+      "target": "pass@1",
+      "value": 2
+    },
+    {
+      "source": "mbpp",
+      "target": "pass@1",
+      "value": 5
+    },
+    {
+      "source": "gpt",
+      "target": "pass@1",
+      "value": 6
+    },
+    {
+      "source": "gpt-4o",
+      "target": "mbpp",
+      "value": 3
+    },
+    {
+      "source": "codex",
+      "target": "transformer",
+      "value": 2
+    },
+    {
+      "source": "codellama",
+      "target": "multi-agent",
+      "value": 2
+    },
+    {
+      "source": "agentic",
+      "target": "pass@1",
+      "value": 2
+    },
+    {
+      "source": "multi-agent",
+      "target": "pass@1",
+      "value": 2
+    },
+    {
+      "source": "gsm8k",
+      "target": "pass@1",
+      "value": 2
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "pass@1",
+      "value": 3
+    },
+    {
+      "source": "cot",
+      "target": "pass@1",
+      "value": 3
+    },
+    {
+      "source": "gpt-4o",
+      "target": "gsm8k",
+      "value": 2
+    },
+    {
+      "source": "cot",
+      "target": "gpt-4o",
+      "value": 2
+    },
+    {
+      "source": "claude",
+      "target": "gsm8k",
+      "value": 2
+    },
+    {
+      "source": "agentic",
+      "target": "gsm8k",
+      "value": 2
+    },
+    {
+      "source": "gsm8k",
+      "target": "multi-agent",
+      "value": 2
+    },
+    {
+      "source": "chain-of-thought",
+      "target": "gsm8k",
+      "value": 3
+    },
+    {
+      "source": "gsm8k",
+      "target": "mbpp",
+      "value": 2
+    },
+    {
+      "source": "cot",
+      "target": "gsm8k",
+      "value": 2
+    },
+    {
+      "source": "bert",
+      "target": "faiss",
+      "value": 2
+    },
+    {
+      "source": "faiss",
+      "target": "llama",
+      "value": 2
+    },
+    {
+      "source": "bert",
+      "target": "tool use",
+      "value": 3
+    },
+    {
+      "source": "agentic",
+      "target": "bert",
+      "value": 2
+    },
+    {
+      "source": "bert",
+      "target": "langchain",
+      "value": 2
+    },
+    {
+      "source": "bert",
+      "target": "multi-agent",
+      "value": 2
+    },
+    {
+      "source": "gpt-4o",
+      "target": "rouge",
+      "value": 2
+    },
+    {
+      "source": "bleu",
+      "target": "claude",
+      "value": 3
+    },
+    {
+      "source": "claude",
+      "target": "rouge",
+      "value": 3
+    },
+    {
+      "source": "bert",
+      "target": "chain-of-thought",
+      "value": 2
+    },
+    {
+      "source": "bert",
+      "target": "cot",
+      "value": 2
+    },
+    {
+      "source": "gpt-4",
+      "target": "pass@1",
+      "value": 2
+    },
+    {
+      "source": "pass@1",
+      "target": "react",
+      "value": 2
+    },
+    {
+      "source": "codex",
+      "target": "pass@1",
+      "value": 2
+    },
+    {
+      "source": "codex",
+      "target": "humaneval",
+      "value": 2
+    },
+    {
+      "source": "codex",
+      "target": "mbpp",
+      "value": 2
+    },
+    {
+      "source": "bleu",
+      "target": "gemini",
+      "value": 2
+    },
+    {
+      "source": "pass@1",
+      "target": "pass@k",
+      "value": 2
+    },
+    {
+      "source": "in-context learning",
+      "target": "transformer",
+      "value": 2
+    },
+    {
+      "source": "rouge",
+      "target": "transformer",
+      "value": 2
+    },
+    {
+      "source": "mmlu",
+      "target": "rlhf",
+      "value": 2
+    },
+    {
+      "source": "cot",
+      "target": "mmlu",
+      "value": 2
+    },
+    {
+      "source": "cot",
+      "target": "rlhf",
+      "value": 2
+    }
+  ]
+}

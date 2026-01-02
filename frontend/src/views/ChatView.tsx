@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { Send, Bot, User, Loader2, Trash2, Copy, Check, Plus, MessageSquare, ChevronLeft } from 'lucide-react'
+import { Send, Bot, User, Loader2, Trash2, Copy, Check, Plus, MessageSquare, ChevronLeft, Sparkles, FileText } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import { AutocompletePopup, useAutocomplete } from '../components/research'
+import { useResearch, Paper, AutocompleteResult } from '../hooks/useResearch'
 
 interface Message {
   id: string
@@ -41,8 +43,15 @@ export default function ChatView() {
   const [selectedModel, setSelectedModel] = useState('grok-4-fast-reasoning')
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [showSidebar, setShowSidebar] = useState(true)
+  const [enrichedContext, setEnrichedContext] = useState<Paper[]>([])
+  const [showEnrichment, setShowEnrichment] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+
+  // AIKH Research Integration
+  const { enrichContext, autocomplete } = useResearch()
+  const { isOpen: autocompleteOpen, query: autocompleteQuery, position: autocompletePos, 
+          filterType, openAutocomplete, closeAutocomplete } = useAutocomplete()
 
   // Load conversations from localStorage on mount
   useEffect(() => {
@@ -288,6 +297,67 @@ export default function ChatView() {
     }
   }
 
+  // Handle input change with @trigger detection for autocomplete
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value
+    setInput(value)
+
+    // Detect @paper:, @concept:, or @author: triggers
+    const cursorPos = e.target.selectionStart || 0
+    const textBeforeCursor = value.slice(0, cursorPos)
+    
+    const paperMatch = textBeforeCursor.match(/@paper:(\w*)$/)
+    const conceptMatch = textBeforeCursor.match(/@concept:(\w*)$/)
+    const authorMatch = textBeforeCursor.match(/@author:(\w*)$/)
+    
+    if (paperMatch || conceptMatch || authorMatch) {
+      const match = paperMatch || conceptMatch || authorMatch
+      const type = paperMatch ? 'paper' : conceptMatch ? 'concept' : 'author'
+      const query = match![1]
+      
+      if (inputRef.current) {
+        const rect = inputRef.current.getBoundingClientRect()
+        openAutocomplete(query, { top: rect.top - 200, left: rect.left }, type)
+      }
+    } else {
+      closeAutocomplete()
+    }
+  }
+
+  // Handle autocomplete selection
+  const handleAutocompleteSelect = (result: AutocompleteResult) => {
+    // Replace the @trigger:query with the selected value
+    const cursorPos = inputRef.current?.selectionStart || input.length
+    const textBeforeCursor = input.slice(0, cursorPos)
+    const textAfterCursor = input.slice(cursorPos)
+    
+    // Find and replace the trigger
+    const newTextBefore = textBeforeCursor.replace(/@(paper|concept|author):\w*$/, 
+      result.type === 'paper' ? `[${result.display}]` : result.value)
+    
+    setInput(newTextBefore + textAfterCursor)
+    closeAutocomplete()
+    inputRef.current?.focus()
+  }
+
+  // Enrich context before sending (for research-aware responses)
+  const enrichBeforeSend = async (message: string): Promise<string> => {
+    if (!showEnrichment) return message
+
+    const enriched = await enrichContext(message, 2)
+    if (enriched && enriched.papers.length > 0) {
+      setEnrichedContext(enriched.papers)
+      
+      // Build context prefix with relevant papers
+      const contextPrefix = `[Context: Relevant research papers - ${
+        enriched.papers.map(p => `"${p.title}"`).join(', ')
+      }]\n\n`
+      
+      return contextPrefix + message
+    }
+    return message
+  }
+
   return (
     <div className="flex-1 flex h-full">
       {/* Conversation Sidebar */}
@@ -477,28 +547,67 @@ export default function ChatView() {
               <textarea
                 ref={inputRef}
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
+                onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder="Type your message... (Shift+Enter for newline)"
-                className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 pr-12 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-none"
+                placeholder="Type your message... (@paper: @concept: for research)"
+                className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 pr-24 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-none"
                 rows={1}
                 disabled={isLoading}
               />
-              <button
-                type="submit"
-                disabled={!input.trim() || isLoading}
-                className="absolute right-2 bottom-2 p-2 bg-cyan-600 hover:bg-cyan-500 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg transition-colors"
-              >
-                {isLoading ? (
-                  <Loader2 className="w-5 h-5 text-white animate-spin" />
-                ) : (
-                  <Send className="w-5 h-5 text-white" />
-                )}
-              </button>
+              <div className="absolute right-2 bottom-2 flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setShowEnrichment(!showEnrichment)}
+                  className={`p-2 rounded-lg transition-colors ${
+                    showEnrichment 
+                      ? 'bg-purple-600 text-white' 
+                      : 'bg-gray-700 text-gray-400 hover:text-white'
+                  }`}
+                  title={showEnrichment ? 'Context enrichment ON' : 'Enable context enrichment'}
+                >
+                  <Sparkles className="w-4 h-4" />
+                </button>
+                <button
+                  type="submit"
+                  disabled={!input.trim() || isLoading}
+                  className="p-2 bg-cyan-600 hover:bg-cyan-500 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg transition-colors"
+                >
+                  {isLoading ? (
+                    <Loader2 className="w-5 h-5 text-white animate-spin" />
+                  ) : (
+                    <Send className="w-5 h-5 text-white" />
+                  )}
+                </button>
+              </div>
             </div>
+
+            {/* Enriched Context Display */}
+            {enrichedContext.length > 0 && (
+              <div className="mt-2 flex items-center gap-2 text-xs text-purple-400">
+                <FileText className="w-3 h-3" />
+                <span>Context: {enrichedContext.map(p => p.title?.slice(0, 30)).join(', ')}</span>
+                <button 
+                  onClick={() => setEnrichedContext([])}
+                  className="ml-auto text-gray-500 hover:text-white"
+                >
+                  Clear
+                </button>
+              </div>
+            )}
           </form>
         </div>
       </div>
+
+      {/* Autocomplete Popup */}
+      {autocompleteOpen && (
+        <AutocompletePopup
+          query={autocompleteQuery}
+          position={autocompletePos}
+          onSelect={handleAutocompleteSelect}
+          onClose={closeAutocomplete}
+          filterType={filterType}
+        />
+      )}
     </div>
   )
 }

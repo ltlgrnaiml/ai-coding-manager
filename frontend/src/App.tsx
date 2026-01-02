@@ -1,12 +1,16 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
-import { MessageSquare, GitBranch, Settings, Zap } from 'lucide-react'
+import { MessageSquare, GitBranch, Settings, Zap, BookOpen } from 'lucide-react'
 import ChatView from './views/ChatView'
 import { WorkflowManagerPage } from './pages/WorkflowManagerPage'
+import ResearchPage from './pages/ResearchPage'
+import { ResearchPane } from './components/research'
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 
 function App() {
   const location = useLocation()
   const [apiKeyConfigured, setApiKeyConfigured] = useState<boolean | null>(null)
+  const [researchPaneOpen, setResearchPaneOpen] = useState(false)
 
   // Check API health on mount
   useState(() => {
@@ -16,9 +20,20 @@ function App() {
       .catch(() => setApiKeyConfigured(false))
   })
 
+  // Keyboard shortcuts for AIKH
+  const toggleResearchPane = useCallback(() => {
+    setResearchPaneOpen(prev => !prev)
+  }, [])
+
+  useKeyboardShortcuts({
+    onOpenResearch: toggleResearchPane,
+    onEscape: () => setResearchPaneOpen(false),
+  })
+
   const navItems = [
     { path: '/', icon: MessageSquare, label: 'Chat' },
     { path: '/workflow', icon: GitBranch, label: 'Workflow' },
+    { path: '/research', icon: BookOpen, label: 'Research Papers' },
   ]
 
   return (
@@ -54,7 +69,7 @@ function App() {
         </nav>
 
         {/* Settings */}
-        <div className="mt-auto">
+        <div className="mt-auto flex flex-col gap-2">
           <button
             className="w-12 h-12 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-800 hover:text-gray-200 transition-colors"
             title="Settings"
@@ -77,8 +92,21 @@ function App() {
         <Routes>
           <Route path="/" element={<ChatView />} />
           <Route path="/workflow" element={<WorkflowManagerPage />} />
+          <Route path="/research" element={<ResearchPage />} />
         </Routes>
       </main>
+
+      {/* Research Pane - Global overlay */}
+      {researchPaneOpen && (
+        <ResearchPane
+          defaultCollapsed={false}
+          position="right"
+          onInsertReference={(paper) => {
+            console.log('Insert reference:', paper)
+            // TODO: Insert into active editor
+          }}
+        />
+      )}
     </div>
   )
 }

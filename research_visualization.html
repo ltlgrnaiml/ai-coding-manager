@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Research Paper Network - AICM</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%); color: #e0e0e0; min-height: 100vh; }
+        .container { max-width: 1600px; margin: 0 auto; padding: 20px; }
+        h1 { color: #00d4ff; font-size: 2em; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        h1::before { content: "🔬"; }
+        .subtitle { color: #888; margin-bottom: 20px; }
+        .stats { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+        .stat-card { background: rgba(22, 33, 62, 0.8); padding: 15px 25px; border-radius: 12px; text-align: center; border: 1px solid #333; backdrop-filter: blur(10px); }
+        .stat-value { font-size: 2.2em; color: #00d4ff; font-weight: bold; }
+        .stat-label { font-size: 0.85em; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+        .tab { padding: 12px 24px; background: rgba(22, 33, 62, 0.6); border: 1px solid #333; color: #ccc; cursor: pointer; border-radius: 8px; transition: all 0.2s; font-weight: 500; }
+        .tab:hover { background: rgba(0, 212, 255, 0.1); border-color: #00d4ff; }
+        .tab.active { background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%); color: #000; border-color: #00d4ff; }
+        .controls { display: flex; gap: 15px; margin-bottom: 15px; align-items: center; flex-wrap: wrap; }
+        .control-group { display: flex; align-items: center; gap: 8px; }
+        .control-group label { color: #888; font-size: 0.9em; }
+        input[type="range"] { width: 120px; accent-color: #00d4ff; }
+        input[type="text"] { background: rgba(22, 33, 62, 0.8); border: 1px solid #333; color: #fff; padding: 8px 12px; border-radius: 6px; width: 200px; }
+        input[type="text"]:focus { outline: none; border-color: #00d4ff; }
+        #graph-container { position: relative; background: rgba(15, 15, 35, 0.9); border-radius: 12px; border: 1px solid #333; overflow: hidden; }
+        #graph { width: 100%; height: 650px; }
+        .legend { display: flex; gap: 20px; flex-wrap: wrap; padding: 15px; background: rgba(22, 33, 62, 0.5); border-radius: 0 0 12px 12px; }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.85em; }
+        .legend-color { width: 12px; height: 12px; border-radius: 50%; }
+        .tooltip { position: absolute; background: rgba(22, 33, 62, 0.95); padding: 12px 16px; border-radius: 8px; border: 1px solid #00d4ff; max-width: 350px; pointer-events: none; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        .tooltip h3 { color: #00d4ff; font-size: 1em; margin-bottom: 8px; }
+        .tooltip p { color: #ccc; font-size: 0.85em; line-height: 1.4; }
+        .tooltip .meta { color: #888; font-size: 0.8em; margin-top: 8px; }
+        .node circle { stroke: #fff; stroke-width: 1.5px; cursor: pointer; transition: all 0.2s; }
+        .node circle:hover { stroke-width: 3px; filter: brightness(1.3); }
+        .node text { font-size: 9px; fill: #aaa; pointer-events: none; }
+        .link { stroke-opacity: 0.4; }
+        .info-panel { margin-top: 20px; background: rgba(22, 33, 62, 0.6); border-radius: 12px; padding: 20px; border: 1px solid #333; }
+        .info-panel h2 { color: #00d4ff; margin-bottom: 15px; font-size: 1.2em; }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }
+        .info-card { background: rgba(15, 15, 35, 0.5); padding: 15px; border-radius: 8px; }
+        .info-card h3 { color: #fff; font-size: 0.95em; margin-bottom: 10px; }
+        .info-list { list-style: none; }
+        .info-list li { padding: 5px 0; border-bottom: 1px solid #222; font-size: 0.85em; color: #bbb; }
+        .info-list li:last-child { border: none; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75em; margin-left: 5px; }
+        .badge-model { background: #e41a1c33; color: #e41a1c; }
+        .badge-technique { background: #4daf4a33; color: #4daf4a; }
+        .badge-dataset { background: #377eb833; color: #377eb8; }
+        .badge-tool { background: #ff7f0033; color: #ff7f00; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Research Paper Network</h1>
+        <p class="subtitle">Interactive visualization of paper similarities and concept relationships</p>
+        
+        <div class="stats" id="stats"></div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="loadGraph('papers')">📄 Paper Similarity</button>
+            <button class="tab" onclick="loadGraph('concepts')">🧠 Concept Network</button>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label>Min Link Strength:</label>
+                <input type="range" id="linkStrength" min="0" max="100" value="40" oninput="updateFilter()">
+                <span id="linkValue">0.40</span>
+            </div>
+            <div class="control-group">
+                <label>Search:</label>
+                <input type="text" id="search" placeholder="Filter nodes..." oninput="filterNodes()">
+            </div>
+        </div>
+        
+        <div id="graph-container">
+            <svg id="graph"></svg>
+            <div class="legend" id="legend"></div>
+        </div>
+        <div class="tooltip" id="tooltip"></div>
+        
+        <div class="info-panel">
+            <h2>📊 Network Statistics</h2>
+            <div class="info-grid" id="info-grid"></div>
+        </div>
+    </div>
+
+    <script>
+        const conceptColors = {
+            'models': '#e41a1c', 'datasets': '#377eb8', 'techniques': '#4daf4a',
+            'metrics': '#984ea3', 'tools': '#ff7f00', 'frameworks': '#00d4ff'
+        };
+        const paperColors = d3.schemeTableau10;
+        
+        let currentGraph = 'papers';
+        let simulation, allData, svg, g;
+        
+        async function loadGraph(type) {
+            currentGraph = type;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const file = type === 'papers' ? 'paper_graph.json' : 'concept_graph.json';
+            try {
+                const response = await fetch(file);
+                allData = await response.json();
+                renderGraph(allData, type);
+            } catch (e) {
+                console.error('Failed to load', file, e);
+            }
+        }
+        
+        function renderGraph(data, type) {
+            const container = document.getElementById('graph');
+            const width = container.clientWidth || 1200;
+            const height = 650;
+            
+            d3.select('#graph').selectAll('*').remove();
+            svg = d3.select('#graph').attr('width', width).attr('height', height);
+            g = svg.append('g');
+            
+            // Stats
+            document.getElementById('stats').innerHTML = `
+                <div class="stat-card"><div class="stat-value">${data.nodes.length}</div><div class="stat-label">Nodes</div></div>
+                <div class="stat-card"><div class="stat-value">${data.links.length}</div><div class="stat-label">Connections</div></div>
+                <div class="stat-card"><div class="stat-value">${(data.links.reduce((a,b) => a + (b.value||0), 0) / data.links.length || 0).toFixed(2)}</div><div class="stat-label">Avg Similarity</div></div>
+            `;
+            
+            // Legend
+            const legendDiv = document.getElementById('legend');
+            if (type === 'concepts') {
+                legendDiv.innerHTML = Object.entries(conceptColors).map(([k,v]) => 
+                    `<div class="legend-item"><div class="legend-color" style="background:${v}"></div>${k}</div>`
+                ).join('');
+            } else {
+                legendDiv.innerHTML = '<div class="legend-item">Colors represent topic clusters based on content similarity</div>';
+            }
+            
+            // Zoom
+            const zoom = d3.zoom().scaleExtent([0.1, 4]).on('zoom', (e) => g.attr('transform', e.transform));
+            svg.call(zoom);
+            
+            // Simulation
+            simulation = d3.forceSimulation(data.nodes)
+                .force('link', d3.forceLink(data.links).id(d => d.id).distance(80).strength(d => d.value || 0.5))
+                .force('charge', d3.forceManyBody().strength(-150))
+                .force('center', d3.forceCenter(width / 2, height / 2))
+                .force('collision', d3.forceCollide().radius(25));
+            
+            const link = g.append('g').selectAll('line').data(data.links).join('line')
+                .attr('class', 'link').attr('stroke', '#444').attr('stroke-width', d => Math.sqrt(d.value || 1) * 2);
+            
+            const node = g.append('g').selectAll('g').data(data.nodes).join('g').attr('class', 'node')
+                .call(d3.drag().on('start', dragstarted).on('drag', dragged).on('end', dragended));
+            
+            node.append('circle')
+                .attr('r', d => type === 'concepts' ? 6 + Math.sqrt(d.freq || 1) * 1.5 : 10)
+                .attr('fill', d => type === 'concepts' ? (conceptColors[d.type] || '#999') : paperColors[(d.group || 0) % 10]);
+            
+            node.append('text').attr('dx', 14).attr('dy', 4)
+                .text(d => type === 'concepts' ? d.name : (d.title || '').substring(0, 25) + (d.title?.length > 25 ? '...' : ''));
+            
+            const tooltip = document.getElementById('tooltip');
+            node.on('mouseover', function(event, d) {
+                tooltip.style.display = 'block';
+                tooltip.style.left = (event.pageX + 15) + 'px';
+                tooltip.style.top = (event.pageY + 15) + 'px';
+                
+                if (type === 'concepts') {
+                    tooltip.innerHTML = `<h3>${d.name}</h3><p>Type: <span class="badge badge-${d.type}">${d.type}</span></p><p class="meta">Frequency: ${d.freq || 1}</p>`;
+                } else {
+                    tooltip.innerHTML = `<h3>${d.title || 'Unknown'}</h3>${d.arxiv ? `<p class="meta">arXiv: ${d.arxiv}</p>` : ''}`;
+                }
+            }).on('mouseout', () => tooltip.style.display = 'none');
+            
+            simulation.on('tick', () => {
+                link.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+                    .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+                node.attr('transform', d => `translate(${d.x},${d.y})`);
+            });
+            
+            updateInfoPanel(data, type);
+        }
+        
+        function updateInfoPanel(data, type) {
+            const grid = document.getElementById('info-grid');
+            if (type === 'concepts') {
+                const byType = {};
+                data.nodes.forEach(n => { byType[n.type] = (byType[n.type] || 0) + 1; });
+                grid.innerHTML = `
+                    <div class="info-card"><h3>Concepts by Type</h3><ul class="info-list">
+                        ${Object.entries(byType).sort((a,b) => b[1]-a[1]).map(([k,v]) => `<li>${k}: <strong>${v}</strong></li>`).join('')}
+                    </ul></div>
+                    <div class="info-card"><h3>Most Connected</h3><ul class="info-list">
+                        ${data.nodes.slice().sort((a,b) => (b.freq||0)-(a.freq||0)).slice(0,8).map(n => `<li>${n.name} <span class="badge badge-${n.type}">${n.freq||1}</span></li>`).join('')}
+                    </ul></div>`;
+            } else {
+                grid.innerHTML = `
+                    <div class="info-card"><h3>Network Metrics</h3><ul class="info-list">
+                        <li>Total Papers: <strong>${data.nodes.length}</strong></li>
+                        <li>Connections: <strong>${data.links.length}</strong></li>
+                        <li>Avg Connections/Paper: <strong>${(data.links.length * 2 / data.nodes.length).toFixed(1)}</strong></li>
+                    </ul></div>`;
+            }
+        }
+        
+        function updateFilter() {
+            const val = document.getElementById('linkStrength').value / 100;
+            document.getElementById('linkValue').textContent = val.toFixed(2);
+            if (allData) {
+                const filtered = {
+                    nodes: allData.nodes,
+                    links: allData.links.filter(l => (l.value || 0) >= val)
+                };
+                renderGraph(filtered, currentGraph);
+            }
+        }
+        
+        function filterNodes() {
+            const query = document.getElementById('search').value.toLowerCase();
+            d3.selectAll('.node').style('opacity', d => {
+                const text = (d.title || d.name || '').toLowerCase();
+                return !query || text.includes(query) ? 1 : 0.1;
+            });
+        }
+        
+        function dragstarted(event) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            event.subject.fx = event.subject.x;
+            event.subject.fy = event.subject.y;
+        }
+        function dragged(event) {
+            event.subject.fx = event.x;
+            event.subject.fy = event.y;
+        }
+        function dragended(event) {
+            if (!event.active) simulation.alphaTarget(0);
+            event.subject.fx = null;
+            event.subject.fy = null;
+        }
+        
+        // Initial load
+        loadGraph('papers');
+    </script>
+</body>
+</html>

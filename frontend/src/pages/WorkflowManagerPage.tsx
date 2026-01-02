@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { List, Network } from 'lucide-react'
+import { List, Network, BookOpen, Sparkles } from 'lucide-react'
 import {
   WorkflowSidebar,
   ArtifactGraph,
@@ -16,6 +16,7 @@ import { useWorkflowState } from '../components/workflow/useWorkflowState'
 import type { ArtifactType, FileFormat, ArtifactSummary } from '../components/workflow/types'
 import type { WorkflowType } from '../components/workflow/workflowUtils'
 import { isStageInWorkflow, artifactTypeToStage } from '../components/workflow/workflowUtils'
+import { useResearch, Paper } from '../hooks/useResearch'
 
 const API_BASE = '/api/devtools'
 
@@ -26,8 +27,18 @@ export function WorkflowManagerPage() {
   const [generateModalOpen, setGenerateModalOpen] = useState(false)
   const [allArtifacts, setAllArtifacts] = useState<ArtifactSummary[]>([])
   const [view, setView] = useState<'list' | 'graph'>('list')
+  const [relatedPapers, setRelatedPapers] = useState<Paper[]>([])
+  const [showRelatedPapers, setShowRelatedPapers] = useState(false)
 
   const workflow = useWorkflowState()
+  const { searchPapers } = useResearch()
+
+  // Find related papers when artifact is selected
+  const findRelatedPapers = useCallback(async (artifactTitle: string) => {
+    const papers = await searchPapers(artifactTitle, 5)
+    setRelatedPapers(papers)
+    setShowRelatedPapers(true)
+  }, [searchPapers])
 
   // Fetch all artifacts for command palette
   useEffect(() => {
@@ -121,7 +132,7 @@ export function WorkflowManagerPage() {
         onNewWorkflow={handleNewWorkflow}
       />
 
-      {/* View Toggle */}
+      {/* View Toggle + Research Button */}
       <div className="flex items-center gap-1 px-4 py-2 border-b border-zinc-800">
         <span className="text-xs text-zinc-500 mr-2">View:</span>
         <button
@@ -146,7 +157,54 @@ export function WorkflowManagerPage() {
           <Network size={14} />
           Graph
         </button>
+
+        {/* Research Papers Button - Find related papers for selected artifact */}
+        {selectedArtifact && (
+          <button
+            onClick={() => findRelatedPapers(selectedArtifact.id)}
+            className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded text-sm bg-purple-600/20 text-purple-300 hover:bg-purple-600/30 transition-colors"
+            title="Find related research papers"
+          >
+            <BookOpen size={14} />
+            Related Papers
+          </button>
+        )}
       </div>
+
+      {/* Related Papers Panel */}
+      {showRelatedPapers && relatedPapers.length > 0 && (
+        <div className="px-4 py-2 border-b border-zinc-800 bg-purple-950/20">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-medium text-purple-300 flex items-center gap-1">
+              <Sparkles size={12} />
+              Related Research ({relatedPapers.length} papers)
+            </span>
+            <button 
+              onClick={() => setShowRelatedPapers(false)}
+              className="text-xs text-zinc-500 hover:text-white"
+            >
+              Hide
+            </button>
+          </div>
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {relatedPapers.map(paper => (
+              <a
+                key={paper.paper_id}
+                href={paper.arxiv_id ? `https://arxiv.org/abs/${paper.arxiv_id}` : '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-shrink-0 px-3 py-2 bg-zinc-800/50 rounded-lg hover:bg-zinc-700/50 transition-colors max-w-xs"
+              >
+                <p className="text-xs text-white truncate">{paper.title}</p>
+                <p className="text-xs text-zinc-500 mt-0.5">
+                  {paper.similarity ? `${Math.round(paper.similarity * 100)}% match` : ''}
+                  {paper.arxiv_id && ` • arXiv:${paper.arxiv_id}`}
+                </p>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Main content */}
       <div className="flex flex-1 overflow-hidden">

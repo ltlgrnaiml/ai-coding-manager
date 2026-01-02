@@ -1,0 +1,2046 @@
+{
+  "nodes": [
+    {
+      "id": "paper_f71c311ca1b9",
+      "title": "Proceedings of the 2025 Conference on Empirical Me",
+      "arxiv": "2412.05547"
+    },
+    {
+      "id": "paper_d04306a33f41",
+      "title": "AUTOMATING AGENTIC WORKFLOW GENERATION",
+      "arxiv": "2410.10762"
+    },
+    {
+      "id": "paper_5b98fe80ff59",
+      "title": "Information Retrieval Research 1 (2025) 137-165",
+      "arxiv": "1908.10554"
+    },
+    {
+      "id": "paper_2da366f25f0f",
+      "title": "July 27 - August 1, 2025 \u00a92025 Association for Com",
+      "arxiv": "2310.03249"
+    },
+    {
+      "id": "paper_a43ea7ad6f0b",
+      "title": "Reflexion: Language Agents with",
+      "arxiv": "2204.01691"
+    },
+    {
+      "id": "paper_7f217adf52bd",
+      "title": "A Survey on Code Generation with LLM-based Agents",
+      "arxiv": "2508.00083"
+    },
+    {
+      "id": "paper_135cb3c423d6",
+      "title": "RETRIEVAL-AUGMENTED CODE GENERATION: A SURVEY WITH",
+      "arxiv": "2510.04905"
+    },
+    {
+      "id": "paper_bf9cf9564514",
+      "title": "In-Context Former: Lightning-fast Compressing Cont",
+      "arxiv": "2406.13618"
+    },
+    {
+      "id": "paper_7eb5607dfc05",
+      "title": "AUTOENCODING-FREE CONTEXT COMPRESSION FOR",
+      "arxiv": "2510.08907"
+    },
+    {
+      "id": "paper_ad70dfa07af97c76",
+      "title": "Human Language Technologies (Volume 1: Long Papers",
+      "arxiv": "2403.04696"
+    },
+    {
+      "id": "paper_48c1eec262c2063b",
+      "title": "REACT: SYNERGIZING REASONING AND ACTING IN",
+      "arxiv": "2210.03629"
+    },
+    {
+      "id": "paper_12a270ed08b33b5f",
+      "title": "Toolformer: Language Models Can Teach Themselves t",
+      "arxiv": "2302.04761"
+    },
+    {
+      "id": "paper_f0a9a6cefecb5568",
+      "title": "Tree of Thoughts: Deliberate Problem Solving",
+      "arxiv": "2305.10601"
+    },
+    {
+      "id": "paper_c5ed86bc72309b83",
+      "title": "Judging LLM-as-a-Judge",
+      "arxiv": "2306.05685"
+    },
+    {
+      "id": "paper_cfdf350912576a55",
+      "title": "A Survey on Evaluation of Large Language Models",
+      "arxiv": "2307.03109"
+    },
+    {
+      "id": "paper_42d0ecac4d70114c",
+      "title": "IN-CONTEXT AUTOENCODER FOR CONTEXT",
+      "arxiv": "2307.06945"
+    },
+    {
+      "id": "paper_e93f365b605530b1",
+      "title": "RETRIEVAL MEETS LONG CONTEXT LARGE LANGUAGE",
+      "arxiv": "2310.03025"
+    },
+    {
+      "id": "paper_8978e26fbbf6019e",
+      "title": "Evaluating Large Language Models: A",
+      "arxiv": "2310.19736"
+    },
+    {
+      "id": "paper_607f4aff232f06e5",
+      "title": "AutoGPT+P: Affordance-based Task Planning",
+      "arxiv": "2402.10778"
+    },
+    {
+      "id": "paper_70d1fdc17854fa0a",
+      "title": "LongRoPE: Extending LLM Context Window Beyond 2 Mi",
+      "arxiv": "2402.13753"
+    },
+    {
+      "id": "paper_8c1913463313c0e5",
+      "title": "Fact-and-Reflection (FaR) Improves Confidence Cali",
+      "arxiv": "2402.17124"
+    },
+    {
+      "id": "paper_4ce7d77fd620176e",
+      "title": "THE LANDSCAPE OF EMERGING AI AGENT ARCHITECTURES",
+      "arxiv": "2404.11584"
+    },
+    {
+      "id": "paper_aa09c74e778c106e",
+      "title": "SWE-agent: Agent-Computer Interfaces Enable",
+      "arxiv": "2405.15793"
+    },
+    {
+      "id": "paper_d1e0c58dc2be3e4f",
+      "title": "Benchmarks and Metrics for Evaluations of Code",
+      "arxiv": "2406.12655"
+    },
+    {
+      "id": "paper_e49a84a5204f6cf9",
+      "title": "StackRAG Agent: Improving Developer Answers",
+      "arxiv": "2406.13840"
+    },
+    {
+      "id": "paper_48a19ba2d4f8cb71",
+      "title": "OPENHANDS: AN OPEN PLATFORM FOR",
+      "arxiv": "2407.16741"
+    },
+    {
+      "id": "paper_51415b6d0d25fbfa",
+      "title": ": Recipe for Efficient Long Context",
+      "arxiv": "2409.00509"
+    },
+    {
+      "id": "paper_eb1c58a0de6428e4",
+      "title": "Knowledge Graph Embeddings: A Comprehensive Survey",
+      "arxiv": "2410.14733"
+    },
+    {
+      "id": "paper_3208ac11a127cbb8",
+      "title": "A Survey on LLM-as-a-Judge",
+      "arxiv": "2411.15594"
+    },
+    {
+      "id": "paper_3b1c65eb3261494f",
+      "title": "LLMs-as-Judges: A Comprehensive Survey on LLM-base",
+      "arxiv": "2412.05579"
+    },
+    {
+      "id": "paper_89002caaff99e43e",
+      "title": "A-Mem: Agentic Memory for LLM Agents",
+      "arxiv": "2502.12110"
+    },
+    {
+      "id": "paper_5c5d350ed71c9036",
+      "title": "Uncertainty Quantification and Confidence Calibrat",
+      "arxiv": "2503.15850"
+    },
+    {
+      "id": "paper_9aab233a27874306",
+      "title": "DocAgent: A Multi-Agent System for Automated Code ",
+      "arxiv": "2504.08725"
+    },
+    {
+      "id": "paper_a82a49cbd9f2156f",
+      "title": "Mem0: Building Production-Ready AI Agents with",
+      "arxiv": "2504.19413"
+    },
+    {
+      "id": "paper_4a60428d7b51a6c4",
+      "title": "EFFICIENTLY ENHANCING GENERAL AGENTS WITH HIERARCH",
+      "arxiv": "2505.22006"
+    },
+    {
+      "id": "paper_7299cdd62a00a7cf",
+      "title": "Small Language Models are the Future of Agentic AI",
+      "arxiv": "2506.02153"
+    },
+    {
+      "id": "paper_c2552110d574e9f9",
+      "title": "Memory OS of AI Agent",
+      "arxiv": "2506.06326"
+    },
+    {
+      "id": "paper_878d5a62c6d4b76d",
+      "title": "Interaction, Process, Infrastructure:",
+      "arxiv": "2506.11718"
+    },
+    {
+      "id": "paper_43d7b09bcfa97919",
+      "title": "A Deep Dive into Retrieval-Augmented Generation",
+      "arxiv": "2507.18515"
+    },
+    {
+      "id": "paper_806a319882eac28e",
+      "title": "H-MEM: Hierarchical Memory for High-Efficiency",
+      "arxiv": "2507.22925"
+    },
+    {
+      "id": "paper_e6942058090271e3",
+      "title": "AI Agentic Programming: A Survey of Techniques,",
+      "arxiv": "2508.11126"
+    },
+    {
+      "id": "paper_7b999cacac0c1932",
+      "title": "Assessing the Quality and Security of AI-Generated",
+      "arxiv": "2508.14727"
+    },
+    {
+      "id": "paper_f856dbe7890a6ad6",
+      "title": "On the Theoretical Limitations of",
+      "arxiv": "2508.21038"
+    },
+    {
+      "id": "paper_4cf9f42ecc8b985a",
+      "title": "CCF: A Context Compression Framework for Efficient",
+      "arxiv": "2509.09199"
+    },
+    {
+      "id": "paper_a91eb5aec1d0ed95",
+      "title": "The (R)evolution of Scientific Workflows in the Ag",
+      "arxiv": "2509.09915"
+    },
+    {
+      "id": "paper_1e71437fe048b9f1",
+      "title": "Fetch.ai: An Architecture for Modern Multi-Agent S",
+      "arxiv": "2510.18699"
+    },
+    {
+      "id": "paper_8da0db02d51c063e",
+      "title": "Agentic AI: A Comprehensive Survey of",
+      "arxiv": "2510.25445"
+    },
+    {
+      "id": "paper_3c96f8135d3479f9",
+      "title": "Everything is Context: Agentic File System",
+      "arxiv": "2512.05470"
+    },
+    {
+      "id": "paper_2c1f83fdca74f8bb",
+      "title": "A Practical Guide for Designing, Developing, and",
+      "arxiv": "2512.08769"
+    },
+    {
+      "id": "paper_4e48fc1229b4a3e6",
+      "title": "An Empirical Study of Developer-Provided Context f",
+      "arxiv": "2512.18925"
+    },
+    {
+      "id": "paper_3c85fe422e1bef37",
+      "title": "Latest updates: h\ue03cps://dl.acm.org/doi/10.1145/3696",
+      "arxiv": "6630.37284"
+    },
+    {
+      "id": "paper_65bf5c03a8518786",
+      "title": "Latest updates: h\ue03cps://dl.acm.org/doi/10.1145/3712",
+      "arxiv": "2309.17234"
+    },
+    {
+      "id": "paper_fbb9d427aa3bb154",
+      "title": "Latest updates: h\ue03cps://dl.acm.org/doi/10.1145/3715",
+      "arxiv": "2406.11638"
+    },
+    {
+      "id": "paper_2059a8fd9808721b",
+      "title": "Latest updates: h\ue03cps://dl.acm.org/doi/10.1145/3729",
+      "arxiv": "2404.04442"
+    },
+    {
+      "id": "paper_679b0290e040c811",
+      "title": "The AI Landscape of Early 2025:",
+      "arxiv": "2507.09089"
+    },
+    {
+      "id": "paper_ea6545e589bd59ea",
+      "title": "Relational Context Modeling for Improved",
+      "arxiv": null
+    },
+    {
+      "id": "paper_2b57fb79fc4f76b4",
+      "title": "Future of Work with AI Agents:",
+      "arxiv": "2503.04761"
+    },
+    {
+      "id": "paper_76a3dc237e19eb8d",
+      "title": "Received 7 February 2025, accepted 27 February 202",
+      "arxiv": "1807.01016"
+    },
+    {
+      "id": "paper_81aa5deae9f54937",
+      "title": "Towards the Next Generation of Agent Systems: From",
+      "arxiv": "2303.08774"
+    },
+    {
+      "id": "paper_4817d6a9a48b1044",
+      "title": "Practical Integration of Large Language Models int",
+      "arxiv": null
+    },
+    {
+      "id": "paper_3acf3a3cd6bff62e",
+      "title": "Bridging Modalities: Improving Universal Multimoda",
+      "arxiv": null
+    },
+    {
+      "id": "paper_2223c2edb4066f48",
+      "title": "Agentic AI advantage:",
+      "arxiv": null
+    },
+    {
+      "id": "paper_0be96d76a753fa5d",
+      "title": "Practices for Governing Agentic AI Systems",
+      "arxiv": "2302.10329"
+    },
+    {
+      "id": "paper_4847ff92cc17501d",
+      "title": "Decoding the Configuration of AI Coding Agents: In",
+      "arxiv": "2511.09268"
+    },
+    {
+      "id": "paper_9dc281634b897cc6",
+      "title": "Agent READMEs: An Empirical Study of Context Files",
+      "arxiv": "2511.12884"
+    },
+    {
+      "id": "paper_63a9d8ad445f0db9",
+      "title": "AI Agentic Programming: A Survey of Techniques,",
+      "arxiv": "2508.11126"
+    },
+    {
+      "id": "paper_7f4179fcf45a8d7c",
+      "title": "AUTOMATING AGENTIC WORKFLOW GENERATION",
+      "arxiv": "2410.10762"
+    },
+    {
+      "id": "paper_69969d44f14c7360",
+      "title": "November 4-9, 2025 \u00a92025 Association for Computati",
+      "arxiv": "2412.05547"
+    }
+  ],
+  "links": [
+    {
+      "source": "paper_f71c311ca1b9",
+      "target": "paper_69969d44f14c7360",
+      "value": 0.992933988571167
+    },
+    {
+      "source": "paper_f71c311ca1b9",
+      "target": "paper_c2552110d574e9f9",
+      "value": 0.9687339067459106
+    },
+    {
+      "source": "paper_f71c311ca1b9",
+      "target": "paper_806a319882eac28e",
+      "value": 0.8034029006958008
+    },
+    {
+      "source": "paper_f71c311ca1b9",
+      "target": "paper_89002caaff99e43e",
+      "value": 0.789679229259491
+    },
+    {
+      "source": "paper_f71c311ca1b9",
+      "target": "paper_2da366f25f0f",
+      "value": 0.7770944833755493
+    },
+    {
+      "source": "paper_d04306a33f41",
+      "target": "paper_7f4179fcf45a8d7c",
+      "value": 1.0000003576278687
+    },
+    {
+      "source": "paper_d04306a33f41",
+      "target": "paper_7f217adf52bd",
+      "value": 0.6707820892333984
+    },
+    {
+      "source": "paper_d04306a33f41",
+      "target": "paper_48a19ba2d4f8cb71",
+      "value": 0.6666096448898315
+    },
+    {
+      "source": "paper_d04306a33f41",
+      "target": "paper_9aab233a27874306",
+      "value": 0.6445595026016235
+    },
+    {
+      "source": "paper_d04306a33f41",
+      "target": "paper_63a9d8ad445f0db9",
+      "value": 0.644051194190979
+    },
+    {
+      "source": "paper_5b98fe80ff59",
+      "target": "paper_eb1c58a0de6428e4",
+      "value": 0.6569820046424866
+    },
+    {
+      "source": "paper_5b98fe80ff59",
+      "target": "paper_ea6545e589bd59ea",
+      "value": 0.6085777878761292
+    },
+    {
+      "source": "paper_5b98fe80ff59",
+      "target": "paper_f856dbe7890a6ad6",
+      "value": 0.5372090339660645
+    },
+    {
+      "source": "paper_5b98fe80ff59",
+      "target": "paper_89002caaff99e43e",
+      "value": 0.46657854318618774
+    },
+    {
+      "source": "paper_5b98fe80ff59",
+      "target": "paper_806a319882eac28e",
+      "value": 0.41028115153312683
+    },
+    {
+      "source": "paper_2da366f25f0f",
+      "target": "paper_f71c311ca1b9",
+      "value": 0.7770944833755493
+    },
+    {
+      "source": "paper_2da366f25f0f",
+      "target": "paper_69969d44f14c7360",
+      "value": 0.7685760259628296
+    },
+    {
+      "source": "paper_2da366f25f0f",
+      "target": "paper_806a319882eac28e",
+      "value": 0.7593682408332825
+    },
+    {
+      "source": "paper_2da366f25f0f",
+      "target": "paper_c2552110d574e9f9",
+      "value": 0.7563149929046631
+    },
+    {
+      "source": "paper_2da366f25f0f",
+      "target": "paper_48c1eec262c2063b",
+      "value": 0.742749810218811
+    },
+    {
+      "source": "paper_a43ea7ad6f0b",
+      "target": "paper_2da366f25f0f",
+      "value": 0.7187445163726807
+    },
+    {
+      "source": "paper_a43ea7ad6f0b",
+      "target": "paper_48c1eec262c2063b",
+      "value": 0.7053231000900269
+    },
+    {
+      "source": "paper_a43ea7ad6f0b",
+      "target": "paper_48a19ba2d4f8cb71",
+      "value": 0.6889432668685913
+    },
+    {
+      "source": "paper_a43ea7ad6f0b",
+      "target": "paper_a82a49cbd9f2156f",
+      "value": 0.6723268628120422
+    },
+    {
+      "source": "paper_a43ea7ad6f0b",
+      "target": "paper_7299cdd62a00a7cf",
+      "value": 0.6720675230026245
+    },
+    {
+      "source": "paper_7f217adf52bd",
+      "target": "paper_63a9d8ad445f0db9",
+      "value": 0.8403708934783936
+    },
+    {
+      "source": "paper_7f217adf52bd",
+      "target": "paper_e6942058090271e3",
+      "value": 0.8403708338737488
+    },
+    {
+      "source": "paper_7f217adf52bd",
+      "target": "paper_9aab233a27874306",
+      "value": 0.7150529623031616
+    },
+    {
+      "source": "paper_7f217adf52bd",
+      "target": "paper_aa09c74e778c106e",
+      "value": 0.7043938636779785
+    },
+    {
+      "source": "paper_7f217adf52bd",
+      "target": "paper_48a19ba2d4f8cb71",
+      "value": 0.6973384618759155
+    },
+    {
+      "source": "paper_135cb3c423d6",
+      "target": "paper_43d7b09bcfa97919",
+      "value": 0.8478845953941345
+    },
+    {
+      "source": "paper_135cb3c423d6",
+      "target": "paper_d1e0c58dc2be3e4f",
+      "value": 0.6837258338928223
+    },
+    {
+      "source": "paper_135cb3c423d6",
+      "target": "paper_9aab233a27874306",
+      "value": 0.6740089654922485
+    },
+    {
+      "source": "paper_135cb3c423d6",
+      "target": "paper_7f217adf52bd",
+      "value": 0.6688363552093506
+    },
+    {
+      "source": "paper_135cb3c423d6",
+      "target": "paper_7b999cacac0c1932",
+      "value": 0.6194335222244263
+    },
+    {
+      "source": "paper_bf9cf9564514",
+      "target": "paper_7eb5607dfc05",
+      "value": 0.8657716512680054
+    },
+    {
+      "source": "paper_bf9cf9564514",
+      "target": "paper_51415b6d0d25fbfa",
+      "value": 0.8281861543655396
+    },
+    {
+      "source": "paper_bf9cf9564514",
+      "target": "paper_4cf9f42ecc8b985a",
+      "value": 0.8133625388145447
+    },
+    {
+      "source": "paper_bf9cf9564514",
+      "target": "paper_70d1fdc17854fa0a",
+      "value": 0.7904558181762695
+    },
+    {
+      "source": "paper_bf9cf9564514",
+      "target": "paper_42d0ecac4d70114c",
+      "value": 0.7723917961120605
+    },
+    {
+      "source": "paper_7eb5607dfc05",
+      "target": "paper_bf9cf9564514",
+      "value": 0.8657716512680054
+    },
+    {
+      "source": "paper_7eb5607dfc05",
+      "target": "paper_4cf9f42ecc8b985a",
+      "value": 0.830007791519165
+    },
+    {
+      "source": "paper_7eb5607dfc05",
+      "target": "paper_e93f365b605530b1",
+      "value": 0.7610019445419312
+    },
+    {
+      "source": "paper_7eb5607dfc05",
+      "target": "paper_51415b6d0d25fbfa",
+      "value": 0.7604815363883972
+    },
+    {
+      "source": "paper_7eb5607dfc05",
+      "target": "paper_42d0ecac4d70114c",
+      "value": 0.7339268922805786
+    },
+    {
+      "source": "paper_ad70dfa07af97c76",
+      "target": "paper_5c5d350ed71c9036",
+      "value": 0.8128121495246887
+    },
+    {
+      "source": "paper_ad70dfa07af97c76",
+      "target": "paper_cfdf350912576a55",
+      "value": 0.771690309047699
+    },
+    {
+      "source": "paper_ad70dfa07af97c76",
+      "target": "paper_8978e26fbbf6019e",
+      "value": 0.7287474870681763
+    },
+    {
+      "source": "paper_ad70dfa07af97c76",
+      "target": "paper_8c1913463313c0e5",
+      "value": 0.5861025452613831
+    },
+    {
+      "source": "paper_ad70dfa07af97c76",
+      "target": "paper_3208ac11a127cbb8",
+      "value": 0.5807965993881226
+    },
+    {
+      "source": "paper_48c1eec262c2063b",
+      "target": "paper_f0a9a6cefecb5568",
+      "value": 0.7820956707000732
+    },
+    {
+      "source": "paper_48c1eec262c2063b",
+      "target": "paper_2da366f25f0f",
+      "value": 0.742749810218811
+    },
+    {
+      "source": "paper_48c1eec262c2063b",
+      "target": "paper_a43ea7ad6f0b",
+      "value": 0.7053231000900269
+    },
+    {
+      "source": "paper_48c1eec262c2063b",
+      "target": "paper_806a319882eac28e",
+      "value": 0.7026678323745728
+    },
+    {
+      "source": "paper_48c1eec262c2063b",
+      "target": "paper_a82a49cbd9f2156f",
+      "value": 0.668470025062561
+    },
+    {
+      "source": "paper_12a270ed08b33b5f",
+      "target": "paper_a43ea7ad6f0b",
+      "value": 0.6666531562805176
+    },
+    {
+      "source": "paper_12a270ed08b33b5f",
+      "target": "paper_48c1eec262c2063b",
+      "value": 0.6616853475570679
+    },
+    {
+      "source": "paper_12a270ed08b33b5f",
+      "target": "paper_48a19ba2d4f8cb71",
+      "value": 0.6541507244110107
+    },
+    {
+      "source": "paper_12a270ed08b33b5f",
+      "target": "paper_a82a49cbd9f2156f",
+      "value": 0.6538702249526978
+    },
+    {
+      "source": "paper_12a270ed08b33b5f",
+      "target": "paper_51415b6d0d25fbfa",
+      "value": 0.6489617824554443
+    },
+    {
+      "source": "paper_f0a9a6cefecb5568",
+      "target": "paper_48c1eec262c2063b",
+      "value": 0.7820956707000732
+    },
+    {
+      "source": "paper_f0a9a6cefecb5568",
+      "target": "paper_2da366f25f0f",
+      "value": 0.7183587551116943
+    },
+    {
+      "source": "paper_f0a9a6cefecb5568",
+      "target": "paper_806a319882eac28e",
+      "value": 0.6468201279640198
+    },
+    {
+      "source": "paper_f0a9a6cefecb5568",
+      "target": "paper_a43ea7ad6f0b",
+      "value": 0.6447739601135254
+    },
+    {
+      "source": "paper_f0a9a6cefecb5568",
+      "target": "paper_8c1913463313c0e5",
+      "value": 0.6393169164657593
+    },
+    {
+      "source": "paper_c5ed86bc72309b83",
+      "target": "paper_48c1eec262c2063b",
+      "value": 0.6608548164367676
+    },
+    {
+      "source": "paper_c5ed86bc72309b83",
+      "target": "paper_8c1913463313c0e5",
+      "value": 0.6480383276939392
+    },
+    {
+      "source": "paper_c5ed86bc72309b83",
+      "target": "paper_a82a49cbd9f2156f",
+      "value": 0.6459077596664429
+    },
+    {
+      "source": "paper_c5ed86bc72309b83",
+      "target": "paper_3208ac11a127cbb8",
+      "value": 0.6272867918014526
+    },
+    {
+      "source": "paper_c5ed86bc72309b83",
+      "target": "paper_f0a9a6cefecb5568",
+      "value": 0.6264573335647583
+    },
+    {
+      "source": "paper_cfdf350912576a55",
+      "target": "paper_8978e26fbbf6019e",
+      "value": 0.8222976922988892
+    },
+    {
+      "source": "paper_cfdf350912576a55",
+      "target": "paper_3b1c65eb3261494f",
+      "value": 0.8169393539428711
+    },
+    {
+      "source": "paper_cfdf350912576a55",
+      "target": "paper_ad70dfa07af97c76",
+      "value": 0.771690309047699
+    },
+    {
+      "source": "paper_cfdf350912576a55",
+      "target": "paper_5c5d350ed71c9036",
+      "value": 0.7167899012565613
+    },
+    {
+      "source": "paper_cfdf350912576a55",
+      "target": "paper_3208ac11a127cbb8",
+      "value": 0.7099483609199524
+    },
+    {
+      "source": "paper_42d0ecac4d70114c",
+      "target": "paper_bf9cf9564514",
+      "value": 0.7723917961120605
+    },
+    {
+      "source": "paper_42d0ecac4d70114c",
+      "target": "paper_4cf9f42ecc8b985a",
+      "value": 0.7620207071304321
+    },
+    {
+      "source": "paper_42d0ecac4d70114c",
+      "target": "paper_51415b6d0d25fbfa",
+      "value": 0.7568201422691345
+    },
+    {
+      "source": "paper_42d0ecac4d70114c",
+      "target": "paper_7eb5607dfc05",
+      "value": 0.7339268922805786
+    },
+    {
+      "source": "paper_42d0ecac4d70114c",
+      "target": "paper_e93f365b605530b1",
+      "value": 0.724785327911377
+    },
+    {
+      "source": "paper_e93f365b605530b1",
+      "target": "paper_70d1fdc17854fa0a",
+      "value": 0.8044052124023438
+    },
+    {
+      "source": "paper_e93f365b605530b1",
+      "target": "paper_51415b6d0d25fbfa",
+      "value": 0.7887122631072998
+    },
+    {
+      "source": "paper_e93f365b605530b1",
+      "target": "paper_4cf9f42ecc8b985a",
+      "value": 0.7829818725585938
+    },
+    {
+      "source": "paper_e93f365b605530b1",
+      "target": "paper_7eb5607dfc05",
+      "value": 0.7610019445419312
+    },
+    {
+      "source": "paper_e93f365b605530b1",
+      "target": "paper_bf9cf9564514",
+      "value": 0.7592005729675293
+    },
+    {
+      "source": "paper_8978e26fbbf6019e",
+      "target": "paper_cfdf350912576a55",
+      "value": 0.8222976922988892
+    },
+    {
+      "source": "paper_8978e26fbbf6019e",
+      "target": "paper_ad70dfa07af97c76",
+      "value": 0.7287474870681763
+    },
+    {
+      "source": "paper_8978e26fbbf6019e",
+      "target": "paper_3b1c65eb3261494f",
+      "value": 0.7063170075416565
+    },
+    {
+      "source": "paper_8978e26fbbf6019e",
+      "target": "paper_5c5d350ed71c9036",
+      "value": 0.6999529600143433
+    },
+    {
+      "source": "paper_8978e26fbbf6019e",
+      "target": "paper_d1e0c58dc2be3e4f",
+      "value": 0.6630975008010864
+    },
+    {
+      "source": "paper_607f4aff232f06e5",
+      "target": "paper_48c1eec262c2063b",
+      "value": 0.635516881942749
+    },
+    {
+      "source": "paper_607f4aff232f06e5",
+      "target": "paper_f0a9a6cefecb5568",
+      "value": 0.606614351272583
+    },
+    {
+      "source": "paper_607f4aff232f06e5",
+      "target": "paper_2da366f25f0f",
+      "value": 0.5756049156188965
+    },
+    {
+      "source": "paper_607f4aff232f06e5",
+      "target": "paper_7f4179fcf45a8d7c",
+      "value": 0.5640109181404114
+    },
+    {
+      "source": "paper_607f4aff232f06e5",
+      "target": "paper_d04306a33f41",
+      "value": 0.564010739326477
+    },
+    {
+      "source": "paper_70d1fdc17854fa0a",
+      "target": "paper_51415b6d0d25fbfa",
+      "value": 0.8607060313224792
+    },
+    {
+      "source": "paper_70d1fdc17854fa0a",
+      "target": "paper_e93f365b605530b1",
+      "value": 0.8044052124023438
+    },
+    {
+      "source": "paper_70d1fdc17854fa0a",
+      "target": "paper_bf9cf9564514",
+      "value": 0.7904558181762695
+    },
+    {
+      "source": "paper_70d1fdc17854fa0a",
+      "target": "paper_4cf9f42ecc8b985a",
+      "value": 0.719915509223938
+    },
+    {
+      "source": "paper_70d1fdc17854fa0a",
+      "target": "paper_7eb5607dfc05",
+      "value": 0.7185148000717163
+    },
+    {
+      "source": "paper_8c1913463313c0e5",
+      "target": "paper_c5ed86bc72309b83",
+      "value": 0.6480383276939392
+    },
+    {
+      "source": "paper_8c1913463313c0e5",
+      "target": "paper_f0a9a6cefecb5568",
+      "value": 0.6393169164657593
+    },
+    {
+      "source": "paper_8c1913463313c0e5",
+      "target": "paper_3208ac11a127cbb8",
+      "value": 0.6265153288841248
+    },
+    {
+      "source": "paper_8c1913463313c0e5",
+      "target": "paper_48c1eec262c2063b",
+      "value": 0.618776798248291
+    },
+    {
+      "source": "paper_8c1913463313c0e5",
+      "target": "paper_ad70dfa07af97c76",
+      "value": 0.5861025452613831
+    },
+    {
+      "source": "paper_4ce7d77fd620176e",
+      "target": "paper_81aa5deae9f54937",
+      "value": 0.8410606384277344
+    },
+    {
+      "source": "paper_4ce7d77fd620176e",
+      "target": "paper_2223c2edb4066f48",
+      "value": 0.8039854764938354
+    },
+    {
+      "source": "paper_4ce7d77fd620176e",
+      "target": "paper_2c1f83fdca74f8bb",
+      "value": 0.7663919925689697
+    },
+    {
+      "source": "paper_4ce7d77fd620176e",
+      "target": "paper_0be96d76a753fa5d",
+      "value": 0.730522096157074
+    },
+    {
+      "source": "paper_4ce7d77fd620176e",
+      "target": "paper_878d5a62c6d4b76d",
+      "value": 0.7062973380088806
+    },
+    {
+      "source": "paper_aa09c74e778c106e",
+      "target": "paper_48a19ba2d4f8cb71",
+      "value": 0.7924228310585022
+    },
+    {
+      "source": "paper_aa09c74e778c106e",
+      "target": "paper_e6942058090271e3",
+      "value": 0.7625598311424255
+    },
+    {
+      "source": "paper_aa09c74e778c106e",
+      "target": "paper_63a9d8ad445f0db9",
+      "value": 0.7625597715377808
+    },
+    {
+      "source": "paper_aa09c74e778c106e",
+      "target": "paper_4847ff92cc17501d",
+      "value": 0.7065448760986328
+    },
+    {
+      "source": "paper_aa09c74e778c106e",
+      "target": "paper_7f217adf52bd",
+      "value": 0.7043938636779785
+    },
+    {
+      "source": "paper_d1e0c58dc2be3e4f",
+      "target": "paper_7b999cacac0c1932",
+      "value": 0.7240440845489502
+    },
+    {
+      "source": "paper_d1e0c58dc2be3e4f",
+      "target": "paper_135cb3c423d6",
+      "value": 0.6837258338928223
+    },
+    {
+      "source": "paper_d1e0c58dc2be3e4f",
+      "target": "paper_7f217adf52bd",
+      "value": 0.6787434816360474
+    },
+    {
+      "source": "paper_d1e0c58dc2be3e4f",
+      "target": "paper_43d7b09bcfa97919",
+      "value": 0.6737524271011353
+    },
+    {
+      "source": "paper_d1e0c58dc2be3e4f",
+      "target": "paper_cfdf350912576a55",
+      "value": 0.6728760004043579
+    },
+    {
+      "source": "paper_e49a84a5204f6cf9",
+      "target": "paper_9aab233a27874306",
+      "value": 0.6570470333099365
+    },
+    {
+      "source": "paper_e49a84a5204f6cf9",
+      "target": "paper_43d7b09bcfa97919",
+      "value": 0.6478617191314697
+    },
+    {
+      "source": "paper_e49a84a5204f6cf9",
+      "target": "paper_a82a49cbd9f2156f",
+      "value": 0.6178343296051025
+    },
+    {
+      "source": "paper_e49a84a5204f6cf9",
+      "target": "paper_48a19ba2d4f8cb71",
+      "value": 0.6038466691970825
+    },
+    {
+      "source": "paper_e49a84a5204f6cf9",
+      "target": "paper_c5ed86bc72309b83",
+      "value": 0.599929928779602
+    },
+    {
+      "source": "paper_48a19ba2d4f8cb71",
+      "target": "paper_aa09c74e778c106e",
+      "value": 0.7924228310585022
+    },
+    {
+      "source": "paper_48a19ba2d4f8cb71",
+      "target": "paper_e6942058090271e3",
+      "value": 0.7673454284667969
+    },
+    {
+      "source": "paper_48a19ba2d4f8cb71",
+      "target": "paper_63a9d8ad445f0db9",
+      "value": 0.7673453688621521
+    },
+    {
+      "source": "paper_48a19ba2d4f8cb71",
+      "target": "paper_9aab233a27874306",
+      "value": 0.7172449827194214
+    },
+    {
+      "source": "paper_48a19ba2d4f8cb71",
+      "target": "paper_7f217adf52bd",
+      "value": 0.6973384618759155
+    },
+    {
+      "source": "paper_51415b6d0d25fbfa",
+      "target": "paper_70d1fdc17854fa0a",
+      "value": 0.8607060313224792
+    },
+    {
+      "source": "paper_51415b6d0d25fbfa",
+      "target": "paper_bf9cf9564514",
+      "value": 0.8281861543655396
+    },
+    {
+      "source": "paper_51415b6d0d25fbfa",
+      "target": "paper_4cf9f42ecc8b985a",
+      "value": 0.8014352321624756
+    },
+    {
+      "source": "paper_51415b6d0d25fbfa",
+      "target": "paper_e93f365b605530b1",
+      "value": 0.7887122631072998
+    },
+    {
+      "source": "paper_51415b6d0d25fbfa",
+      "target": "paper_7eb5607dfc05",
+      "value": 0.7604815363883972
+    },
+    {
+      "source": "paper_eb1c58a0de6428e4",
+      "target": "paper_ea6545e589bd59ea",
+      "value": 0.791425347328186
+    },
+    {
+      "source": "paper_eb1c58a0de6428e4",
+      "target": "paper_5b98fe80ff59",
+      "value": 0.6569820046424866
+    },
+    {
+      "source": "paper_eb1c58a0de6428e4",
+      "target": "paper_806a319882eac28e",
+      "value": 0.530060887336731
+    },
+    {
+      "source": "paper_eb1c58a0de6428e4",
+      "target": "paper_89002caaff99e43e",
+      "value": 0.5255099534988403
+    },
+    {
+      "source": "paper_eb1c58a0de6428e4",
+      "target": "paper_7eb5607dfc05",
+      "value": 0.4892313480377197
+    },
+    {
+      "source": "paper_3208ac11a127cbb8",
+      "target": "paper_3b1c65eb3261494f",
+      "value": 0.7674652338027954
+    },
+    {
+      "source": "paper_3208ac11a127cbb8",
+      "target": "paper_cfdf350912576a55",
+      "value": 0.7099483609199524
+    },
+    {
+      "source": "paper_3208ac11a127cbb8",
+      "target": "paper_a82a49cbd9f2156f",
+      "value": 0.6655489206314087
+    },
+    {
+      "source": "paper_3208ac11a127cbb8",
+      "target": "paper_c5ed86bc72309b83",
+      "value": 0.6272867918014526
+    },
+    {
+      "source": "paper_3208ac11a127cbb8",
+      "target": "paper_8c1913463313c0e5",
+      "value": 0.6265153288841248
+    },
+    {
+      "source": "paper_3b1c65eb3261494f",
+      "target": "paper_cfdf350912576a55",
+      "value": 0.8169393539428711
+    },
+    {
+      "source": "paper_3b1c65eb3261494f",
+      "target": "paper_3208ac11a127cbb8",
+      "value": 0.7674652338027954
+    },
+    {
+      "source": "paper_3b1c65eb3261494f",
+      "target": "paper_8978e26fbbf6019e",
+      "value": 0.7063170075416565
+    },
+    {
+      "source": "paper_3b1c65eb3261494f",
+      "target": "paper_ad70dfa07af97c76",
+      "value": 0.5759472846984863
+    },
+    {
+      "source": "paper_3b1c65eb3261494f",
+      "target": "paper_5c5d350ed71c9036",
+      "value": 0.5638989210128784
+    },
+    {
+      "source": "paper_89002caaff99e43e",
+      "target": "paper_806a319882eac28e",
+      "value": 0.8010856509208679
+    },
+    {
+      "source": "paper_89002caaff99e43e",
+      "target": "paper_c2552110d574e9f9",
+      "value": 0.7995719909667969
+    },
+    {
+      "source": "paper_89002caaff99e43e",
+      "target": "paper_f71c311ca1b9",
+      "value": 0.789679229259491
+    },
+    {
+      "source": "paper_89002caaff99e43e",
+      "target": "paper_69969d44f14c7360",
+      "value": 0.7887901067733765
+    },
+    {
+      "source": "paper_89002caaff99e43e",
+      "target": "paper_2da366f25f0f",
+      "value": 0.7369636297225952
+    },
+    {
+      "source": "paper_5c5d350ed71c9036",
+      "target": "paper_ad70dfa07af97c76",
+      "value": 0.8128121495246887
+    },
+    {
+      "source": "paper_5c5d350ed71c9036",
+      "target": "paper_cfdf350912576a55",
+      "value": 0.7167899012565613
+    },
+    {
+      "source": "paper_5c5d350ed71c9036",
+      "target": "paper_8978e26fbbf6019e",
+      "value": 0.6999529600143433
+    },
+    {
+      "source": "paper_5c5d350ed71c9036",
+      "target": "paper_8c1913463313c0e5",
+      "value": 0.5725386142730713
+    },
+    {
+      "source": "paper_5c5d350ed71c9036",
+      "target": "paper_bf9cf9564514",
+      "value": 0.568356990814209
+    },
+    {
+      "source": "paper_9aab233a27874306",
+      "target": "paper_63a9d8ad445f0db9",
+      "value": 0.7550234198570251
+    },
+    {
+      "source": "paper_9aab233a27874306",
+      "target": "paper_e6942058090271e3",
+      "value": 0.7550233602523804
+    },
+    {
+      "source": "paper_9aab233a27874306",
+      "target": "paper_4e48fc1229b4a3e6",
+      "value": 0.7407001256942749
+    },
+    {
+      "source": "paper_9aab233a27874306",
+      "target": "paper_4847ff92cc17501d",
+      "value": 0.7312461733818054
+    },
+    {
+      "source": "paper_9aab233a27874306",
+      "target": "paper_48a19ba2d4f8cb71",
+      "value": 0.7172449827194214
+    },
+    {
+      "source": "paper_a82a49cbd9f2156f",
+      "target": "paper_806a319882eac28e",
+      "value": 0.6979579925537109
+    },
+    {
+      "source": "paper_a82a49cbd9f2156f",
+      "target": "paper_f71c311ca1b9",
+      "value": 0.69603431224823
+    },
+    {
+      "source": "paper_a82a49cbd9f2156f",
+      "target": "paper_4a60428d7b51a6c4",
+      "value": 0.694003701210022
+    },
+    {
+      "source": "paper_a82a49cbd9f2156f",
+      "target": "paper_69969d44f14c7360",
+      "value": 0.6851050853729248
+    },
+    {
+      "source": "paper_a82a49cbd9f2156f",
+      "target": "paper_c2552110d574e9f9",
+      "value": 0.6742299795150757
+    },
+    {
+      "source": "paper_4a60428d7b51a6c4",
+      "target": "paper_806a319882eac28e",
+      "value": 0.7413191795349121
+    },
+    {
+      "source": "paper_4a60428d7b51a6c4",
+      "target": "paper_2da366f25f0f",
+      "value": 0.7179265022277832
+    },
+    {
+      "source": "paper_4a60428d7b51a6c4",
+      "target": "paper_f71c311ca1b9",
+      "value": 0.6954222917556763
+    },
+    {
+      "source": "paper_4a60428d7b51a6c4",
+      "target": "paper_c2552110d574e9f9",
+      "value": 0.6943889856338501
+    },
+    {
+      "source": "paper_4a60428d7b51a6c4",
+      "target": "paper_a82a49cbd9f2156f",
+      "value": 0.694003701210022
+    },
+    {
+      "source": "paper_7299cdd62a00a7cf",
+      "target": "paper_48a19ba2d4f8cb71",
+      "value": 0.6940631866455078
+    },
+    {
+      "source": "paper_7299cdd62a00a7cf",
+      "target": "paper_4ce7d77fd620176e",
+      "value": 0.6879875659942627
+    },
+    {
+      "source": "paper_7299cdd62a00a7cf",
+      "target": "paper_2da366f25f0f",
+      "value": 0.6865065097808838
+    },
+    {
+      "source": "paper_7299cdd62a00a7cf",
+      "target": "paper_a82a49cbd9f2156f",
+      "value": 0.6735928654670715
+    },
+    {
+      "source": "paper_7299cdd62a00a7cf",
+      "target": "paper_81aa5deae9f54937",
+      "value": 0.6720848083496094
+    },
+    {
+      "source": "paper_c2552110d574e9f9",
+      "target": "paper_69969d44f14c7360",
+      "value": 0.9728443622589111
+    },
+    {
+      "source": "paper_c2552110d574e9f9",
+      "target": "paper_f71c311ca1b9",
+      "value": 0.9687339067459106
+    },
+    {
+      "source": "paper_c2552110d574e9f9",
+      "target": "paper_89002caaff99e43e",
+      "value": 0.7995719909667969
+    },
+    {
+      "source": "paper_c2552110d574e9f9",
+      "target": "paper_806a319882eac28e",
+      "value": 0.7885767817497253
+    },
+    {
+      "source": "paper_c2552110d574e9f9",
+      "target": "paper_2da366f25f0f",
+      "value": 0.7563149929046631
+    },
+    {
+      "source": "paper_878d5a62c6d4b76d",
+      "target": "paper_81aa5deae9f54937",
+      "value": 0.7316806316375732
+    },
+    {
+      "source": "paper_878d5a62c6d4b76d",
+      "target": "paper_2c1f83fdca74f8bb",
+      "value": 0.7103325128555298
+    },
+    {
+      "source": "paper_878d5a62c6d4b76d",
+      "target": "paper_4ce7d77fd620176e",
+      "value": 0.7062973380088806
+    },
+    {
+      "source": "paper_878d5a62c6d4b76d",
+      "target": "paper_2223c2edb4066f48",
+      "value": 0.6863003373146057
+    },
+    {
+      "source": "paper_878d5a62c6d4b76d",
+      "target": "paper_2b57fb79fc4f76b4",
+      "value": 0.6258121728897095
+    },
+    {
+      "source": "paper_43d7b09bcfa97919",
+      "target": "paper_135cb3c423d6",
+      "value": 0.8478845953941345
+    },
+    {
+      "source": "paper_43d7b09bcfa97919",
+      "target": "paper_d1e0c58dc2be3e4f",
+      "value": 0.6737524271011353
+    },
+    {
+      "source": "paper_43d7b09bcfa97919",
+      "target": "paper_e49a84a5204f6cf9",
+      "value": 0.6478617191314697
+    },
+    {
+      "source": "paper_43d7b09bcfa97919",
+      "target": "paper_9aab233a27874306",
+      "value": 0.6402912139892578
+    },
+    {
+      "source": "paper_43d7b09bcfa97919",
+      "target": "paper_7b999cacac0c1932",
+      "value": 0.621635913848877
+    },
+    {
+      "source": "paper_806a319882eac28e",
+      "target": "paper_f71c311ca1b9",
+      "value": 0.8034029006958008
+    },
+    {
+      "source": "paper_806a319882eac28e",
+      "target": "paper_69969d44f14c7360",
+      "value": 0.8017014265060425
+    },
+    {
+      "source": "paper_806a319882eac28e",
+      "target": "paper_89002caaff99e43e",
+      "value": 0.8010856509208679
+    },
+    {
+      "source": "paper_806a319882eac28e",
+      "target": "paper_c2552110d574e9f9",
+      "value": 0.7885767817497253
+    },
+    {
+      "source": "paper_806a319882eac28e",
+      "target": "paper_2da366f25f0f",
+      "value": 0.7593682408332825
+    },
+    {
+      "source": "paper_e6942058090271e3",
+      "target": "paper_63a9d8ad445f0db9",
+      "value": 0.9999999403953552
+    },
+    {
+      "source": "paper_e6942058090271e3",
+      "target": "paper_7f217adf52bd",
+      "value": 0.8403708338737488
+    },
+    {
+      "source": "paper_e6942058090271e3",
+      "target": "paper_4847ff92cc17501d",
+      "value": 0.7786602973937988
+    },
+    {
+      "source": "paper_e6942058090271e3",
+      "target": "paper_48a19ba2d4f8cb71",
+      "value": 0.7673454284667969
+    },
+    {
+      "source": "paper_e6942058090271e3",
+      "target": "paper_aa09c74e778c106e",
+      "value": 0.7625598311424255
+    },
+    {
+      "source": "paper_7b999cacac0c1932",
+      "target": "paper_d1e0c58dc2be3e4f",
+      "value": 0.7240440845489502
+    },
+    {
+      "source": "paper_7b999cacac0c1932",
+      "target": "paper_7f217adf52bd",
+      "value": 0.663974404335022
+    },
+    {
+      "source": "paper_7b999cacac0c1932",
+      "target": "paper_43d7b09bcfa97919",
+      "value": 0.621635913848877
+    },
+    {
+      "source": "paper_7b999cacac0c1932",
+      "target": "paper_135cb3c423d6",
+      "value": 0.6194335222244263
+    },
+    {
+      "source": "paper_7b999cacac0c1932",
+      "target": "paper_9aab233a27874306",
+      "value": 0.6053684949874878
+    },
+    {
+      "source": "paper_f856dbe7890a6ad6",
+      "target": "paper_3acf3a3cd6bff62e",
+      "value": 0.5934733748435974
+    },
+    {
+      "source": "paper_f856dbe7890a6ad6",
+      "target": "paper_e93f365b605530b1",
+      "value": 0.5898621082305908
+    },
+    {
+      "source": "paper_f856dbe7890a6ad6",
+      "target": "paper_bf9cf9564514",
+      "value": 0.5512468218803406
+    },
+    {
+      "source": "paper_f856dbe7890a6ad6",
+      "target": "paper_7eb5607dfc05",
+      "value": 0.545441210269928
+    },
+    {
+      "source": "paper_f856dbe7890a6ad6",
+      "target": "paper_a82a49cbd9f2156f",
+      "value": 0.5410484075546265
+    },
+    {
+      "source": "paper_4cf9f42ecc8b985a",
+      "target": "paper_7eb5607dfc05",
+      "value": 0.830007791519165
+    },
+    {
+      "source": "paper_4cf9f42ecc8b985a",
+      "target": "paper_bf9cf9564514",
+      "value": 0.8133625388145447
+    },
+    {
+      "source": "paper_4cf9f42ecc8b985a",
+      "target": "paper_51415b6d0d25fbfa",
+      "value": 0.8014352321624756
+    },
+    {
+      "source": "paper_4cf9f42ecc8b985a",
+      "target": "paper_e93f365b605530b1",
+      "value": 0.7829818725585938
+    },
+    {
+      "source": "paper_4cf9f42ecc8b985a",
+      "target": "paper_42d0ecac4d70114c",
+      "value": 0.7620207071304321
+    },
+    {
+      "source": "paper_a91eb5aec1d0ed95",
+      "target": "paper_2c1f83fdca74f8bb",
+      "value": 0.662444531917572
+    },
+    {
+      "source": "paper_a91eb5aec1d0ed95",
+      "target": "paper_2223c2edb4066f48",
+      "value": 0.6259447336196899
+    },
+    {
+      "source": "paper_a91eb5aec1d0ed95",
+      "target": "paper_4ce7d77fd620176e",
+      "value": 0.6088049411773682
+    },
+    {
+      "source": "paper_a91eb5aec1d0ed95",
+      "target": "paper_878d5a62c6d4b76d",
+      "value": 0.6054220199584961
+    },
+    {
+      "source": "paper_a91eb5aec1d0ed95",
+      "target": "paper_81aa5deae9f54937",
+      "value": 0.599146842956543
+    },
+    {
+      "source": "paper_1e71437fe048b9f1",
+      "target": "paper_2223c2edb4066f48",
+      "value": 0.6445103287696838
+    },
+    {
+      "source": "paper_1e71437fe048b9f1",
+      "target": "paper_4ce7d77fd620176e",
+      "value": 0.6247592568397522
+    },
+    {
+      "source": "paper_1e71437fe048b9f1",
+      "target": "paper_2c1f83fdca74f8bb",
+      "value": 0.6242601871490479
+    },
+    {
+      "source": "paper_1e71437fe048b9f1",
+      "target": "paper_81aa5deae9f54937",
+      "value": 0.6242587566375732
+    },
+    {
+      "source": "paper_1e71437fe048b9f1",
+      "target": "paper_7299cdd62a00a7cf",
+      "value": 0.6161307096481323
+    },
+    {
+      "source": "paper_8da0db02d51c063e",
+      "target": "paper_0be96d76a753fa5d",
+      "value": 0.7535587549209595
+    },
+    {
+      "source": "paper_8da0db02d51c063e",
+      "target": "paper_4ce7d77fd620176e",
+      "value": 0.681904673576355
+    },
+    {
+      "source": "paper_8da0db02d51c063e",
+      "target": "paper_2223c2edb4066f48",
+      "value": 0.6743881106376648
+    },
+    {
+      "source": "paper_8da0db02d51c063e",
+      "target": "paper_81aa5deae9f54937",
+      "value": 0.6491812467575073
+    },
+    {
+      "source": "paper_8da0db02d51c063e",
+      "target": "paper_2c1f83fdca74f8bb",
+      "value": 0.61777663230896
+    },
+    {
+      "source": "paper_3c96f8135d3479f9",
+      "target": "paper_4e48fc1229b4a3e6",
+      "value": 0.6629178524017334
+    },
+    {
+      "source": "paper_3c96f8135d3479f9",
+      "target": "paper_4847ff92cc17501d",
+      "value": 0.6336466073989868
+    },
+    {
+      "source": "paper_3c96f8135d3479f9",
+      "target": "paper_9aab233a27874306",
+      "value": 0.6087132692337036
+    },
+    {
+      "source": "paper_3c96f8135d3479f9",
+      "target": "paper_63a9d8ad445f0db9",
+      "value": 0.5893988609313965
+    },
+    {
+      "source": "paper_3c96f8135d3479f9",
+      "target": "paper_e6942058090271e3",
+      "value": 0.5893988609313965
+    },
+    {
+      "source": "paper_2c1f83fdca74f8bb",
+      "target": "paper_4ce7d77fd620176e",
+      "value": 0.7663919925689697
+    },
+    {
+      "source": "paper_2c1f83fdca74f8bb",
+      "target": "paper_2223c2edb4066f48",
+      "value": 0.7216576933860779
+    },
+    {
+      "source": "paper_2c1f83fdca74f8bb",
+      "target": "paper_81aa5deae9f54937",
+      "value": 0.713491678237915
+    },
+    {
+      "source": "paper_2c1f83fdca74f8bb",
+      "target": "paper_0be96d76a753fa5d",
+      "value": 0.7133830189704895
+    },
+    {
+      "source": "paper_2c1f83fdca74f8bb",
+      "target": "paper_878d5a62c6d4b76d",
+      "value": 0.7103325128555298
+    },
+    {
+      "source": "paper_4e48fc1229b4a3e6",
+      "target": "paper_4847ff92cc17501d",
+      "value": 0.7486903667449951
+    },
+    {
+      "source": "paper_4e48fc1229b4a3e6",
+      "target": "paper_9aab233a27874306",
+      "value": 0.7407001256942749
+    },
+    {
+      "source": "paper_4e48fc1229b4a3e6",
+      "target": "paper_e6942058090271e3",
+      "value": 0.6849997043609619
+    },
+    {
+      "source": "paper_4e48fc1229b4a3e6",
+      "target": "paper_63a9d8ad445f0db9",
+      "value": 0.6849995851516724
+    },
+    {
+      "source": "paper_4e48fc1229b4a3e6",
+      "target": "paper_aa09c74e778c106e",
+      "value": 0.6838634014129639
+    },
+    {
+      "source": "paper_3c85fe422e1bef37",
+      "target": "paper_63a9d8ad445f0db9",
+      "value": 0.7144458889961243
+    },
+    {
+      "source": "paper_3c85fe422e1bef37",
+      "target": "paper_e6942058090271e3",
+      "value": 0.7144458889961243
+    },
+    {
+      "source": "paper_3c85fe422e1bef37",
+      "target": "paper_7f217adf52bd",
+      "value": 0.6732998490333557
+    },
+    {
+      "source": "paper_3c85fe422e1bef37",
+      "target": "paper_aa09c74e778c106e",
+      "value": 0.6663862466812134
+    },
+    {
+      "source": "paper_3c85fe422e1bef37",
+      "target": "paper_65bf5c03a8518786",
+      "value": 0.6652662754058838
+    },
+    {
+      "source": "paper_65bf5c03a8518786",
+      "target": "paper_fbb9d427aa3bb154",
+      "value": 0.7630966305732727
+    },
+    {
+      "source": "paper_65bf5c03a8518786",
+      "target": "paper_3c85fe422e1bef37",
+      "value": 0.6652662754058838
+    },
+    {
+      "source": "paper_65bf5c03a8518786",
+      "target": "paper_2059a8fd9808721b",
+      "value": 0.6379567384719849
+    },
+    {
+      "source": "paper_65bf5c03a8518786",
+      "target": "paper_7f217adf52bd",
+      "value": 0.6348669528961182
+    },
+    {
+      "source": "paper_65bf5c03a8518786",
+      "target": "paper_2c1f83fdca74f8bb",
+      "value": 0.6258677244186401
+    },
+    {
+      "source": "paper_fbb9d427aa3bb154",
+      "target": "paper_65bf5c03a8518786",
+      "value": 0.7630966305732727
+    },
+    {
+      "source": "paper_fbb9d427aa3bb154",
+      "target": "paper_81aa5deae9f54937",
+      "value": 0.7023763656616211
+    },
+    {
+      "source": "paper_fbb9d427aa3bb154",
+      "target": "paper_4ce7d77fd620176e",
+      "value": 0.7012614011764526
+    },
+    {
+      "source": "paper_fbb9d427aa3bb154",
+      "target": "paper_2c1f83fdca74f8bb",
+      "value": 0.6829767227172852
+    },
+    {
+      "source": "paper_fbb9d427aa3bb154",
+      "target": "paper_e6942058090271e3",
+      "value": 0.6558405160903931
+    },
+    {
+      "source": "paper_2059a8fd9808721b",
+      "target": "paper_65bf5c03a8518786",
+      "value": 0.6379567384719849
+    },
+    {
+      "source": "paper_2059a8fd9808721b",
+      "target": "paper_fbb9d427aa3bb154",
+      "value": 0.6090716123580933
+    },
+    {
+      "source": "paper_2059a8fd9808721b",
+      "target": "paper_7f217adf52bd",
+      "value": 0.5599660277366638
+    },
+    {
+      "source": "paper_2059a8fd9808721b",
+      "target": "paper_e6942058090271e3",
+      "value": 0.5150448679924011
+    },
+    {
+      "source": "paper_2059a8fd9808721b",
+      "target": "paper_63a9d8ad445f0db9",
+      "value": 0.5150448083877563
+    },
+    {
+      "source": "paper_679b0290e040c811",
+      "target": "paper_0be96d76a753fa5d",
+      "value": 0.6559206247329712
+    },
+    {
+      "source": "paper_679b0290e040c811",
+      "target": "paper_2223c2edb4066f48",
+      "value": 0.6497606039047241
+    },
+    {
+      "source": "paper_679b0290e040c811",
+      "target": "paper_4ce7d77fd620176e",
+      "value": 0.5834222435951233
+    },
+    {
+      "source": "paper_679b0290e040c811",
+      "target": "paper_1e71437fe048b9f1",
+      "value": 0.5781775712966919
+    },
+    {
+      "source": "paper_679b0290e040c811",
+      "target": "paper_8da0db02d51c063e",
+      "value": 0.5710700750350952
+    },
+    {
+      "source": "paper_ea6545e589bd59ea",
+      "target": "paper_eb1c58a0de6428e4",
+      "value": 0.791425347328186
+    },
+    {
+      "source": "paper_ea6545e589bd59ea",
+      "target": "paper_5b98fe80ff59",
+      "value": 0.6085777878761292
+    },
+    {
+      "source": "paper_ea6545e589bd59ea",
+      "target": "paper_89002caaff99e43e",
+      "value": 0.5350199937820435
+    },
+    {
+      "source": "paper_ea6545e589bd59ea",
+      "target": "paper_7eb5607dfc05",
+      "value": 0.5260131359100342
+    },
+    {
+      "source": "paper_ea6545e589bd59ea",
+      "target": "paper_4cf9f42ecc8b985a",
+      "value": 0.4931194484233856
+    },
+    {
+      "source": "paper_2b57fb79fc4f76b4",
+      "target": "paper_2223c2edb4066f48",
+      "value": 0.7354650497436523
+    },
+    {
+      "source": "paper_2b57fb79fc4f76b4",
+      "target": "paper_0be96d76a753fa5d",
+      "value": 0.6398643255233765
+    },
+    {
+      "source": "paper_2b57fb79fc4f76b4",
+      "target": "paper_878d5a62c6d4b76d",
+      "value": 0.6258121728897095
+    },
+    {
+      "source": "paper_2b57fb79fc4f76b4",
+      "target": "paper_4ce7d77fd620176e",
+      "value": 0.622514545917511
+    },
+    {
+      "source": "paper_2b57fb79fc4f76b4",
+      "target": "paper_2c1f83fdca74f8bb",
+      "value": 0.5874522924423218
+    },
+    {
+      "source": "paper_76a3dc237e19eb8d",
+      "target": "paper_2c1f83fdca74f8bb",
+      "value": 0.513096034526825
+    },
+    {
+      "source": "paper_76a3dc237e19eb8d",
+      "target": "paper_a82a49cbd9f2156f",
+      "value": 0.45471054315567017
+    },
+    {
+      "source": "paper_76a3dc237e19eb8d",
+      "target": "paper_fbb9d427aa3bb154",
+      "value": 0.4289200007915497
+    },
+    {
+      "source": "paper_76a3dc237e19eb8d",
+      "target": "paper_cfdf350912576a55",
+      "value": 0.42693275213241577
+    },
+    {
+      "source": "paper_76a3dc237e19eb8d",
+      "target": "paper_81aa5deae9f54937",
+      "value": 0.42413997650146484
+    },
+    {
+      "source": "paper_81aa5deae9f54937",
+      "target": "paper_4ce7d77fd620176e",
+      "value": 0.8410606384277344
+    },
+    {
+      "source": "paper_81aa5deae9f54937",
+      "target": "paper_878d5a62c6d4b76d",
+      "value": 0.7316806316375732
+    },
+    {
+      "source": "paper_81aa5deae9f54937",
+      "target": "paper_2c1f83fdca74f8bb",
+      "value": 0.713491678237915
+    },
+    {
+      "source": "paper_81aa5deae9f54937",
+      "target": "paper_fbb9d427aa3bb154",
+      "value": 0.7023763656616211
+    },
+    {
+      "source": "paper_81aa5deae9f54937",
+      "target": "paper_7299cdd62a00a7cf",
+      "value": 0.6720848083496094
+    },
+    {
+      "source": "paper_4817d6a9a48b1044",
+      "target": "paper_7b999cacac0c1932",
+      "value": 0.602985143661499
+    },
+    {
+      "source": "paper_4817d6a9a48b1044",
+      "target": "paper_2c1f83fdca74f8bb",
+      "value": 0.4548741579055786
+    },
+    {
+      "source": "paper_4817d6a9a48b1044",
+      "target": "paper_679b0290e040c811",
+      "value": 0.44975560903549194
+    },
+    {
+      "source": "paper_4817d6a9a48b1044",
+      "target": "paper_8978e26fbbf6019e",
+      "value": 0.4375033378601074
+    },
+    {
+      "source": "paper_4817d6a9a48b1044",
+      "target": "paper_7f217adf52bd",
+      "value": 0.43502533435821533
+    },
+    {
+      "source": "paper_3acf3a3cd6bff62e",
+      "target": "paper_e93f365b605530b1",
+      "value": 0.6095393896102905
+    },
+    {
+      "source": "paper_3acf3a3cd6bff62e",
+      "target": "paper_4a60428d7b51a6c4",
+      "value": 0.5993591547012329
+    },
+    {
+      "source": "paper_3acf3a3cd6bff62e",
+      "target": "paper_f856dbe7890a6ad6",
+      "value": 0.5934733748435974
+    },
+    {
+      "source": "paper_3acf3a3cd6bff62e",
+      "target": "paper_4cf9f42ecc8b985a",
+      "value": 0.5584521293640137
+    },
+    {
+      "source": "paper_3acf3a3cd6bff62e",
+      "target": "paper_70d1fdc17854fa0a",
+      "value": 0.5491470694541931
+    },
+    {
+      "source": "paper_2223c2edb4066f48",
+      "target": "paper_4ce7d77fd620176e",
+      "value": 0.8039854764938354
+    },
+    {
+      "source": "paper_2223c2edb4066f48",
+      "target": "paper_0be96d76a753fa5d",
+      "value": 0.7419278025627136
+    },
+    {
+      "source": "paper_2223c2edb4066f48",
+      "target": "paper_2b57fb79fc4f76b4",
+      "value": 0.7354650497436523
+    },
+    {
+      "source": "paper_2223c2edb4066f48",
+      "target": "paper_2c1f83fdca74f8bb",
+      "value": 0.7216576933860779
+    },
+    {
+      "source": "paper_2223c2edb4066f48",
+      "target": "paper_878d5a62c6d4b76d",
+      "value": 0.6863003373146057
+    },
+    {
+      "source": "paper_0be96d76a753fa5d",
+      "target": "paper_8da0db02d51c063e",
+      "value": 0.7535587549209595
+    },
+    {
+      "source": "paper_0be96d76a753fa5d",
+      "target": "paper_2223c2edb4066f48",
+      "value": 0.7419278025627136
+    },
+    {
+      "source": "paper_0be96d76a753fa5d",
+      "target": "paper_4ce7d77fd620176e",
+      "value": 0.730522096157074
+    },
+    {
+      "source": "paper_0be96d76a753fa5d",
+      "target": "paper_2c1f83fdca74f8bb",
+      "value": 0.7133830189704895
+    },
+    {
+      "source": "paper_0be96d76a753fa5d",
+      "target": "paper_679b0290e040c811",
+      "value": 0.6559206247329712
+    },
+    {
+      "source": "paper_4847ff92cc17501d",
+      "target": "paper_63a9d8ad445f0db9",
+      "value": 0.7786602973937988
+    },
+    {
+      "source": "paper_4847ff92cc17501d",
+      "target": "paper_e6942058090271e3",
+      "value": 0.7786602973937988
+    },
+    {
+      "source": "paper_4847ff92cc17501d",
+      "target": "paper_4e48fc1229b4a3e6",
+      "value": 0.7486903667449951
+    },
+    {
+      "source": "paper_4847ff92cc17501d",
+      "target": "paper_9aab233a27874306",
+      "value": 0.7312461733818054
+    },
+    {
+      "source": "paper_4847ff92cc17501d",
+      "target": "paper_aa09c74e778c106e",
+      "value": 0.7065448760986328
+    },
+    {
+      "source": "paper_9dc281634b897cc6",
+      "target": "paper_4847ff92cc17501d",
+      "value": 0.6486223936080933
+    },
+    {
+      "source": "paper_9dc281634b897cc6",
+      "target": "paper_63a9d8ad445f0db9",
+      "value": 0.622113049030304
+    },
+    {
+      "source": "paper_9dc281634b897cc6",
+      "target": "paper_e6942058090271e3",
+      "value": 0.6221129894256592
+    },
+    {
+      "source": "paper_9dc281634b897cc6",
+      "target": "paper_3c96f8135d3479f9",
+      "value": 0.5850288271903992
+    },
+    {
+      "source": "paper_9dc281634b897cc6",
+      "target": "paper_aa09c74e778c106e",
+      "value": 0.5674152374267578
+    },
+    {
+      "source": "paper_63a9d8ad445f0db9",
+      "target": "paper_e6942058090271e3",
+      "value": 0.9999999403953552
+    },
+    {
+      "source": "paper_63a9d8ad445f0db9",
+      "target": "paper_7f217adf52bd",
+      "value": 0.8403708934783936
+    },
+    {
+      "source": "paper_63a9d8ad445f0db9",
+      "target": "paper_4847ff92cc17501d",
+      "value": 0.7786602973937988
+    },
+    {
+      "source": "paper_63a9d8ad445f0db9",
+      "target": "paper_48a19ba2d4f8cb71",
+      "value": 0.7673453688621521
+    },
+    {
+      "source": "paper_63a9d8ad445f0db9",
+      "target": "paper_aa09c74e778c106e",
+      "value": 0.7625597715377808
+    },
+    {
+      "source": "paper_7f4179fcf45a8d7c",
+      "target": "paper_d04306a33f41",
+      "value": 1.0000003576278687
+    },
+    {
+      "source": "paper_7f4179fcf45a8d7c",
+      "target": "paper_7f217adf52bd",
+      "value": 0.6707820892333984
+    },
+    {
+      "source": "paper_7f4179fcf45a8d7c",
+      "target": "paper_48a19ba2d4f8cb71",
+      "value": 0.6666097640991211
+    },
+    {
+      "source": "paper_7f4179fcf45a8d7c",
+      "target": "paper_9aab233a27874306",
+      "value": 0.644559383392334
+    },
+    {
+      "source": "paper_7f4179fcf45a8d7c",
+      "target": "paper_e6942058090271e3",
+      "value": 0.6440513134002686
+    },
+    {
+      "source": "paper_69969d44f14c7360",
+      "target": "paper_f71c311ca1b9",
+      "value": 0.992933988571167
+    },
+    {
+      "source": "paper_69969d44f14c7360",
+      "target": "paper_c2552110d574e9f9",
+      "value": 0.9728443622589111
+    },
+    {
+      "source": "paper_69969d44f14c7360",
+      "target": "paper_806a319882eac28e",
+      "value": 0.8017014265060425
+    },
+    {
+      "source": "paper_69969d44f14c7360",
+      "target": "paper_89002caaff99e43e",
+      "value": 0.7887901067733765
+    },
+    {
+      "source": "paper_69969d44f14c7360",
+      "target": "paper_2da366f25f0f",
+      "value": 0.7685760259628296
+    }
+  ]
+}
