@@ -10,6 +10,7 @@ import { usePrompt } from '../../hooks/useWorkflowApi'
 import type { ArtifactType, FileFormat } from './types'
 
 const API_BASE = '/api/devtools'
+const CHATLOGS_API = '/api/chatlogs'
 
 interface ArtifactReaderProps {
   artifactId: string
@@ -34,7 +35,11 @@ export function ArtifactReader({ artifactId, artifactType, fileFormat: propFileF
       setLoading(true)
       setError(null)
       try {
-        const res = await fetch(`${API_BASE}/artifacts/${artifactId}`)
+        // Use different endpoint for chatlogs
+        const endpoint = artifactType === 'chatlog' 
+          ? `${CHATLOGS_API}/${artifactId}`
+          : `${API_BASE}/artifacts/${artifactId}`
+        const res = await fetch(endpoint)
         if (!res.ok) throw new Error('Failed to fetch artifact')
         const data = await res.json()
         setContent(data.content || data)
@@ -72,7 +77,7 @@ export function ArtifactReader({ artifactId, artifactType, fileFormat: propFileF
       }
     }
     if (artifactId) fetchContent()
-  }, [artifactId])
+  }, [artifactId, artifactType])
 
   const handleCopy = () => {
     navigator.clipboard.writeText(typeof content === 'string' ? content : JSON.stringify(content, null, 2))

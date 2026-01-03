@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '../../lib/utils'
 import { SidebarTabs } from './SidebarTabs'
 import { ArtifactList } from './ArtifactList'
 import type { ArtifactType, ArtifactSummary } from './types'
+
+const TAB_ORDER: ArtifactType[] = ['chatlog', 'discussion', 'adr', 'spec', 'plan', 'contract', 'session', 'bug', 'guide']
 
 interface WorkflowSidebarProps {
   onArtifactSelect: (artifact: ArtifactSummary) => void
@@ -12,8 +14,20 @@ interface WorkflowSidebarProps {
 
 export function WorkflowSidebar({ onArtifactSelect, selectedArtifactId }: WorkflowSidebarProps) {
   const [collapsed, setCollapsed] = useState(false)
-  const [activeTab, setActiveTab] = useState<ArtifactType>('adr')
+  const [activeTab, setActiveTab] = useState<ArtifactType>('chatlog')
   const [searchQuery, setSearchQuery] = useState('')
+
+  const handleNavigateList = useCallback((direction: 'left' | 'right') => {
+    const currentIndex = TAB_ORDER.indexOf(activeTab)
+    if (direction === 'left') {
+      const newIndex = currentIndex > 0 ? currentIndex - 1 : TAB_ORDER.length - 1
+      setActiveTab(TAB_ORDER[newIndex])
+    } else {
+      const newIndex = currentIndex < TAB_ORDER.length - 1 ? currentIndex + 1 : 0
+      setActiveTab(TAB_ORDER[newIndex])
+    }
+    setSearchQuery('')
+  }, [activeTab])
 
   return (
     <div
@@ -39,6 +53,7 @@ export function WorkflowSidebar({ onArtifactSelect, selectedArtifactId }: Workfl
             onSearchChange={setSearchQuery}
             onSelect={onArtifactSelect}
             selectedId={selectedArtifactId}
+            onNavigateList={handleNavigateList}
           />
         </>
       )}
