@@ -135,21 +135,20 @@ export function useResearch() {
     }
   }, []);
 
-  // Get all papers (for initial display)
+  // Get all papers (for initial display) - uses GPU search with broad query
   const listAllPapers = useCallback(async (limit = 100): Promise<Paper[]> => {
     try {
-      const res = await fetch(`${API_BASE}/api/aikh/papers?limit=${limit}`);
-      if (!res.ok) {
-        // Fallback: use search with empty query
-        return searchPapers('', limit);
-      }
-      const data = await res.json();
-      return data.papers || data || [];
+      const res = await fetch(`${API_BASE}/api/gpu/search`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: 'research paper AI machine learning', top_k: limit, search_type: 'hybrid' })
+      });
+      if (!res.ok) throw new Error('Failed to load papers');
+      return await res.json();
     } catch {
-      // Fallback to search
-      return searchPapers('', limit);
+      return [];
     }
-  }, [searchPapers]);
+  }, []);
 
   // Get categories/topics for exploration
   const getCategories = useCallback(async (): Promise<{ category: string; count: number }[]> => {
