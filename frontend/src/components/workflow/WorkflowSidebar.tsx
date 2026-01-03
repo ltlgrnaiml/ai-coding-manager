@@ -3,9 +3,10 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '../../lib/utils'
 import { SidebarTabs } from './SidebarTabs'
 import { ArtifactList } from './ArtifactList'
+import { P2REToolsPanel } from './P2REToolsPanel'
 import type { ArtifactType, ArtifactSummary } from './types'
 
-const TAB_ORDER: ArtifactType[] = ['chatlog', 'discussion', 'adr', 'spec', 'plan', 'contract', 'session', 'bug', 'guide']
+const TAB_ORDER: ArtifactType[] = ['chatlog', 'discussion', 'adr', 'spec', 'plan', 'contract', 'session', 'bug', 'guide', 'trace']
 
 interface WorkflowSidebarProps {
   onArtifactSelect: (artifact: ArtifactSummary) => void
@@ -47,14 +48,18 @@ export function WorkflowSidebar({ onArtifactSelect, selectedArtifactId }: Workfl
       {!collapsed && (
         <>
           <SidebarTabs activeTab={activeTab} onTabChange={setActiveTab} />
-          <ArtifactList
-            type={activeTab}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            onSelect={onArtifactSelect}
-            selectedId={selectedArtifactId}
-            onNavigateList={handleNavigateList}
-          />
+          {activeTab === 'trace' ? (
+            <P2REToolsPanel />
+          ) : (
+            <ArtifactList
+              type={activeTab}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              onSelect={onArtifactSelect}
+              selectedId={selectedArtifactId}
+              onNavigateList={handleNavigateList}
+            />
+          )}
         </>
       )}
     </div>

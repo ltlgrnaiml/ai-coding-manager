@@ -1,4 +1,4 @@
-import { Clock, FileJson, FileText, MessageSquare, ListTodo, Code2, BookOpen, Bug, FileQuestion, ScrollText } from 'lucide-react'
+import { Clock, FileJson, FileText, MessageSquare, ListTodo, Code2, BookOpen, Bug, FileQuestion, ScrollText, Activity } from 'lucide-react'
 import { cn } from '../../lib/utils'
 import type { ArtifactType, ArtifactSummary } from './types'
 
@@ -12,6 +12,7 @@ const TYPE_ICONS: Record<ArtifactType, React.ReactNode> = {
   bug: <Bug size={14} />,
   guide: <BookOpen size={14} />,
   chatlog: <MessageSquare size={14} />,
+  trace: <Activity size={14} />,
 }
 
 interface ActivityFeedProps {

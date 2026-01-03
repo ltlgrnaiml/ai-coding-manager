@@ -18,6 +18,7 @@ const TYPE_COLORS: Record<ArtifactType, string> = {
   bug: '#DC2626',
   guide: '#06B6D4',
   chatlog: '#8B5CF6',
+  trace: '#10B981',
 }
 
 const TYPE_LABELS: Record<ArtifactType, string> = {
@@ -30,6 +31,7 @@ const TYPE_LABELS: Record<ArtifactType, string> = {
   bug: 'Bug',
   guide: 'Guide',
   chatlog: 'Chat Log',
+  trace: 'Trace',
 }
 
 interface ExtendedGraphNode extends GraphNode {

@@ -58,6 +58,12 @@ const EMPTY_STATE_CONTENT: Record<ArtifactType, { icon: React.ReactNode; title: 
     description: 'Chat logs capture AI conversations from external chat exports.',
     cta: 'Import Chat Log',
   },
+  trace: {
+    icon: <Sparkles size={48} className="text-emerald-400" />,
+    title: 'P2RE Tools',
+    description: 'Trace observability, prompt optimization, and quality analysis tools.',
+    cta: 'Open Phoenix',
+  },
 }
 
 const STAGE_TO_ARTIFACT: Record<WorkflowStage, ArtifactType> = {

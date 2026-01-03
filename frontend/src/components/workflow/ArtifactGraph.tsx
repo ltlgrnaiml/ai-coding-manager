@@ -17,6 +17,7 @@ const TYPE_COLORS: Record<ArtifactType, string> = {
   bug: '#F97316',        // orange
   guide: '#64748B',      // slate
   chatlog: '#818CF8',    // indigo
+  trace: '#10B981',      // emerald (P2RE)
 }
 
 const TYPE_LABELS: Record<ArtifactType, string> = {
@@ -29,6 +30,7 @@ const TYPE_LABELS: Record<ArtifactType, string> = {
   bug: 'Bug',
   guide: 'Guide',
   chatlog: 'Chatlog',
+  trace: 'Trace',
 }
 
 interface ArtifactGraphProps {

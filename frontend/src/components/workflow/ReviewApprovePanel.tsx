@@ -33,6 +33,7 @@ const TYPE_LABELS: Record<ArtifactType, string> = {
   bug: 'Bug',
   guide: 'Guide',
   chatlog: 'Chat Log',
+  trace: 'Trace',
 }
 
 const TYPE_COLORS: Record<ArtifactType, string> = {
@@ -45,6 +46,7 @@ const TYPE_COLORS: Record<ArtifactType, string> = {
   bug: 'bg-orange-500/20 text-orange-300 border-orange-500/30',
   guide: 'bg-slate-500/20 text-slate-300 border-slate-500/30',
   chatlog: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
+  trace: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
 }
 
 export function ReviewApprovePanel({

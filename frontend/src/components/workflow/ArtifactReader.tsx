@@ -101,6 +101,7 @@ export function ArtifactReader({ artifactId, artifactType, fileFormat: propFileF
         bug: 'plan',
         guide: 'spec',
         chatlog: 'discussion',
+        trace: 'discussion',
       }
       const targetType = targetTypeMap[artifactType] || 'adr'
       const response = await fetchPrompt(artifactId, targetType)
