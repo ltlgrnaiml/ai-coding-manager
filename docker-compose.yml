@@ -31,6 +31,7 @@ x-backend-base: &backend-base
     - ./.questions:/workspace/.questions
     - ./.workspace:/workspace/.workspace
     - ~/.aikh:/aikh
+    - ./.research_papers:/workspace/.research_papers
   healthcheck: &backend-healthcheck
     test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
     interval: 30s

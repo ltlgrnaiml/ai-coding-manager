@@ -44,8 +44,19 @@ except ImportError:
     SBERT_AVAILABLE = False
 
 
-# Database paths
-DB_PATH = Path(".workspace/research_papers.db")
+# Database paths - use AIKH centralized location
+import os
+def _get_aikh_db() -> Path:
+    # Docker mount
+    if Path("/aikh/research.db").exists():
+        return Path("/aikh/research.db")
+    # Environment variable
+    if aikh_home := os.getenv("AIKH_HOME"):
+        return Path(aikh_home) / "research.db"
+    # Default
+    return Path.home() / ".aikh" / "research.db"
+
+DB_PATH = _get_aikh_db()
 
 # Embedding table schema (separate from main embeddings to avoid conflicts)
 GPU_EMBEDDINGS_SCHEMA = """
@@ -154,21 +165,25 @@ class GPUBatchEmbedder:
         """Get papers that need embeddings."""
         with self._get_conn() as conn:
             cursor = conn.execute("""
-                SELECT p.id, p.title, p.abstract, p.full_text
+                SELECT p.id, p.title, p.abstract
                 FROM research_papers p
                 LEFT JOIN paper_embeddings_gpu e 
                     ON p.id = e.paper_id AND e.embedding_type = 'paper'
-                WHERE e.paper_id IS NULL
+                WHERE e.id IS NULL
             """)
             
             tasks = []
             for row in cursor.fetchall():
-                # Combine title + abstract + first 2000 chars of text
                 text_parts = [row["title"] or ""]
                 if row["abstract"]:
                     text_parts.append(row["abstract"])
-                if row["full_text"]:
-                    text_parts.append(row["full_text"][:2000])
+                # Get first chunk content if available
+                chunk_row = conn.execute(
+                    "SELECT content FROM paper_chunks WHERE paper_id = ? ORDER BY chunk_index LIMIT 1",
+                    (row["id"],)
+                ).fetchone()
+                if chunk_row:
+                    text_parts.append(chunk_row["content"][:2000])
                 
                 text = " ".join(text_parts)
                 if text.strip():
