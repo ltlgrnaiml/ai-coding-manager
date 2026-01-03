@@ -377,6 +377,30 @@ async def get_artifact(artifact_type: str, artifact_id: str):
 # Chat Endpoints
 # =============================================================================
 
+# Model pricing per 1M tokens (input, output) in USD
+MODEL_PRICING = {
+    # Anthropic
+    "claude-sonnet-4-20250514": (3.00, 15.00),
+    "claude-3-5-sonnet-20241022": (3.00, 15.00),
+    "claude-3-5-haiku-20241022": (0.80, 4.00),
+    # xAI
+    "grok-4-0709": (3.00, 15.00),
+    "grok-4-fast-reasoning": (5.00, 25.00),
+    "grok-4-1-fast-reasoning": (5.00, 25.00),
+    "grok-3-beta": (3.00, 15.00),
+    # Google
+    "gemini-2.0-flash": (0.075, 0.30),
+    "gemini-1.5-pro": (1.25, 5.00),
+}
+
+def _calculate_cost(model: str, tokens_in: int, tokens_out: int) -> float:
+    """Calculate cost in USD based on model pricing."""
+    pricing = MODEL_PRICING.get(model, (1.0, 3.0))  # Default fallback
+    cost_in = (tokens_in / 1_000_000) * pricing[0]
+    cost_out = (tokens_out / 1_000_000) * pricing[1]
+    return round(cost_in + cost_out, 6)
+
+
 async def stream_chat_response(
     messages: list[ChatMessage],
     model: str,
@@ -432,6 +456,10 @@ async def stream_chat_response(
     except Exception as e:
         logging.warning(f"Failed to capture trace: {e}")
     
+    # Estimate input tokens from messages (rough: ~4 chars per token)
+    input_text = "".join(m.content for m in messages)
+    tokens_in_estimate = len(input_text) // 4
+    
     # Collect full response for trace completion
     full_response = []
     tokens_out = 0
@@ -482,12 +510,20 @@ async def stream_chat_response(
         # Complete trace with response data
         if trace_id:
             latency_ms = int((time.time() - start_time) * 1000)
+            response_text = "".join(full_response)
+            tokens_out_final = tokens_out or len(response_text) // 4
+            
+            # Calculate cost based on model pricing (per 1M tokens)
+            cost_usd = _calculate_cost(model, tokens_in_estimate, tokens_out_final)
+            
             try:
                 complete_trace(
                     trace_id=trace_id,
-                    response_content="".join(full_response),
-                    tokens_out=tokens_out or len("".join(full_response)) // 4,  # Estimate if not provided
+                    response_content=response_text,
+                    tokens_in=tokens_in_estimate,
+                    tokens_out=tokens_out_final,
                     latency_ms=latency_ms,
+                    cost_usd=cost_usd,
                     error=error_occurred,
                 )
             except Exception as e:
