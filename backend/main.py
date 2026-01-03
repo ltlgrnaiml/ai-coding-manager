@@ -25,6 +25,7 @@ from backend.services.devtools_service import router as devtools_router
 from backend.services.research_api import router as research_router
 from backend.services.chatlog_service import router as chatlog_router
 from backend.services.p2re import router as p2re_router
+from backend.services.p2re import model_router
 from backend.services.p2re.database import init_database as init_p2re_database
 from backend.services.knowledge.database import init_database
 from backend.services.knowledge.archive_service import ArchiveService
@@ -193,6 +194,7 @@ app.include_router(devtools_router, prefix="/api/devtools", tags=["devtools"])
 app.include_router(research_router, tags=["research"])
 app.include_router(chatlog_router, tags=["chatlogs"])
 app.include_router(p2re_router, tags=["P2RE - Trace Observability"])
+app.include_router(model_router, tags=["Model Registry"])
 
 # Workspace paths
 WORKSPACE_ROOT = Path(os.getenv("WORKSPACE_ROOT", "."))
@@ -209,13 +211,48 @@ class ChatMessage(BaseModel):
     timestamp: str | None = None
 
 
+class ToolRequest(BaseModel):
+    """Request to use a specific tool."""
+    name: str = Field(..., description="Tool name (e.g., 'web_search', 'code_execution')")
+    parameters: dict | None = Field(None, description="Tool-specific parameters")
+
+
+class MCPToolRequest(BaseModel):
+    """Request to use an MCP server tool."""
+    server_id: str = Field(..., description="MCP server ID")
+    tool_name: str = Field(..., description="Tool name from the MCP server")
+    parameters: dict | None = Field(None, description="Tool parameters")
+
+
 class ChatRequest(BaseModel):
-    """Request for chat completion."""
+    """
+    Comprehensive chat request with tool selection and capability checks.
+    
+    The model field can be:
+    - A specific model ID (e.g., 'claude-sonnet-4', 'gemini-2.5-flash')
+    - 'auto' to let the system select based on requirements
+    
+    Tools are validated against the selected model's capabilities.
+    """
     messages: list[ChatMessage]
-    model: str = "grok-4-fast-reasoning"
+    model: str = Field("grok-4-fast-reasoning", description="Model ID or 'auto' for automatic selection")
     stream: bool = True
     temperature: float = 0.7
     max_tokens: int = 4096
+    
+    # Tool selection
+    tools: list[ToolRequest] | None = Field(None, description="Provider tools to enable (validated against model capabilities)")
+    mcp_tools: list[MCPToolRequest] | None = Field(None, description="MCP server tools to enable")
+    
+    # Auto-selection hints (used when model='auto')
+    task_hint: str | None = Field(None, description="Task type hint for model selection (e.g., 'code_review', 'chat', 'reasoning')")
+    required_capabilities: list[str] | None = Field(None, description="Required capabilities (e.g., ['vision', 'tools', 'reasoning'])")
+    max_cost_per_mtok: float | None = Field(None, description="Maximum acceptable cost per million tokens")
+    prefer_provider: str | None = Field(None, description="Preferred provider (e.g., 'anthropic', 'google', 'xai')")
+    
+    # Session tracking
+    session_id: str | None = Field(None, description="Session ID for conversation grouping")
+    use_rag: bool = Field(True, description="Whether to use RAG context injection")
 
 
 class ArtifactSummary(BaseModel):

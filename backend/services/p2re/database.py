@@ -244,6 +244,156 @@ CREATE TABLE IF NOT EXISTS daily_rollups (
 );
 
 -- =============================================================================
+-- Model Registry: Providers
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS providers (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    api_base_url TEXT,
+    auth_type TEXT DEFAULT 'api_key',
+    status TEXT DEFAULT 'active',
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+);
+
+-- =============================================================================
+-- Model Registry: Models (SSoT for all AI models)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS models (
+    id TEXT PRIMARY KEY,
+    provider_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    family TEXT,
+    category TEXT,
+    
+    -- Context & Limits
+    context_window INTEGER,
+    max_output_tokens INTEGER,
+    
+    -- Pricing (per 1M tokens, in USD)
+    input_price_per_mtok REAL,
+    output_price_per_mtok REAL,
+    cache_read_price_per_mtok REAL,
+    cache_write_price_per_mtok REAL,
+    batch_input_price_per_mtok REAL,
+    batch_output_price_per_mtok REAL,
+    
+    -- Capabilities (boolean flags stored as INTEGER 0/1)
+    supports_streaming INTEGER DEFAULT 1,
+    supports_tools INTEGER DEFAULT 0,
+    supports_vision INTEGER DEFAULT 0,
+    supports_audio INTEGER DEFAULT 0,
+    supports_video INTEGER DEFAULT 0,
+    supports_code_execution INTEGER DEFAULT 0,
+    supports_web_search INTEGER DEFAULT 0,
+    supports_caching INTEGER DEFAULT 0,
+    supports_batch INTEGER DEFAULT 0,
+    supports_reasoning INTEGER DEFAULT 0,
+    supports_json_mode INTEGER DEFAULT 0,
+    supports_mcp INTEGER DEFAULT 0,
+    
+    -- Metadata
+    release_date TEXT,
+    deprecation_date TEXT,
+    status TEXT DEFAULT 'active',
+    notes TEXT,
+    
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now')),
+    
+    FOREIGN KEY (provider_id) REFERENCES providers(id)
+);
+
+-- =============================================================================
+-- Model Registry: Tools (provider-specific tools with pricing)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS model_tools (
+    id TEXT PRIMARY KEY,
+    provider_id TEXT,
+    name TEXT NOT NULL,
+    display_name TEXT,
+    description TEXT,
+    
+    -- Pricing
+    price_per_use REAL,
+    price_per_1k_uses REAL,
+    token_overhead INTEGER DEFAULT 0,
+    
+    -- Availability
+    models_supported TEXT,  -- JSON array of model IDs
+    free_tier_limit INTEGER,
+    
+    -- Tool schema for invocation
+    parameters_schema TEXT,  -- JSON schema
+    
+    status TEXT DEFAULT 'active',
+    created_at TEXT DEFAULT (datetime('now')),
+    
+    FOREIGN KEY (provider_id) REFERENCES providers(id)
+);
+
+-- =============================================================================
+-- Model Registry: MCP Servers (external tool servers)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS mcp_servers (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT,
+    
+    -- Connection
+    server_type TEXT,  -- 'stdio', 'sse', 'http'
+    command TEXT,      -- For stdio servers
+    url TEXT,          -- For http/sse servers
+    
+    -- Status
+    status TEXT DEFAULT 'active',
+    last_connected_at TEXT,
+    
+    -- Discovered tools (cached)
+    tools_json TEXT,  -- JSON array of tool definitions
+    resources_json TEXT,  -- JSON array of resources
+    
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+);
+
+-- =============================================================================
+-- Model Registry: Routing Rules (deterministic model selection)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS routing_rules (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    priority INTEGER DEFAULT 0,
+    
+    -- Conditions (JSON)
+    conditions TEXT,  -- {"task_type": "code", "context_gt": 100000}
+    
+    -- Action
+    model_id TEXT,
+    fallback_model_id TEXT,
+    
+    enabled INTEGER DEFAULT 1,
+    created_at TEXT DEFAULT (datetime('now')),
+    
+    FOREIGN KEY (model_id) REFERENCES models(id),
+    FOREIGN KEY (fallback_model_id) REFERENCES models(id)
+);
+
+-- =============================================================================
+-- Model Registry: Pricing History
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS pricing_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    model_id TEXT NOT NULL,
+    input_price REAL,
+    output_price REAL,
+    recorded_at TEXT DEFAULT (datetime('now')),
+    source TEXT,
+    
+    FOREIGN KEY (model_id) REFERENCES models(id)
+);
+
+-- =============================================================================
 -- Indexes
 -- =============================================================================
 CREATE INDEX IF NOT EXISTS idx_traces_session ON traces(session_id);
@@ -257,6 +407,11 @@ CREATE INDEX IF NOT EXISTS idx_evaluations_experiment ON evaluations(experiment_
 
 CREATE INDEX IF NOT EXISTS idx_daily_rollups_date ON daily_rollups(date);
 CREATE INDEX IF NOT EXISTS idx_daily_rollups_provider ON daily_rollups(provider, model);
+
+CREATE INDEX IF NOT EXISTS idx_models_provider ON models(provider_id);
+CREATE INDEX IF NOT EXISTS idx_models_status ON models(status);
+CREATE INDEX IF NOT EXISTS idx_model_tools_provider ON model_tools(provider_id);
+CREATE INDEX IF NOT EXISTS idx_pricing_history_model ON pricing_history(model_id);
 
 -- =============================================================================
 -- Triggers

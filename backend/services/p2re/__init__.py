@@ -24,6 +24,7 @@ from .models import (
     TraceUpdate,
 )
 from .router import router
+from .model_router import router as model_router
 from .service import (
     capture_trace,
     complete_trace,
