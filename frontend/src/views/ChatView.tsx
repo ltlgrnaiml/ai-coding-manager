@@ -132,14 +132,27 @@ export default function ChatView() {
       .catch(console.error)
   }, [])
 
-  // Create initial conversation if none exist
+  // Create initial conversation only if none exist AND we've finished loading
+  const [initialized, setInitialized] = useState(false)
+  
   useEffect(() => {
-    if (conversations.length === 0) {
+    // Wait for localStorage to be loaded before creating new conversation
+    if (initialized) return
+    
+    const stored = localStorage.getItem(STORAGE_KEY)
+    const hasStoredConversations = stored && JSON.parse(stored).length > 0
+    
+    if (!hasStoredConversations && conversations.length === 0) {
       createNewConversation()
     } else if (!activeConversationId && conversations.length > 0) {
-      setActiveConversationId(conversations[0].id)
+      // Restore last active conversation
+      const storedActiveId = localStorage.getItem(ACTIVE_CONV_KEY)
+      const validId = conversations.find(c => c.id === storedActiveId)?.id || conversations[0].id
+      setActiveConversationId(validId)
     }
-  }, [conversations.length, activeConversationId, createNewConversation])
+    
+    setInitialized(true)
+  }, [conversations.length, activeConversationId, createNewConversation, initialized])
 
   // Auto-scroll to bottom
   useEffect(() => {

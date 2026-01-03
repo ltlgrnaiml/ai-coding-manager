@@ -23,6 +23,7 @@ from pydantic import BaseModel, Field
 
 from backend.services.devtools_service import router as devtools_router
 from backend.services.research_api import router as research_router
+from backend.services.chatlog_service import router as chatlog_router
 from backend.services.knowledge.database import init_database
 from backend.services.knowledge.archive_service import ArchiveService
 from backend.services.knowledge.sync_service import SyncService
@@ -147,6 +148,7 @@ app.add_middleware(
 # Include routers
 app.include_router(devtools_router, prefix="/api/devtools", tags=["devtools"])
 app.include_router(research_router, tags=["research"])
+app.include_router(chatlog_router, tags=["chatlogs"])
 
 # Workspace paths
 WORKSPACE_ROOT = Path(os.getenv("WORKSPACE_ROOT", "."))

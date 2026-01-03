@@ -7,12 +7,85 @@ import { useState, useEffect, useCallback } from 'react'
 import type { ArtifactSummary, ArtifactType, GraphResponse, WorkflowState, PromptResponse } from '../components/workflow/types'
 
 const API_BASE = '/api/devtools'
+const CHATLOGS_API = '/api/chatlogs'
 
 interface UseDataResult<T> {
   data: T | null
   loading: boolean
   error: Error | null
   refetch: () => void
+}
+
+// =============================================================================
+// Chat Logs Hook (separate API)
+// =============================================================================
+
+export interface ChatLogSummary {
+  id: number
+  filename: string
+  title: string | null
+  turn_count: number
+  word_count: number
+  modified_date: string | null
+}
+
+export function useChatLogs(search?: string): UseDataResult<ChatLogSummary[]> {
+  const [data, setData] = useState<ChatLogSummary[] | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<Error | null>(null)
+
+  const fetchData = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const params = new URLSearchParams()
+      if (search) params.set('search', search)
+      const query = params.toString()
+      
+      const res = await fetch(`${CHATLOGS_API}${query ? `?${query}` : ''}`)
+      if (!res.ok) throw new Error('Failed to fetch chat logs')
+      const response = await res.json()
+      setData(response.items)
+    } catch (e) {
+      setError(e instanceof Error ? e : new Error(String(e)))
+    } finally {
+      setLoading(false)
+    }
+  }, [search])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
+
+  return { data, loading, error, refetch: fetchData }
+}
+
+export function useChatLogDetail(chatLogId?: number) {
+  const [data, setData] = useState<any | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<Error | null>(null)
+
+  const fetchData = useCallback(async () => {
+    if (!chatLogId) return
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await fetch(`${CHATLOGS_API}/${chatLogId}`)
+      if (!res.ok) throw new Error('Failed to fetch chat log')
+      const response = await res.json()
+      setData(response)
+    } catch (e) {
+      setError(e instanceof Error ? e : new Error(String(e)))
+    } finally {
+      setLoading(false)
+    }
+  }, [chatLogId])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
+
+  return { data, loading, error, refetch: fetchData }
 }
 
 export function useArtifacts(

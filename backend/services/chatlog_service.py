@@ -12,19 +12,20 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
-# ChatLogs database path - Docker uses /chatlogs, local uses full path
-LOCAL_DB_PATH = Path("/home/mycahya/coding/ChatLogs/chathistory.db")
-DOCKER_DB_PATH = Path("/chatlogs/chathistory.db")
-
-
+# ChatLogs database path - use AIKH centralized location
 def get_db_path() -> Path:
-    """Get the chat log database path."""
-    env_path = os.environ.get("CHATLOG_DB_PATH")
-    if env_path:
+    """Get the chat log database path from AIKH."""
+    # Environment override
+    if env_path := os.environ.get("CHATLOG_DB_PATH"):
         return Path(env_path)
-    if DOCKER_DB_PATH.parent.exists():
-        return DOCKER_DB_PATH
-    return LOCAL_DB_PATH
+    # Docker mount
+    if Path("/aikh/chatlogs.db").exists():
+        return Path("/aikh/chatlogs.db")
+    # AIKH_HOME environment
+    if aikh_home := os.environ.get("AIKH_HOME"):
+        return Path(aikh_home) / "chatlogs.db"
+    # Default to user home
+    return Path.home() / ".aikh" / "chatlogs.db"
 
 
 def get_connection() -> sqlite3.Connection:
@@ -247,11 +248,10 @@ async def search_logs(request: SearchRequest) -> ChatLogListResponse:
 @router.post("/sync")
 async def sync_chatlogs() -> dict[str, Any]:
     """Trigger manual sync/re-ingestion of chat logs."""
-    results = ingest_all_chatlogs()
+    # Return current stats - actual ingestion done via scripts/ingest_chat_logs.py
+    stats = get_stats()
     return {
-        "status": "completed",
-        "ingested": results["ingested"],
-        "failed": results["failed"],
-        "total_chatlogs": results["total_chatlogs"],
-        "total_turns": results["total_turns"],
+        "status": "use scripts/ingest_chat_logs.py for ingestion",
+        "total_chatlogs": stats["total_chatlogs"],
+        "total_turns": stats["total_turns"],
     }

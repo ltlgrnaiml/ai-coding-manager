@@ -3,6 +3,7 @@ import { cn } from '../../lib/utils'
 import type { ArtifactType } from './types'
 
 const TABS: { type: ArtifactType; icon: React.ReactNode; label: string }[] = [
+  { type: 'chatlog', icon: <MessagesSquare size={16} />, label: 'Chat Logs' },
   { type: 'discussion', icon: <MessageSquare size={16} />, label: 'Discussions' },
   { type: 'adr', icon: <FileJson size={16} />, label: 'ADRs' },
   { type: 'spec', icon: <FileText size={16} />, label: 'SPECs' },
@@ -11,7 +12,6 @@ const TABS: { type: ArtifactType; icon: React.ReactNode; label: string }[] = [
   { type: 'session', icon: <ScrollText size={16} />, label: 'Sessions' },
   { type: 'bug', icon: <Bug size={16} />, label: 'Bugs' },
   { type: 'guide', icon: <BookOpen size={16} />, label: 'Guides' },
-  { type: 'chatlog', icon: <MessagesSquare size={16} />, label: 'Chat Logs' },
 ]
 
 interface SidebarTabsProps {
