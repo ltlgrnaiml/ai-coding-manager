@@ -531,6 +531,78 @@ if (capabilities.estimatedNodes < nodeCount) {
 
 ---
 
+## First-Class Visualization Suite (2026-01-02)
+
+> **Goal**: Replace cluttered basic graphs with **3 professional visualization modes** inspired by industry-leading tools (Connected Papers, Litmaps, ResearchRabbit).
+
+### Visualization Mode 1: Similarity Graph (Connected Papers Style)
+
+**Inspiration**: [Connected Papers](https://connectedpapers.com) - Industry gold standard
+
+| Feature | Implementation |
+|---------|---------------|
+| **Layout** | Force-directed with similarity-based clustering |
+| **Node Size** | Citation count / importance score |
+| **Node Color** | Publication year gradient (darker = newer) |
+| **Edge Thickness** | Cosine similarity strength from GPU embeddings |
+| **Background** | Light/white for documentation quality |
+| **Interaction** | Hover for tooltip, click for detail panel |
+
+**Data Source**: GPU embeddings similarity matrix (already available)
+
+### Visualization Mode 2: Timeline-Scatterplot (Litmaps Style)
+
+**Inspiration**: [Litmaps](https://litmaps.com) - Best for temporal navigation
+
+| Feature | Implementation |
+|---------|---------------|
+| **X-Axis** | Publication year (timeline) |
+| **Y-Axis** | Citation count / impact score |
+| **Quadrant Logic** | Top-right = recent + highly cited (most relevant) |
+| **Connection Lines** | Citation relationships (dashed) |
+| **Grid** | Year markers and citation thresholds |
+| **Seed Highlight** | Origin/search papers prominently marked |
+
+**Data Source**: Paper metadata (year, citations) + citation graph
+
+### Visualization Mode 3: Topic Treemap (Hierarchical Clusters)
+
+**Inspiration**: Academic topic maps, D3.js treemaps
+
+| Feature | Implementation |
+|---------|---------------|
+| **Hierarchy** | Topics → Sub-topics → Papers |
+| **Area Size** | Number of papers or total citations |
+| **Color** | Category-based (consistent with sidebar) |
+| **Labels** | Topic names, paper count per cluster |
+| **Drill-down** | Click cluster to zoom into papers |
+| **Breadcrumb** | Navigation path for deep exploration |
+
+**Data Source**: Category detection + hierarchical clustering
+
+### View Mode Selector UI
+
+```
+┌─────────────────────────────────────────────────────┐
+│ [🔗 Similarity] [📅 Timeline] [📊 Topics] [⋮ 3D]   │
+└─────────────────────────────────────────────────────┘
+```
+
+- Toggle between modes with preserved paper selection
+- Each mode optimized for different exploration patterns
+- 3D remains as advanced option (existing implementation)
+
+### Technology Stack
+
+| Mode | Library | GPU Acceleration |
+|------|---------|-----------------|
+| Similarity Graph | Sigma.js 2.0 (WebGL) | ✅ Yes |
+| Timeline Scatter | D3.js + Canvas | ⚠️ Partial |
+| Topic Treemap | D3.js Treemap | ⚠️ Partial |
+| 3D Explorer | deck.gl (WebGL2) | ✅ Yes |
+
+---
+
 ## Open Questions
 
 1. ~~**Pane Position**: Left side or right side of editor?~~ **RESOLVED**: Left side, dedicated nav item

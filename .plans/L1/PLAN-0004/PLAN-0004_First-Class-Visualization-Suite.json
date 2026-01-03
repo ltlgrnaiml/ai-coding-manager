@@ -1,0 +1,267 @@
+{
+  "id": "PLAN-0004",
+  "title": "First-Class Research Paper Visualization Suite",
+  "status": "in_progress",
+  "granularity": "L1",
+  "created_at": "2026-01-02",
+  "updated_at": "2026-01-02",
+  "source": {
+    "discussion": "DISC-0022",
+    "spec": null
+  },
+  "objective": "Implement 3 professional visualization modes for research papers: Similarity Graph (Connected Papers style), Timeline-Scatterplot (Litmaps style), and Topic Treemap. Replace cluttered basic graphs with documentation-quality visualizations.",
+  "context": [
+    "ARCHITECTURE: AIKH visualization suite per DISC-0022",
+    "FILE: frontend/src/components/research/PaperGraph2D.tsx - Current 2D implementation",
+    "FILE: frontend/src/pages/ResearchPage.tsx - Main research page with view modes",
+    "DATA: GPU embeddings with similarity scores available via /api/gpu/search"
+  ],
+  "milestones": [
+    {
+      "id": "M1",
+      "name": "Similarity Graph (Connected Papers Style)",
+      "description": "Professional force-directed graph with similarity-based clustering, node sizing by importance, color by recency",
+      "status": "pending",
+      "acceptance_criteria": [
+        {
+          "id": "AC-M1-01",
+          "description": "Light/white background for documentation quality",
+          "verification_command": "grep -r 'background.*#f' frontend/src/components/research/SimilarityGraph.tsx"
+        },
+        {
+          "id": "AC-M1-02",
+          "description": "Node size varies by citation/importance score",
+          "verification_command": "grep -r 'size.*citation\\|importance' frontend/src/components/research/SimilarityGraph.tsx"
+        },
+        {
+          "id": "AC-M1-03",
+          "description": "Edge thickness based on similarity score",
+          "verification_command": "grep -r 'similarity.*edge\\|weight' frontend/src/components/research/SimilarityGraph.tsx"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-M1-01",
+          "description": "Create SimilarityGraph.tsx component with Sigma.js",
+          "status": "pending",
+          "verification_command": "test -f frontend/src/components/research/SimilarityGraph.tsx",
+          "context": ["FILE: frontend/src/components/research/SimilarityGraph.tsx"],
+          "notes": "Use existing Sigma.js setup, modify layout and styling"
+        },
+        {
+          "id": "T-M1-02",
+          "description": "Implement similarity-based edge weights from GPU embeddings",
+          "status": "pending",
+          "verification_command": "grep -r 'cosine\\|similarity' frontend/src/components/research/SimilarityGraph.tsx",
+          "context": ["API: /api/gpu/search returns similarity scores"],
+          "notes": "Edge thickness = similarity score * base_width"
+        },
+        {
+          "id": "T-M1-03",
+          "description": "Add year-based color gradient (darker = newer)",
+          "status": "pending",
+          "verification_command": "grep -r 'year.*color\\|gradient' frontend/src/components/research/SimilarityGraph.tsx",
+          "context": [],
+          "notes": "Use d3-scale for color interpolation"
+        },
+        {
+          "id": "T-M1-04",
+          "description": "Professional hover tooltip with paper details",
+          "status": "pending",
+          "verification_command": "grep -r 'tooltip\\|hover' frontend/src/components/research/SimilarityGraph.tsx",
+          "context": [],
+          "notes": "Title, authors, year, abstract preview"
+        }
+      ]
+    },
+    {
+      "id": "M2",
+      "name": "Timeline-Scatterplot (Litmaps Style)",
+      "description": "X-axis = year, Y-axis = citations/importance, with connection lines showing relationships",
+      "status": "pending",
+      "acceptance_criteria": [
+        {
+          "id": "AC-M2-01",
+          "description": "X-axis shows publication years with grid lines",
+          "verification_command": "grep -r 'xAxis\\|year' frontend/src/components/research/TimelineGraph.tsx"
+        },
+        {
+          "id": "AC-M2-02",
+          "description": "Y-axis shows citation count or importance",
+          "verification_command": "grep -r 'yAxis\\|citation' frontend/src/components/research/TimelineGraph.tsx"
+        },
+        {
+          "id": "AC-M2-03",
+          "description": "Quadrant highlighting (top-right = most relevant)",
+          "verification_command": "grep -r 'quadrant\\|relevant' frontend/src/components/research/TimelineGraph.tsx"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-M2-01",
+          "description": "Create TimelineGraph.tsx component with D3.js scatterplot",
+          "status": "pending",
+          "verification_command": "test -f frontend/src/components/research/TimelineGraph.tsx",
+          "context": ["FILE: frontend/src/components/research/TimelineGraph.tsx"],
+          "notes": "Use D3.js for axes, canvas for points"
+        },
+        {
+          "id": "T-M2-02",
+          "description": "Implement year extraction from paper metadata",
+          "status": "pending",
+          "verification_command": "grep -r 'parseYear\\|extractYear' frontend/src/components/research/TimelineGraph.tsx",
+          "context": [],
+          "notes": "Parse from paper.year or paper.published_date"
+        },
+        {
+          "id": "T-M2-03",
+          "description": "Add citation-based Y-axis positioning",
+          "status": "pending",
+          "verification_command": "grep -r 'citation\\|yScale' frontend/src/components/research/TimelineGraph.tsx",
+          "context": [],
+          "notes": "Use similarity score as proxy if citations unavailable"
+        },
+        {
+          "id": "T-M2-04",
+          "description": "Draw connection lines between related papers",
+          "status": "pending",
+          "verification_command": "grep -r 'line\\|connection\\|edge' frontend/src/components/research/TimelineGraph.tsx",
+          "context": [],
+          "notes": "Dashed lines for citation relationships"
+        }
+      ]
+    },
+    {
+      "id": "M3",
+      "name": "Topic Treemap (Hierarchical Clusters)",
+      "description": "Hierarchical treemap visualization grouped by detected topics/categories",
+      "status": "pending",
+      "acceptance_criteria": [
+        {
+          "id": "AC-M3-01",
+          "description": "Papers grouped by category in nested rectangles",
+          "verification_command": "grep -r 'treemap\\|hierarchy' frontend/src/components/research/TopicTreemap.tsx"
+        },
+        {
+          "id": "AC-M3-02",
+          "description": "Click to drill down into category",
+          "verification_command": "grep -r 'drill\\|zoom\\|onClick' frontend/src/components/research/TopicTreemap.tsx"
+        },
+        {
+          "id": "AC-M3-03",
+          "description": "Breadcrumb navigation for deep exploration",
+          "verification_command": "grep -r 'breadcrumb\\|path' frontend/src/components/research/TopicTreemap.tsx"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-M3-01",
+          "description": "Create TopicTreemap.tsx component with D3.js treemap",
+          "status": "pending",
+          "verification_command": "test -f frontend/src/components/research/TopicTreemap.tsx",
+          "context": ["FILE: frontend/src/components/research/TopicTreemap.tsx"],
+          "notes": "Use d3-hierarchy for treemap layout"
+        },
+        {
+          "id": "T-M3-02",
+          "description": "Build hierarchical data structure from categories",
+          "status": "pending",
+          "verification_command": "grep -r 'hierarchy\\|children\\|category' frontend/src/components/research/TopicTreemap.tsx",
+          "context": [],
+          "notes": "Use existing detectCategory function"
+        },
+        {
+          "id": "T-M3-03",
+          "description": "Implement drill-down on click",
+          "status": "pending",
+          "verification_command": "grep -r 'setZoom\\|drill\\|onClick' frontend/src/components/research/TopicTreemap.tsx",
+          "context": [],
+          "notes": "Animate transition to zoomed view"
+        },
+        {
+          "id": "T-M3-04",
+          "description": "Add breadcrumb navigation component",
+          "status": "pending",
+          "verification_command": "grep -r 'Breadcrumb\\|path' frontend/src/components/research/TopicTreemap.tsx",
+          "context": [],
+          "notes": "Show: All > Category > Sub-category"
+        }
+      ]
+    },
+    {
+      "id": "M4",
+      "name": "View Mode Integration",
+      "description": "Integrate all 3 new visualizations into ResearchPage with smooth mode switching",
+      "status": "pending",
+      "acceptance_criteria": [
+        {
+          "id": "AC-M4-01",
+          "description": "View mode selector with all options",
+          "verification_command": "grep -r 'similarity\\|timeline\\|treemap' frontend/src/pages/ResearchPage.tsx"
+        },
+        {
+          "id": "AC-M4-02",
+          "description": "All 3 visualizations render without errors",
+          "verification_command": "cd frontend && npm run build 2>&1 | grep -i error"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "T-M4-01",
+          "description": "Update ViewMode type to include new modes",
+          "status": "pending",
+          "verification_command": "grep -r \"ViewMode.*similarity\\|timeline\\|treemap\" frontend/src/pages/ResearchPage.tsx",
+          "context": ["FILE: frontend/src/pages/ResearchPage.tsx"],
+          "notes": "Add: 'similarity' | 'timeline' | 'treemap'"
+        },
+        {
+          "id": "T-M4-02",
+          "description": "Add view mode selector buttons in header",
+          "status": "pending",
+          "verification_command": "grep -r 'setViewMode.*similarity' frontend/src/pages/ResearchPage.tsx",
+          "context": [],
+          "notes": "Icons: Link2, Calendar, LayoutGrid"
+        },
+        {
+          "id": "T-M4-03",
+          "description": "Render appropriate component based on viewMode",
+          "status": "pending",
+          "verification_command": "grep -r 'SimilarityGraph\\|TimelineGraph\\|TopicTreemap' frontend/src/pages/ResearchPage.tsx",
+          "context": [],
+          "notes": "Conditional rendering in main content area"
+        },
+        {
+          "id": "T-M4-04",
+          "description": "Build, deploy, and test all visualizations",
+          "status": "pending",
+          "verification_command": "curl -s http://localhost:3100/research | grep -q 'Research'",
+          "context": [],
+          "notes": "Docker rebuild required"
+        }
+      ]
+    }
+  ],
+  "global_acceptance_criteria": [
+    {
+      "id": "AC-GLOBAL-01",
+      "description": "Frontend builds without errors",
+      "verification_command": "cd frontend && npm run build"
+    },
+    {
+      "id": "AC-GLOBAL-02",
+      "description": "All 3 visualizations render at localhost:3100/research",
+      "verification_command": "curl -s http://localhost:3100/research"
+    },
+    {
+      "id": "AC-GLOBAL-03",
+      "description": "GPU acceleration maintained for Sigma.js graphs",
+      "verification_command": "grep -r 'WebGL' frontend/src/components/research/*.tsx"
+    }
+  ],
+  "completion": {
+    "type": null,
+    "date": null,
+    "known_bugs": [],
+    "deferred_to": null
+  }
+}
