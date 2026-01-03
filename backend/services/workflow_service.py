@@ -571,7 +571,14 @@ def scan_artifacts(
         List of artifact summaries found.
     """
     results: list[ArtifactSummary] = []
-    types_to_scan = [artifact_type] if artifact_type else list(ArtifactType)
+    
+    # TRACE is database-backed (P2RE), not file-based - skip it
+    if artifact_type == ArtifactType.TRACE:
+        return results
+    
+    # Exclude TRACE from full scan - it's accessed via P2RE API
+    all_file_types = [t for t in ArtifactType if t != ArtifactType.TRACE]
+    types_to_scan = [artifact_type] if artifact_type else all_file_types
 
     for atype in types_to_scan:
         directory = PROJECT_ROOT / ARTIFACT_DIRECTORIES[atype]
