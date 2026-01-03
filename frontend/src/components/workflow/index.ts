@@ -20,6 +20,7 @@ export { SpecViewer } from './SpecViewer'
 export { PlanViewer } from './PlanViewer'
 export { SchemaViewer } from './SchemaViewer'
 export { SchemaInterpreter } from './SchemaInterpreter'
+export { SessionViewer } from './SessionViewer'
 
 // Editor
 export { ArtifactEditor } from './ArtifactEditor'

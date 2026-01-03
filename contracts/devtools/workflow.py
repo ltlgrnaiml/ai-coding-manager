@@ -12,18 +12,26 @@ __version__ = "2025.12.01"
 
 
 # =============================================================================
-# Enums (EXACTLY 5 values each for consistency)
+# Enums (UAM-aligned artifact types per DISC-011)
 # =============================================================================
 
 
 class ArtifactType(str, Enum):
-    """Types of workflow artifacts."""
+    """Types of workflow artifacts per UAM (DISC-011).
+    
+    Six Pillars: EXPLORE (DISC), DECIDE (ADR), DEFINE (SPEC), 
+    SHAPE (Contract), EXECUTE (PLAN), GUIDE
+    Plus supporting artifacts: SESSION, BUG
+    """
 
     DISCUSSION = "discussion"
     ADR = "adr"
     SPEC = "spec"
     PLAN = "plan"
     CONTRACT = "contract"
+    SESSION = "session"
+    BUG = "bug"
+    GUIDE = "guide"
 
 
 class ArtifactStatus(str, Enum):

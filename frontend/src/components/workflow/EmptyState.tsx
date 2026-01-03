@@ -34,6 +34,24 @@ const EMPTY_STATE_CONTENT: Record<ArtifactType, { icon: React.ReactNode; title: 
     description: 'Contracts define data shapes as Pydantic models.',
     cta: 'Add a Contract',
   },
+  session: {
+    icon: <MessageSquare size={48} className="text-cyan-400" />,
+    title: 'No sessions yet',
+    description: 'Sessions track AI coding conversations and progress.',
+    cta: 'Start a Session',
+  },
+  bug: {
+    icon: <FileText size={48} className="text-orange-400" />,
+    title: 'No bugs yet',
+    description: 'Bug reports track issues and their resolutions.',
+    cta: 'Report a Bug',
+  },
+  guide: {
+    icon: <FileText size={48} className="text-slate-400" />,
+    title: 'No guides yet',
+    description: 'Guides document processes and best practices.',
+    cta: 'Create a Guide',
+  },
 }
 
 const STAGE_TO_ARTIFACT: Record<WorkflowStage, ArtifactType> = {

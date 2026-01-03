@@ -68,14 +68,21 @@ function detectGPUCapabilities(): GPUCapabilities {
 }
 
 // Sample categories for exploration (will be fetched from API)
+// Maps display name to search query (acronyms don't embed well semantically)
 const SAMPLE_CATEGORIES = [
-  { category: 'Agentic AI', count: 24 },
-  { category: 'RAG Systems', count: 18 },
-  { category: 'Context Compression', count: 12 },
-  { category: 'Code Generation', count: 15 },
-  { category: 'Multi-Agent', count: 9 },
-  { category: 'Prompt Engineering', count: 8 },
+  { category: 'Agentic AI', count: 24, searchQuery: 'agentic AI agent autonomous' },
+  { category: 'RAG Systems', count: 18, searchQuery: 'retrieval augmented generation RAG' },
+  { category: 'Context Compression', count: 12, searchQuery: 'context compression window length' },
+  { category: 'Code Generation', count: 15, searchQuery: 'code generation programming synthesis' },
+  { category: 'Multi-Agent', count: 9, searchQuery: 'multi-agent collaboration cooperation' },
+  { category: 'Prompt Engineering', count: 8, searchQuery: 'prompt engineering instruction tuning' },
 ]
+
+// Helper to get search query for a category
+const getCategorySearchQuery = (categoryName: string): string => {
+  const cat = SAMPLE_CATEGORIES.find(c => c.category === categoryName)
+  return cat?.searchQuery || categoryName
+}
 
 // Sample concepts for exploration
 const SAMPLE_CONCEPTS = [
@@ -156,7 +163,9 @@ export default function ResearchPage() {
   const handleCategoryClick = useCallback(async (category: string) => {
     setSelectedCategory(category === selectedCategory ? null : category)
     setIsLoading(true)
-    const results = await searchPapers(category, 50)
+    // Use expanded search query for better semantic matching
+    const searchQuery = getCategorySearchQuery(category)
+    const results = await searchPapers(searchQuery, 50)
     setPapers(results)
     setIsLoading(false)
   }, [selectedCategory, searchPapers])

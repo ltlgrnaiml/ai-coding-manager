@@ -13,6 +13,9 @@ const TYPE_COLORS: Record<ArtifactType, string> = {
   spec: '#EAB308',       // yellow (T2)
   contract: '#A855F7',   // purple (T3)
   plan: '#EF4444',       // red (T4)
+  session: '#06B6D4',    // cyan
+  bug: '#F97316',        // orange
+  guide: '#64748B',      // slate
 }
 
 const TYPE_LABELS: Record<ArtifactType, string> = {
@@ -21,6 +24,9 @@ const TYPE_LABELS: Record<ArtifactType, string> = {
   spec: 'SPEC',
   contract: 'Contract',
   plan: 'Plan',
+  session: 'Session',
+  bug: 'Bug',
+  guide: 'Guide',
 }
 
 interface ArtifactGraphProps {

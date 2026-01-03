@@ -1,0 +1,69 @@
+{
+  "$schema": "plan_index_schema.json",
+  "__version__": "2025.12.01",
+  "plan_id": "PLAN-0005",
+  "title": "UAM Workflow Manager Upgrade",
+  "granularity": "L1",
+  "status": "active",
+  "source_references": ["DISC-011", "DISC-0022"],
+  "created": "2026-01-02",
+  "updated": "2026-01-02",
+  
+  "milestones": {
+    "total": 3,
+    "completed": 0,
+    "current": "M01"
+  },
+  
+  "milestone_details": [
+    {
+      "id": "M01",
+      "title": "Expand Artifact Type System",
+      "description": "Add session, bug, guide artifact types to backend and frontend type definitions",
+      "tasks": [
+        "T01: Update ArtifactType enum in contracts to include session, bug, guide",
+        "T02: Update workflow_service.py scan_artifacts to scan .sessions/, .bugs/ directories",
+        "T03: Update frontend types.ts with new artifact types",
+        "T04: Update WorkflowSidebar to show tabs for all artifact types"
+      ],
+      "acceptance_criteria": [
+        "AC-M01-1: Backend returns sessions, bugs, guides in artifact list",
+        "AC-M01-2: Frontend sidebar shows all artifact type tabs"
+      ]
+    },
+    {
+      "id": "M02", 
+      "title": "GPU-Enabled Artifact Search",
+      "description": "Integrate GPU semantic search for artifact discovery (reuse gpu_service pattern)",
+      "tasks": [
+        "T01: Add artifact_embeddings table to research_papers.db",
+        "T02: Create artifact embedding endpoint in devtools_service",
+        "T03: Add GPU artifact search endpoint leveraging existing gpu_service",
+        "T04: Wire Related Papers button to use hybrid search with artifact context"
+      ],
+      "acceptance_criteria": [
+        "AC-M02-1: Artifacts can be semantically searched via GPU",
+        "AC-M02-2: Related Papers uses artifact title+content for search"
+      ]
+    },
+    {
+      "id": "M03",
+      "title": "Enhanced Viewers for All Artifact Types", 
+      "description": "Create/update viewers for sessions, chat logs, and ensure proper rendering",
+      "tasks": [
+        "T01: Create SessionViewer component for .sessions/ markdown files",
+        "T02: Fix ChatRecordViewer detection logic (already done)",
+        "T03: Update ArtifactReader to route to correct viewer by type",
+        "T04: Add session/bug icons and styling to sidebar"
+      ],
+      "acceptance_criteria": [
+        "AC-M03-1: Sessions display with proper formatting",
+        "AC-M03-2: All artifact types render without errors"
+      ]
+    }
+  ],
+  
+  "amendments": [],
+  "execution_history": [],
+  "score_history": []
+}

@@ -43,6 +43,9 @@ ARTIFACT_DIRECTORIES: dict[ArtifactType, str] = {
     ArtifactType.SPEC: "docs/specs",
     ArtifactType.PLAN: ".plans",
     ArtifactType.CONTRACT: "shared/contracts",
+    ArtifactType.SESSION: ".sessions",
+    ArtifactType.BUG: ".bugs",
+    ArtifactType.GUIDE: "docs/guides",
 }
 
 # In-memory workflow storage (POC - would be file-based in production)
@@ -586,7 +589,7 @@ def scan_artifacts(
 
         for pattern in patterns:
           for file_path in directory.rglob(pattern):
-            # Skip templates, __init__.py, __pycache__, L3 chunks, etc.
+            # Skip templates, __init__.py, __pycache__, L3 chunks, meta files etc.
             if (
                 file_path.name.startswith(".")
                 or file_path.name.startswith("_")
@@ -596,6 +599,7 @@ def scan_artifacts(
                 or file_path.name == "INDEX.md"
                 or file_path.name == "INDEX.json"
                 or file_path.name == "EXECUTION.md"
+                or file_path.name == "README.md"
                 or "/L3/" in str(file_path).replace("\\", "/")  # Skip L3 chunk files
             ):
                 continue
@@ -699,12 +703,13 @@ def _parse_json_artifact(file_path: Path, atype: ArtifactType) -> ArtifactSummar
 def _parse_markdown_artifact(
     file_path: Path, atype: ArtifactType
 ) -> ArtifactSummary | None:
-    """Parse markdown-based artifact (Discussion, Plan)."""
+    """Parse markdown-based artifact (Discussion, Plan, Session, Bug, Guide)."""
     with open(file_path, encoding="utf-8") as f:
         content = f.read(2000)  # Read first 2KB for metadata
 
-    # Extract ID from filename (e.g., DISC-001_title.md -> DISC-001)
-    match = re.match(r"^(DISC-\d+|PLAN-\d+)", file_path.stem)
+    # Extract ID from filename based on artifact type patterns
+    # DISC-001, PLAN-001, SESSION_001, BUG-001, GUIDE-001
+    match = re.match(r"^(DISC-\d+|PLAN-\d+|SESSION_\d+|BUG-\d+|GUIDE-\d+)", file_path.stem)
     artifact_id = match.group(1) if match else file_path.stem
 
     # Extract title from first heading

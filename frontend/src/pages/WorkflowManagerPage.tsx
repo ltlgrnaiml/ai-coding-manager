@@ -16,7 +16,7 @@ import { useWorkflowState } from '../components/workflow/useWorkflowState'
 import type { ArtifactType, FileFormat, ArtifactSummary } from '../components/workflow/types'
 import type { WorkflowType } from '../components/workflow/workflowUtils'
 import { isStageInWorkflow, artifactTypeToStage } from '../components/workflow/workflowUtils'
-import { useResearch, Paper } from '../hooks/useResearch'
+import { useResearch, type Paper } from '../hooks/useResearch'
 
 const API_BASE = '/api/devtools'
 
@@ -31,14 +31,14 @@ export function WorkflowManagerPage() {
   const [showRelatedPapers, setShowRelatedPapers] = useState(false)
 
   const workflow = useWorkflowState()
-  const { searchPapers } = useResearch()
+  const { findRelatedPapersForArtifact } = useResearch()
 
-  // Find related papers when artifact is selected
-  const findRelatedPapers = useCallback(async (artifactTitle: string) => {
-    const papers = await searchPapers(artifactTitle, 5)
+  // Find related papers using GPU semantic search on artifact content (PLAN-0005 M02)
+  const findRelatedPapers = useCallback(async (artifactId: string) => {
+    const papers = await findRelatedPapersForArtifact(artifactId, 5)
     setRelatedPapers(papers)
     setShowRelatedPapers(true)
-  }, [searchPapers])
+  }, [findRelatedPapersForArtifact])
 
   // Fetch all artifacts for command palette
   useEffect(() => {
@@ -158,14 +158,10 @@ export function WorkflowManagerPage() {
           Graph
         </button>
 
-        {/* Research Papers Button - Find related papers for selected artifact */}
+        {/* Research Papers Button - Find related papers using GPU semantic search */}
         {selectedArtifact && (
           <button
-            onClick={() => {
-              const artifact = allArtifacts.find(a => a.id === selectedArtifact.id)
-              const searchQuery = artifact?.title || selectedArtifact.id
-              findRelatedPapers(searchQuery)
-            }}
+            onClick={() => findRelatedPapers(selectedArtifact.id)}
             className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded text-sm bg-purple-600/20 text-purple-300 hover:bg-purple-600/30 transition-colors"
             title="Find related research papers"
           >

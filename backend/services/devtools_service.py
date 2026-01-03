@@ -1353,3 +1353,113 @@ async def get_llm_usage() -> LLMUsageStats:
 
     stats = get_llm_usage_stats()
     return LLMUsageStats(**stats)
+
+
+# =============================================================================
+# GPU-Powered Artifact Search (PLAN-0005 M02)
+# =============================================================================
+
+
+class RelatedPapersRequest(BaseModel):
+    """Request for finding related papers based on artifact content."""
+    artifact_id: str
+    top_k: int = 5
+    include_content: bool = True
+
+
+class RelatedPaper(BaseModel):
+    """A related research paper."""
+    paper_id: str
+    title: str | None
+    abstract: str | None
+    similarity: float
+    arxiv_id: str | None = None
+
+
+@router.post("/artifacts/{artifact_id}/related-papers", response_model=list[RelatedPaper])
+async def get_related_papers(artifact_id: str, top_k: int = 5) -> list[RelatedPaper]:
+    """Find related research papers using GPU semantic search.
+    
+    Uses artifact title + content to find semantically similar research papers.
+    Leverages RTX 5090 GPU for fast embedding comparison.
+    
+    Args:
+        artifact_id: The artifact ID to find related papers for.
+        top_k: Number of papers to return.
+        
+    Returns:
+        List of related papers with similarity scores.
+    """
+    # Find the artifact
+    artifacts = scan_artifacts()
+    artifact = next((a for a in artifacts if a.id == artifact_id), None)
+    
+    if not artifact:
+        raise HTTPException(status_code=404, detail=f"Artifact {artifact_id} not found")
+    
+    # Build search query from artifact content
+    query_parts = [artifact.title]
+    
+    # Try to read artifact content for richer context
+    try:
+        file_path = Path(artifact.file_path)
+        if file_path.exists():
+            with open(file_path, encoding="utf-8") as f:
+                content = f.read(4000)  # First 4KB for context
+            
+            # Extract meaningful content based on file type
+            if artifact.file_format == FileFormat.MARKDOWN:
+                # Get summary section if present
+                import re
+                summary_match = re.search(r"##\s*Summary\s*\n(.+?)(?=\n##|\Z)", content, re.DOTALL | re.IGNORECASE)
+                if summary_match:
+                    query_parts.append(summary_match.group(1).strip()[:1000])
+                else:
+                    # Use first 500 chars after title
+                    lines = content.split('\n')[1:10]
+                    query_parts.append(' '.join(lines)[:500])
+            elif artifact.file_format == FileFormat.JSON:
+                data = json.loads(content)
+                if "summary" in data:
+                    query_parts.append(data["summary"][:500])
+                if "context" in data:
+                    query_parts.append(str(data["context"])[:300])
+    except Exception:
+        pass  # Use just the title if content extraction fails
+    
+    query = " ".join(query_parts)
+    
+    # Use GPU service for semantic search
+    try:
+        from backend.services.gpu_service import get_gpu_service
+        gpu = get_gpu_service()
+        results = gpu.hybrid_search(query, top_k=top_k)
+        
+        # Get arxiv IDs from database
+        import sqlite3
+        from backend.services.gpu_service import DB_PATH
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        
+        papers = []
+        for r in results:
+            row = conn.execute(
+                "SELECT arxiv_id FROM research_papers WHERE id = ?",
+                (r.paper_id,)
+            ).fetchone()
+            
+            papers.append(RelatedPaper(
+                paper_id=r.paper_id,
+                title=r.title,
+                abstract=r.abstract,
+                similarity=r.similarity,
+                arxiv_id=row["arxiv_id"] if row else None
+            ))
+        
+        conn.close()
+        return papers
+        
+    except ImportError:
+        raise HTTPException(status_code=503, detail="GPU service not available")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")

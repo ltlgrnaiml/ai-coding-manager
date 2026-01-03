@@ -5,6 +5,7 @@ import { MarkdownRenderer } from './MarkdownRenderer'
 import { CodeRenderer } from './CodeRenderer'
 import { SchemaInterpreter } from './SchemaInterpreter'
 import { ChatRecordViewer } from './ChatRecordViewer'
+import { SessionViewer } from './SessionViewer'
 import { usePrompt } from '../../hooks/useWorkflowApi'
 import type { ArtifactType, FileFormat } from './types'
 
@@ -90,6 +91,9 @@ export function ArtifactReader({ artifactId, artifactType, fileFormat: propFileF
         spec: 'plan',
         plan: 'contract',
         contract: 'plan',
+        session: 'adr',
+        bug: 'plan',
+        guide: 'spec',
       }
       const targetType = targetTypeMap[artifactType] || 'adr'
       const response = await fetchPrompt(artifactId, targetType)
@@ -115,6 +119,11 @@ export function ArtifactReader({ artifactId, artifactType, fileFormat: propFileF
     if (!content) return <div className="p-4 text-zinc-500">No content available</div>
 
     try {
+      // Session - use specialized viewer (PLAN-0005 M03)
+      if (artifactType === 'session') {
+        return <SessionViewer artifactId={artifactId} filePath={filePath} className="h-full" />
+      }
+      
       // Chat record - use specialized viewer
       if (isChatRecord) {
         return <ChatRecordViewer artifactId={artifactId} className="h-full" />

@@ -176,6 +176,24 @@ export function useResearch() {
     }
   }, []);
 
+  // Find related papers for an artifact using GPU semantic search (PLAN-0005 M02)
+  const findRelatedPapersForArtifact = useCallback(async (artifactId: string, topK = 5): Promise<Paper[]> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API_BASE}/api/devtools/artifacts/${artifactId}/related-papers?top_k=${topK}`, {
+        method: 'POST'
+      });
+      if (!res.ok) throw new Error('Failed to find related papers');
+      return await res.json();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Unknown error');
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return {
     loading,
     error,
@@ -187,6 +205,7 @@ export function useResearch() {
     getBibtex,
     copyBibtex,
     getGPUStats,
-    enrichContext
+    enrichContext,
+    findRelatedPapersForArtifact
   };
 }

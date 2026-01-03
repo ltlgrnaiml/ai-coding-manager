@@ -29,6 +29,9 @@ const TYPE_LABELS: Record<ArtifactType, string> = {
   spec: 'SPEC',
   plan: 'Plan',
   contract: 'Contract',
+  session: 'Session',
+  bug: 'Bug',
+  guide: 'Guide',
 }
 
 const TYPE_COLORS: Record<ArtifactType, string> = {
@@ -37,6 +40,9 @@ const TYPE_COLORS: Record<ArtifactType, string> = {
   spec: 'bg-green-500/20 text-green-300 border-green-500/30',
   plan: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
   contract: 'bg-pink-500/20 text-pink-300 border-pink-500/30',
+  session: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
+  bug: 'bg-orange-500/20 text-orange-300 border-orange-500/30',
+  guide: 'bg-slate-500/20 text-slate-300 border-slate-500/30',
 }
 
 export function ReviewApprovePanel({
