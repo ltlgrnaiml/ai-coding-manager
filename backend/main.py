@@ -27,6 +27,7 @@ from backend.services.chatlog_service import router as chatlog_router
 from backend.services.p2re import router as p2re_router
 from backend.services.p2re import model_router
 from backend.services.performance_router import router as performance_router
+from backend.services.memory import router as memory_router, init_database as init_memory_database
 from backend.services.p2re.database import init_database as init_p2re_database
 from backend.services.knowledge.database import init_database
 from backend.services.knowledge.archive_service import ArchiveService
@@ -133,6 +134,13 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"Failed to initialize P2RE database: {e}")
     
+    # Initialize Memory database
+    try:
+        init_memory_database()
+        logger.info("Memory database initialized")
+    except Exception as e:
+        logger.error(f"Failed to initialize Memory database: {e}")
+    
     # Note: Phoenix tracing already initialized at module load time
     
     # Initialize sync service and run backfill
@@ -197,6 +205,7 @@ app.include_router(chatlog_router, tags=["chatlogs"])
 app.include_router(p2re_router, tags=["P2RE - Trace Observability"])
 app.include_router(model_router, tags=["Model Registry"])
 app.include_router(performance_router, tags=["Performance & Caching"])
+app.include_router(memory_router, tags=["Memory Architecture"])
 
 # Workspace paths
 WORKSPACE_ROOT = Path(os.getenv("WORKSPACE_ROOT", "."))

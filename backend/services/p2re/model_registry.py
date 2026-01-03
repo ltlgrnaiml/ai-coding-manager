@@ -627,24 +627,12 @@ def seed_models() -> int:
             capabilities=ModelCapabilities(tools=True, vision=True, audio=True, video=True, caching=True, batch=True, json_mode=True, web_search=True),
         ),
         
-        # xAI Grok models
-        ModelInfo(
-            id="grok-4-0709", provider_id="xai", name="Grok 4",
-            family="grok-4", category="flagship", context_window=256000,
-            pricing=ModelPricing(input_per_mtok=3.0, output_per_mtok=15.0),
-            capabilities=ModelCapabilities(tools=True, vision=True, web_search=True, mcp=True, json_mode=True),
-        ),
-        ModelInfo(
-            id="grok-4-fast-reasoning", provider_id="xai", name="Grok 4 Fast Reasoning",
-            family="grok-4", category="reasoning", context_window=2000000,
-            pricing=ModelPricing(input_per_mtok=5.0, output_per_mtok=25.0),
-            capabilities=ModelCapabilities(tools=True, reasoning=True, web_search=True, mcp=True, code_execution=True),
-        ),
+        # xAI Grok models (updated from docs.x.ai Jan 2026)
         ModelInfo(
             id="grok-4-1-fast-reasoning", provider_id="xai", name="Grok 4.1 Fast Reasoning",
             family="grok-4.1", category="reasoning", context_window=2000000,
-            pricing=ModelPricing(input_per_mtok=5.0, output_per_mtok=25.0),
-            capabilities=ModelCapabilities(tools=True, reasoning=True, web_search=True, mcp=True, code_execution=True),
+            pricing=ModelPricing(input_per_mtok=0.20, output_per_mtok=0.50),
+            capabilities=ModelCapabilities(tools=True, reasoning=True, web_search=True, mcp=True, json_mode=True),
         ),
         ModelInfo(
             id="grok-4-1-fast-non-reasoning", provider_id="xai", name="Grok 4.1 Fast",
@@ -655,19 +643,43 @@ def seed_models() -> int:
         ModelInfo(
             id="grok-code-fast-1", provider_id="xai", name="Grok Code Fast",
             family="grok-code", category="code", context_window=256000,
-            pricing=ModelPricing(input_per_mtok=1.0, output_per_mtok=3.0),
+            pricing=ModelPricing(input_per_mtok=0.20, output_per_mtok=1.50),
             capabilities=ModelCapabilities(tools=True, code_execution=True, json_mode=True),
         ),
         ModelInfo(
+            id="grok-4-fast-reasoning", provider_id="xai", name="Grok 4 Fast Reasoning",
+            family="grok-4", category="reasoning", context_window=2000000,
+            pricing=ModelPricing(input_per_mtok=0.20, output_per_mtok=0.50),
+            capabilities=ModelCapabilities(tools=True, reasoning=True, web_search=True, mcp=True, json_mode=True),
+        ),
+        ModelInfo(
+            id="grok-4-fast-non-reasoning", provider_id="xai", name="Grok 4 Fast",
+            family="grok-4", category="fast", context_window=2000000,
+            pricing=ModelPricing(input_per_mtok=0.20, output_per_mtok=0.50),
+            capabilities=ModelCapabilities(tools=True, web_search=True, mcp=True, json_mode=True),
+        ),
+        ModelInfo(
+            id="grok-4-0709", provider_id="xai", name="Grok 4",
+            family="grok-4", category="flagship", context_window=256000,
+            pricing=ModelPricing(input_per_mtok=3.0, output_per_mtok=15.0),
+            capabilities=ModelCapabilities(tools=True, vision=True, web_search=True, mcp=True, json_mode=True),
+        ),
+        ModelInfo(
+            id="grok-3-mini", provider_id="xai", name="Grok 3 Mini",
+            family="grok-3", category="lite", context_window=131072,
+            pricing=ModelPricing(input_per_mtok=0.30, output_per_mtok=0.50),
+            capabilities=ModelCapabilities(tools=True, json_mode=True),
+        ),
+        ModelInfo(
             id="grok-3", provider_id="xai", name="Grok 3",
-            family="grok-3", category="flagship", context_window=131000,
+            family="grok-3", category="flagship", context_window=131072,
             pricing=ModelPricing(input_per_mtok=3.0, output_per_mtok=15.0),
             capabilities=ModelCapabilities(tools=True, web_search=True, mcp=True),
         ),
         ModelInfo(
             id="grok-2-vision-1212", provider_id="xai", name="Grok 2 Vision",
-            family="grok-2", category="vision", context_window=32000,
-            pricing=ModelPricing(input_per_mtok=2.0, output_per_mtok=8.0),
+            family="grok-2", category="vision", context_window=32768,
+            pricing=ModelPricing(input_per_mtok=2.0, output_per_mtok=10.0),
             capabilities=ModelCapabilities(vision=True),
         ),
     ]

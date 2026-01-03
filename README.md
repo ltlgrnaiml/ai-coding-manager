@@ -1,212 +1,188 @@
-# AI Dev Orchestrator
+# AI Coding Manager (AICM)
 
-> A comprehensive framework for structured, AI-assisted code development with **xAI integration**, **RAG**, and **observability**.
+> **A proof-of-concept framework for AI-assisted development with cross-platform workflow, RAG, and observability.**
 
-## What is This?
+[![Status](https://img.shields.io/badge/status-POC-yellow)]()
+[![Platform](https://img.shields.io/badge/platform-Mac%20%7C%20Win11%20Docker-blue)]()
 
-AI Dev Orchestrator helps you get **consistent, high-quality code** from AI coding assistants by providing:
+---
 
-1. **🤖 xAI/Grok Integration** - Full LangChain-compatible chat models with structured output
-2. **📚 RAG System** - SQLite-backed knowledge archive with hybrid search (FTS + vector)
-3. **👁️ Phoenix Observability** - OpenTelemetry tracing for all LLM calls
-4. **📋 Plan Granularity (L1/L2/L3)** - Match plan detail to model capability
-5. **🔄 6-Tier Workflow** - Discussion → ADR → SPEC → Contract → Plan → Fragment
-6. **🧪 Experiment Framework** - A/B test AI models, measure stochastic variation
-7. **📝 Session Continuity** - Handoff context between AI sessions
+## 🚀 Quick Start: Cross-Platform Workflow
 
-## Quick Start
+**This project is developed across two machines.** Use these commands for seamless switching:
+
+### Machine Switch Protocol
 
 ```bash
-# Clone the repo
-git clone https://github.com/your-org/ai-dev-orchestrator.git
-cd ai-dev-orchestrator
+# BEFORE leaving any machine
+make switch-out          # Commits, pushes, updates state
 
-# Install with all features
-pip install -e ".[all]"
-
-# Or minimal install
-pip install -e .
-
-# Set your xAI API key
-export XAI_API_KEY="your-key-from-console.x.ai"
-
-# Check LLM health
-ai-dev health
-
-# Create your first plan
-ai-dev new-plan "My Feature" -g L1
+# AFTER arriving at new machine  
+git pull && make switch-in   # Pulls, shows env, ready to work
 ```
 
-## Core Features
+### Platform-Aware Commands
 
-### 🤖 xAI/Grok Integration
+| Command | Mac (Native) | Win11 (Docker) |
+|---------|--------------|----------------|
+| `make dev` | `uvicorn` on port 8100 | `docker compose up` |
+| `make test` | `pytest` native | `pytest` in container |
+| `make env` | Shows MPS GPU | Shows CUDA GPU |
 
-```python
-from ai_dev_orchestrator import get_xai_chat_model, generate_structured
-from pydantic import BaseModel
-
-# LangChain-compatible chat model
-llm = get_xai_chat_model(model="grok-4-fast-reasoning")
-response = llm.invoke("Explain RAG in one sentence.")
-
-# Structured output with Pydantic validation
-class TaskOutput(BaseModel):
-    title: str
-    steps: list[str]
-
-result = generate_structured("Create a deployment task", TaskOutput)
-if result.success:
-    print(result.data)
-```
-
-### 📚 RAG System
-
-```python
-from ai_dev_orchestrator import init_database, create_rag_chain
-
-# Initialize knowledge database
-init_database()
-
-# Create RAG chain
-chain = create_rag_chain()
-response = chain.invoke("What ADRs relate to authentication?")
-print(response.answer)
-print(f"Sources: {response.sources}")
-```
-
-### 👁️ Phoenix Observability
-
-```python
-from ai_dev_orchestrator import init_phoenix, shutdown_phoenix
-
-# Initialize at app startup - Phoenix UI at http://localhost:6006
-init_phoenix()
-
-# All LangChain/OpenAI calls are now automatically traced!
-
-# Cleanup at shutdown
-shutdown_phoenix()
-```
-
-## Plan Granularity Levels
-
-Based on [EXP-001 research](/.experiments/EXP-001_L1-vs-L3/FINAL_REPORT.md), different AI models need different levels of detail:
-
-| Level | Target Models | What to Include |
-|-------|---------------|-----------------|
-| **L1** | Premium (Opus, Sonnet, GPT-5.2) | Context prefixes only |
-| **L2** | Mid-tier (Gemini Pro, GPT-5.1) | + Constraints + Pattern refs |
-| **L3** | Budget (Haiku, Flash, Grok) | + Step-by-step code snippets |
-
-### Key Finding
-
-> **L3 plans reduce stochastic variation by 50%+**, enabling budget models to match premium model quality at 3-6x cost savings.
-
-## Project Structure
-
-```
-ai-dev-orchestrator/
-├── contracts/           # Pydantic schemas (SSOT)
-│   ├── plan_schema.py   # L1/L2/L3 plan system
-│   ├── adr_schema.py    # ADR structure
-│   └── spec_schema.py   # SPEC structure
-│
-├── .adrs/               # Architecture Decision Records (WHY)
-├── docs/specs/          # Technical Specifications (WHAT)
-├── docs/guides/         # How-to Guides (HOW)
-│
-├── .discussions/        # Design conversations
-├── .plans/              # Execution plans
-├── .sessions/           # Session continuity logs
-├── .experiments/        # A/B testing framework
-│
-├── scripts/             # Automation tools
-└── examples/            # Example projects
-```
-
-## The 6-Tier Workflow
-
-```
-T0: Discussion   → Capture AI ↔ Human design conversation
-T1: ADR          → Record WHY architectural decisions were made
-T2: SPEC         → Define WHAT to build (behavioral requirements)
-T3: Contract     → Define data shapes (Pydantic SSOT)
-T4: Plan         → Milestones, tasks, acceptance criteria
-T5: Fragment     → One verifiable unit of work
-```
-
-### Entry Points
-
-Not all work requires the full workflow:
-
-| Scenario | Start At | Skip |
-|----------|----------|------|
-| Architectural change | T0 (Discussion) | None |
-| New feature | T2 (SPEC) | T0, T1 |
-| Bug fix / Refactor | T4 (Plan) | T0-T3 |
-
-## Context Prefixes (L1)
-
-When writing L1 plans, use standardized prefixes:
-
-```json
-"context": [
-  "ARCHITECTURE: Functional style, no classes",
-  "FILE: Create gateway/services/my_service.py",
-  "FUNCTION: def process_data(input: str) -> Output",
-  "ENUM: Status values: pending, active, completed",
-  "VERSION: Use __version__ = '2025.12.01'"
-]
-```
-
-## Constraints (L2)
-
-For mid-tier models, add explicit constraints:
-
-```json
-"constraints": [
-  "DO NOT use class-based architecture",
-  "MUST place tests in tests/unit/",
-  "EXACTLY 5 enum values, no more"
-],
-"existing_patterns": [
-  "Follow pattern in gateway/services/user_service.py"
-]
-```
-
-## Running Experiments
-
-Compare AI model performance:
+### Environment Detection
 
 ```bash
-# Create experiment branches
-git worktree add ../exp-l1-opus experiment/l1-opus
-git worktree add ../exp-l3-haiku experiment/l3-haiku
-
-# Run experiments in each worktree with different models
-
-# Collect results
-python .experiments/EXP-001/scripts/save_results.py
-
-# Aggregate and analyze
-python .experiments/EXP-001/scripts/aggregate_results.py
+python scripts/detect_env.py
 ```
 
-## Documentation
+AI assistants should run this first to understand the execution context.
 
-- [Getting Started Guide](docs/guides/GETTING_STARTED.md)
-- [Plan Authoring Guide](docs/guides/PLAN_AUTHORING.md)
-- [Experiment Design Guide](docs/guides/EXPERIMENT_DESIGN.md)
-- [AI Coding Guide](AI_CODING_GUIDE.md)
+---
 
-## Origin
+## 🖥️ Hardware Profile
 
-This framework was extracted from a production engineering tools platform after conducting [EXP-001: L1 vs L3 Plan Granularity Experiment](/.experiments/EXP-001_L1-vs-L3/FINAL_REPORT.md) which tested 8 AI models across two granularity levels.
+| Machine | Purpose | GPU | Execution |
+|---------|---------|-----|-----------|
+| **MacBook Pro M4 Max** | Mobile dev (couch) | MPS (Metal) | Native Python |
+| **Win11 Desktop** | Heavy GPU work | RTX 5090 + 3090 Ti | Docker + WSL2 |
 
-## License
+---
+
+## 📦 Docker Deployment (Win11)
+
+```bash
+# Start all services
+docker compose --profile main up -d
+
+# View logs
+docker logs -f aidev-backend
+
+# Rebuild after code changes
+docker compose --profile main build && docker compose --profile main up -d
+```
+
+**Ports:**
+- `8100` - Backend API
+- `3100` - Frontend UI  
+- `6006` - Phoenix Observability
+
+---
+
+## What is AICM?
+
+AI Coding Manager helps you get **consistent, high-quality code** from AI assistants:
+
+- **🤖 Multi-LLM Support** - xAI, Anthropic, Google via unified adapter
+- **📚 RAG System** - SQLite + hybrid search (FTS + vector embeddings)
+- **👁️ Phoenix Observability** - OpenTelemetry tracing for all LLM calls
+- **📋 Plan Granularity** - L1/L2/L3 plans match detail to model capability
+- **🔄 6-Tier Workflow** - Discussion → ADR → SPEC → Contract → Plan → Fragment
+- **📝 Session Continuity** - Handoff context between AI sessions
+
+---
+
+## 📁 Project Structure
+
+```text
+ai-coding-manager/
+├── backend/              # FastAPI backend
+│   ├── services/         # Business logic
+│   │   ├── knowledge/    # RAG, embeddings, retrieval
+│   │   └── llm/          # Multi-provider LLM adapter
+│   └── main.py           # API entrypoint
+│
+├── frontend/             # React + Vite frontend
+│   └── src/
+│       ├── components/   # UI components
+│       └── views/        # Page views
+│
+├── contracts/            # Pydantic schemas (SSOT)
+├── scripts/              # Automation & workflow tools
+│   ├── detect_env.py     # Environment detection
+│   ├── switch_out.sh     # Machine switch protocol
+│   └── switch_in.sh      # Machine arrival protocol
+│
+├── docker/               # Dockerfiles
+├── .adrs/                # Architecture Decision Records
+├── .discussions/         # Design conversations
+├── .plans/               # Execution plans (L1/L2/L3)
+├── .sessions/            # AI session continuity logs
+└── .research_papers/     # PDFs for RAG ingestion
+```
+
+---
+
+## 🤖 For AI Assistants
+
+**Read these first:**
+
+1. [`AGENTS.md`](AGENTS.md) - Global rules for AI coding assistants
+2. [`python scripts/detect_env.py`](scripts/detect_env.py) - Run to understand execution context
+3. [`.sessions/`](.sessions/) - Check recent session logs for context
+
+**Key Rules:**
+
+- Create a session file in `.sessions/SESSION_XXX_description.md`
+- Run `make test` before and after changes
+- Use `make switch-out` before finishing work
+
+---
+
+## 📚 Core Documentation
+
+| Document | Purpose |
+|----------|---------|
+| [`AGENTS.md`](AGENTS.md) | AI assistant rules |
+| [`docs/CONCURRENT_DEVELOPMENT_POLICY.md`](docs/CONCURRENT_DEVELOPMENT_POLICY.md) | Cross-platform sync |
+| [`.discussions/DISC-029_Cross-Platform-Dev-Workflow-Strategy.md`](.discussions/DISC-029_Cross-Platform-Dev-Workflow-Strategy.md) | Full workflow strategy |
+| [`.discussions/DISC-028_GPU-Accelerated-RAG-Containerization.md`](.discussions/DISC-028_GPU-Accelerated-RAG-Containerization.md) | GPU architecture |
+
+---
+
+## 🧪 Running Tests
+
+```bash
+# Mac (native)
+pytest tests/ -v
+
+# Win11 (Docker)
+docker exec aidev-backend pytest tests/ -v
+
+# Or use platform-aware make
+make test
+```
+
+---
+
+## 🔧 Development Setup
+
+### Mac (Native Python)
+
+```bash
+# Install dependencies
+pip install -r backend/requirements.txt
+
+# Start dev server
+make dev
+# or: python -m uvicorn backend.main:app --reload --port 8100
+```
+
+### Win11 (Docker)
+
+```bash
+# Build and start
+docker compose --profile main up -d
+
+# View logs
+docker logs -f aidev-backend
+```
+
+---
+
+## 📜 License
 
 MIT License - See [LICENSE](LICENSE) for details.
 
 ---
 
-*Built with ❤️ for AI-assisted development*
+*Built with AI, for AI-assisted development*
