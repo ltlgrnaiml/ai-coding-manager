@@ -25,9 +25,11 @@ git pull && make switch-in   # Pulls, shows env, ready to work
 
 | Command | Mac (Native) | Win11 (Docker) |
 |---------|--------------|----------------|
-| `make dev` | `uvicorn` on port 8100 | `docker compose up` |
+| `make dev` | Starts backend + frontend + Phoenix | `docker compose up` |
+| `make dev-backend` | Backend only (port 8100) | Backend container only |
+| `make dev-frontend` | Frontend only (port 3100) | Frontend container only |
+| `make dev-phoenix` | Phoenix only (port 6006) | Phoenix container only |
 | `make test` | `pytest` native | `pytest` in container |
-| `make env` | Shows MPS GPU | Shows CUDA GPU |
 
 ### Environment Detection
 

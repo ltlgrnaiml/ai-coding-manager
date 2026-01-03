@@ -24,7 +24,10 @@ help:
 	@echo "========================="
 	@echo ""
 	@echo "$(GREEN)Development:$(NC)"
-	@echo "  make dev         - Start development server (platform-aware)"
+	@echo "  make dev         - Start ALL services (backend + frontend + phoenix)"
+	@echo "  make dev-backend - Start backend only (port 8100)"
+	@echo "  make dev-frontend- Start frontend only (port 3100)"
+	@echo "  make dev-phoenix - Start Phoenix only (port 6006)"
 	@echo "  make test        - Run tests (platform-aware)"
 	@echo "  make lint        - Run linters"
 	@echo ""
@@ -46,11 +49,10 @@ help:
 env:
 	@python scripts/detect_env.py
 
-# Development server (platform-aware)
+# Development server (platform-aware) - starts ALL services
 dev:
 ifeq ($(PLATFORM), mac)
-	@echo "🍎 Starting Mac Native dev server on port 8100..."
-	python -m uvicorn backend.main:app --reload --port 8100
+	@./scripts/dev_mac.sh
 else
 	@echo "🪟 Starting Docker containers..."
 	docker compose --profile main up
@@ -64,6 +66,26 @@ ifeq ($(PLATFORM), mac)
 else
 	@echo "🪟 Starting Docker backend only..."
 	docker compose --profile main up aidev-backend aidev-phoenix
+endif
+
+# Run frontend only
+dev-frontend:
+ifeq ($(PLATFORM), mac)
+	@echo "🍎 Starting Mac Native frontend only..."
+	cd frontend && npm run dev -- --port 3100
+else
+	@echo "🪟 Starting Docker frontend only..."
+	docker compose --profile main up aidev-frontend
+endif
+
+# Run Phoenix only (observability)
+dev-phoenix:
+ifeq ($(PLATFORM), mac)
+	@echo "🍎 Starting Phoenix observability server..."
+	python -m phoenix.server.main serve --port 6006
+else
+	@echo "🪟 Starting Docker Phoenix only..."
+	docker compose --profile main up aidev-phoenix
 endif
 
 # Run tests (platform-aware)

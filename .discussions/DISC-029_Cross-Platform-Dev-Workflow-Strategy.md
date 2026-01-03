@@ -572,11 +572,33 @@ fi
 - `.sessions/CURRENT_MACHINE.md` provides state for AI assistants
 
 **Action Items:**
-- [ ] Create `scripts/detect_env.py`
-- [ ] Create `scripts/switch_out.sh` and `switch_in.sh`
-- [ ] Create Makefile with platform-aware commands
-- [ ] Update AGENTS.md with cross-platform instructions
-- [ ] Create `.sessions/CURRENT_MACHINE.md` tracking
+- [x] Create `scripts/detect_env.py`
+- [x] Create `scripts/switch_out.sh` and `switch_in.sh`
+- [x] Create Makefile with platform-aware commands
+- [x] Update AGENTS.md with cross-platform instructions
+- [x] Create `.sessions/CURRENT_MACHINE.md` tracking
+
+### 2026-01-03 - SESSION_015 (continued)
+
+**Topics Discussed:**
+- Mac native dev environment setup and venv configuration
+- Need for `make dev` to start ALL services (backend + frontend + Phoenix)
+- Parity with Win11 Docker experience
+
+**Changes Made:**
+- Installed missing backend dependencies via `uv pip install -r backend/requirements.txt`
+- Installed Phoenix for local observability: `uv pip install arize-phoenix`
+- Created `scripts/dev_mac.sh` - orchestrates all 3 services with cleanup
+- Updated Makefile with new dev commands:
+  - `make dev` → Starts backend + frontend + Phoenix
+  - `make dev-backend` → Backend only
+  - `make dev-frontend` → Frontend only
+  - `make dev-phoenix` → Phoenix only
+- Updated README.md with new command reference
+
+**Outcome:**
+- Mac and Win11 now have identical dev experience on same ports (8100, 3100, 6006)
+- All 48 tests passing on Mac native
 
 ---
 

@@ -46,3 +46,26 @@
 - Before leaving Mac: `make switch-out` or `./scripts/switch_out.sh`
 - After arriving Win11: `git pull && ./scripts/switch_in.sh`
 - AI assistants should run `python scripts/detect_env.py` first
+
+## 2026-01-03 Updates (continued)
+
+### Mac Native Dev Environment Setup
+
+**Issues Found:**
+- venv was missing backend dependencies (fastapi, uvicorn, etc.)
+- `make dev` only started backend, not frontend or Phoenix
+
+**Fixes Applied:**
+1. Installed backend deps: `uv pip install -r backend/requirements.txt`
+2. Installed pytest: `uv pip install pytest pytest-asyncio`
+3. Installed Phoenix: `uv pip install arize-phoenix`
+4. Created `scripts/dev_mac.sh` - starts all 3 services in parallel
+5. Updated Makefile:
+   - `make dev` now starts ALL services
+   - Added `make dev-backend`, `make dev-frontend`, `make dev-phoenix`
+6. Updated README.md with new commands
+
+**Result:**
+- 48 tests passing
+- Mac and Win11 have identical dev experience on ports 8100, 3100, 6006
+- `make dev` works the same on both platforms
