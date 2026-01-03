@@ -9,6 +9,26 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$REPO_ROOT"
 
+# Load environment variables from .env if it exists
+if [[ -f .env ]]; then
+    # Only export lines that are valid VAR=VALUE assignments (not comments or blank)
+    while IFS='=' read -r key value; do
+        # Skip comments and empty lines
+        [[ -z "$key" || "$key" =~ ^[[:space:]]*# ]] && continue
+        # Remove leading/trailing whitespace from key
+        key=$(echo "$key" | xargs)
+        # Only export if key looks like a valid variable name
+        if [[ "$key" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
+            export "$key=$value"
+        fi
+    done < .env
+fi
+
+# Port Configuration (from env or defaults)
+BACKEND_PORT="${AICM_BACKEND_PORT:-8100}"
+FRONTEND_PORT="${AICM_FRONTEND_PORT:-3100}"
+PHOENIX_PORT="${AICM_PHOENIX_PORT:-6006}"
+
 # Colors
 CYAN='\033[0;36m'
 GREEN='\033[0;32m'
@@ -39,9 +59,9 @@ cleanup() {
         fi
     done
     # Kill any remaining processes on our ports
-    lsof -ti:8100 | xargs kill -9 2>/dev/null || true
-    lsof -ti:3100 | xargs kill -9 2>/dev/null || true
-    lsof -ti:6006 | xargs kill -9 2>/dev/null || true
+    lsof -ti:$BACKEND_PORT | xargs kill -9 2>/dev/null || true
+    lsof -ti:$FRONTEND_PORT | xargs kill -9 2>/dev/null || true
+    lsof -ti:$PHOENIX_PORT | xargs kill -9 2>/dev/null || true
     echo -e "${GREEN}✅ All services stopped${NC}"
     exit 0
 }
@@ -59,15 +79,15 @@ check_port() {
 }
 
 echo -e "${CYAN}Checking ports...${NC}"
-check_port 8100 || exit 1
-check_port 3100 || exit 1
-check_port 6006 || exit 1
+check_port $BACKEND_PORT || exit 1
+check_port $FRONTEND_PORT || exit 1
+check_port $PHOENIX_PORT || exit 1
 echo -e "${GREEN}✅ All ports available${NC}"
 echo ""
 
 # Start Phoenix (observability)
-echo -e "${CYAN}Starting Phoenix (port 6006)...${NC}"
-PHOENIX_PORT=6006 python -m phoenix.server.main serve > /tmp/aicm-phoenix.log 2>&1 &
+echo -e "${CYAN}Starting Phoenix (port $PHOENIX_PORT)...${NC}"
+PHOENIX_PORT=$PHOENIX_PORT python -m phoenix.server.main serve > /tmp/aicm-phoenix.log 2>&1 &
 PID_PHOENIX=$!
 PIDS+=($PID_PHOENIX)
 sleep 2
@@ -75,12 +95,12 @@ sleep 2
 if ! kill -0 $PID_PHOENIX 2>/dev/null; then
     echo -e "${RED}❌ Phoenix failed to start. Check /tmp/aicm-phoenix.log${NC}"
 else
-    echo -e "${GREEN}✅ Phoenix running at http://localhost:6006${NC}"
+    echo -e "${GREEN}✅ Phoenix running at http://localhost:$PHOENIX_PORT${NC}"
 fi
 
 # Start Backend
-echo -e "${CYAN}Starting Backend (port 8100)...${NC}"
-python -m uvicorn backend.main:app --reload --port 8100 > /tmp/aicm-backend.log 2>&1 &
+echo -e "${CYAN}Starting Backend (port $BACKEND_PORT)...${NC}"
+python -m uvicorn backend.main:app --reload --port $BACKEND_PORT > /tmp/aicm-backend.log 2>&1 &
 PID_BACKEND=$!
 PIDS+=($PID_BACKEND)
 sleep 2
@@ -88,13 +108,13 @@ sleep 2
 if ! kill -0 $PID_BACKEND 2>/dev/null; then
     echo -e "${RED}❌ Backend failed to start. Check /tmp/aicm-backend.log${NC}"
 else
-    echo -e "${GREEN}✅ Backend running at http://localhost:8100${NC}"
+    echo -e "${GREEN}✅ Backend running at http://localhost:$BACKEND_PORT${NC}"
 fi
 
 # Start Frontend
-echo -e "${CYAN}Starting Frontend (port 3100)...${NC}"
+echo -e "${CYAN}Starting Frontend (port $FRONTEND_PORT)...${NC}"
 cd frontend
-npm run dev > /tmp/aicm-frontend.log 2>&1 &
+VITE_BACKEND_PORT=$BACKEND_PORT npm run dev > /tmp/aicm-frontend.log 2>&1 &
 PID_FRONTEND=$!
 PIDS+=($PID_FRONTEND)
 cd ..
@@ -103,16 +123,16 @@ sleep 3
 if ! kill -0 $PID_FRONTEND 2>/dev/null; then
     echo -e "${RED}❌ Frontend failed to start. Check /tmp/aicm-frontend.log${NC}"
 else
-    echo -e "${GREEN}✅ Frontend running at http://localhost:3100${NC}"
+    echo -e "${GREEN}✅ Frontend running at http://localhost:$FRONTEND_PORT${NC}"
 fi
 
 echo ""
 echo "========================================"
 echo -e "${GREEN}🚀 All services running!${NC}"
 echo ""
-echo "  📦 Backend:  http://localhost:8100"
-echo "  🖥️  Frontend: http://localhost:3100"
-echo "  👁️  Phoenix:  http://localhost:6006"
+echo "  📦 Backend:  http://localhost:$BACKEND_PORT"
+echo "  🖥️  Frontend: http://localhost:$FRONTEND_PORT"
+echo "  👁️  Phoenix:  http://localhost:$PHOENIX_PORT"
 echo ""
 echo "  📋 Logs:"
 echo "     tail -f /tmp/aicm-backend.log"

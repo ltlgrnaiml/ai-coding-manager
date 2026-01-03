@@ -4,6 +4,12 @@
 
 .PHONY: help dev test switch-out switch-in env docker-up docker-down lint clean
 
+# Port Configuration (from environment or defaults)
+# These are set in .env and loaded by shell scripts
+AICM_BACKEND_PORT ?= 8100
+AICM_FRONTEND_PORT ?= 3100
+AICM_PHOENIX_PORT ?= 6006
+
 # Detect OS
 UNAME := $(shell uname)
 ifeq ($(UNAME), Darwin)
@@ -25,9 +31,9 @@ help:
 	@echo ""
 	@echo "$(GREEN)Development:$(NC)"
 	@echo "  make dev         - Start ALL services (backend + frontend + phoenix)"
-	@echo "  make dev-backend - Start backend only (port 8100)"
-	@echo "  make dev-frontend- Start frontend only (port 3100)"
-	@echo "  make dev-phoenix - Start Phoenix only (port 6006)"
+	@echo "  make dev-backend - Start backend only (port $(AICM_BACKEND_PORT))"
+	@echo "  make dev-frontend- Start frontend only (port $(AICM_FRONTEND_PORT))"
+	@echo "  make dev-phoenix - Start Phoenix only (port $(AICM_PHOENIX_PORT))"
 	@echo "  make test        - Run tests (platform-aware)"
 	@echo "  make lint        - Run linters"
 	@echo ""
@@ -61,8 +67,8 @@ endif
 # Run backend only (no frontend)
 dev-backend:
 ifeq ($(PLATFORM), mac)
-	@echo "🍎 Starting Mac Native backend only..."
-	python -m uvicorn backend.main:app --reload --port 8100
+	@echo "🍎 Starting Mac Native backend only (port $(AICM_BACKEND_PORT))..."
+	python -m uvicorn backend.main:app --reload --port $(AICM_BACKEND_PORT)
 else
 	@echo "🪟 Starting Docker backend only..."
 	docker compose --profile main up aidev-backend aidev-phoenix
@@ -71,8 +77,8 @@ endif
 # Run frontend only
 dev-frontend:
 ifeq ($(PLATFORM), mac)
-	@echo "🍎 Starting Mac Native frontend only..."
-	cd frontend && npm run dev -- --port 3100
+	@echo "🍎 Starting Mac Native frontend only (port $(AICM_FRONTEND_PORT))..."
+	cd frontend && npm run dev
 else
 	@echo "🪟 Starting Docker frontend only..."
 	docker compose --profile main up aidev-frontend
@@ -81,8 +87,8 @@ endif
 # Run Phoenix only (observability)
 dev-phoenix:
 ifeq ($(PLATFORM), mac)
-	@echo "🍎 Starting Phoenix observability server..."
-	python -m phoenix.server.main serve --port 6006
+	@echo "🍎 Starting Phoenix observability server (port $(AICM_PHOENIX_PORT))..."
+	PHOENIX_PORT=$(AICM_PHOENIX_PORT) python -m phoenix.server.main serve
 else
 	@echo "🪟 Starting Docker Phoenix only..."
 	docker compose --profile main up aidev-phoenix

@@ -201,10 +201,15 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS for frontend
+# CORS for frontend - use env var for port
+_frontend_port = os.getenv("AICM_FRONTEND_PORT", "3100")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=[
+        f"http://localhost:{_frontend_port}",
+        "http://localhost:3100",  # Fallback
+        "http://localhost:5173",  # Vite default
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

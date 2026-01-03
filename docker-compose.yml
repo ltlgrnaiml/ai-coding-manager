@@ -1,15 +1,17 @@
 version: '3.8'
 
 # AI Dev Orchestrator - Standalone Workflow & Chat App
-# Uses ports 8100/3100/6006 to avoid conflicts with engineering-tools
+# Port configuration is read from .env file (AICM_*_PORT variables)
 #
 # Usage:
 #   Main profile (default):  docker compose --profile main up
 #   Backup profile:          docker compose --profile backup up
 #   Both simultaneously:     docker compose --profile main --profile backup up
 #
-# Main ports:   8100 (API), 3100 (UI), 6006 (Phoenix)
-# Backup ports: 8101 (API), 3101 (UI), 6007 (Phoenix)
+# Default ports (configured in .env):
+#   Backend: ${AICM_BACKEND_PORT:-8100}
+#   Frontend: ${AICM_FRONTEND_PORT:-3100}
+#   Phoenix: ${AICM_PHOENIX_PORT:-6006}
 
 # ============================================================================
 # YAML Anchors - Shared configurations (DRY)
@@ -66,8 +68,8 @@ services:
     container_name: aidev-phoenix
     profiles: ["main"]
     ports:
-      - "6006:6006"   # Phoenix UI
-      - "4317:4317"   # OTLP gRPC collector
+      - "${AICM_PHOENIX_PORT:-6006}:6006"   # Phoenix UI
+      - "${AICM_PHOENIX_GRPC_PORT:-4317}:4317"   # OTLP gRPC collector
       - "4318:4318"   # OTLP HTTP collector
     volumes:
       - phoenix-data:/data
@@ -79,7 +81,7 @@ services:
     container_name: aidev-backend
     profiles: ["main"]
     ports:
-      - "8100:8000"
+      - "${AICM_BACKEND_PORT:-8100}:8000"
     environment:
       <<: *backend-env
       PHOENIX_COLLECTOR_ENDPOINT: http://aidev-phoenix:4317
@@ -94,7 +96,7 @@ services:
     container_name: aidev-frontend
     profiles: ["main"]
     ports:
-      - "3100:80"
+      - "${AICM_FRONTEND_PORT:-3100}:80"
     depends_on:
       - aidev-backend
     environment:
