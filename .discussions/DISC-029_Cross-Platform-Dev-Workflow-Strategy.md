@@ -600,6 +600,37 @@ fi
 - Mac and Win11 now have identical dev experience on same ports (8100, 3100, 6006)
 - All 48 tests passing on Mac native
 
+### 2026-01-03 - SESSION_016 (Port Configuration Refactor)
+
+**Issue Identified:**
+- Hardcoded ports across 15+ files led to port mismatch bugs (vite.config.ts pointed to 8000 but backend runs on 8100)
+- Not deterministic or industry best practice
+
+**Solution: Centralized Port Configuration**
+
+All ports now defined in `.env` as Single Source of Truth:
+
+```bash
+# .env - Port Configuration
+AICM_BACKEND_PORT=8100
+AICM_FRONTEND_PORT=3100
+AICM_PHOENIX_PORT=6006
+AICM_PHOENIX_GRPC_PORT=4317
+```
+
+**Files Updated:**
+- `backend/config.py` - New config module with `get_config()` and `get_*_port()` helpers
+- `frontend/vite.config.ts` - Uses `loadEnv()` to read AICM_* and VITE_* vars
+- `docker-compose.yml` - Uses `${AICM_*_PORT:-default}` syntax
+- `scripts/dev_mac.sh` - Loads .env and uses port variables throughout
+- `Makefile` - Uses port variables in help and commands
+
+**Benefits:**
+- Change ports in ONE place (.env) to update everywhere
+- No more port mismatch bugs
+- Works for Mac native AND Docker deployments
+- Environment-specific overrides possible
+
 ---
 
 *Template version: 2.0.0 | Per ADR-0048 (Unified Artifact Model)*
