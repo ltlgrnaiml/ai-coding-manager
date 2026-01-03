@@ -234,10 +234,55 @@ embeddings = gpu_container.embed_batch([d.text for d in documents])  # 155ms tot
 
 | ID | Question | Status | Answer |
 |----|----------|--------|--------|
-| Q-1 | What is current document count in knowledge archive? | `open` | Determines if GPU acceleration needed |
-| Q-2 | Is local LLM inference a priority? | `open` | Determines if GPU inference container needed |
-| Q-3 | What GPU hardware is available? | `open` | NVIDIA required for most acceleration |
-| Q-4 | Is horizontal scaling required? | `open` | Affects architecture choice |
+| Q-1 | What is current document count in knowledge archive? | `answered` | Core docs small; chat logs, research papers, traces will grow LARGE |
+| Q-2 | Is local LLM inference a priority? | `open` | TBD - hardware supports it |
+| Q-3 | What GPU hardware is available? | `answered` | See Hardware Profile below |
+| Q-4 | Is horizontal scaling required? | `answered` | No - single-user dev environments |
+
+---
+
+## Hardware Profile (Answered Q-3)
+
+### Windows 11 Workstation (Primary GPU)
+
+| Component | Spec | Notes |
+|-----------|------|-------|
+| **GPU 1** | MSI RTX 5090 32GB (Liquid Cooled) | Primary - PCIe 16x |
+| **GPU 2** | EVGA RTX 3090 Ti 24GB (Air Cooled) | Secondary - PCIe 4x |
+| **CPU** | AMD Ryzen 9 7950X | 16C/32T |
+| **Motherboard** | MSI MEG ACE | Supports 16x + 4x GPU config |
+| **Environment** | Docker Desktop + WSL2 (Ubuntu) | Containers + workspace in WSL |
+
+**GPU Strategy for Win11:**
+- **5090 (32GB)**: LLM inference, large embedding batches, reranking
+- **3090 Ti (24GB)**: Vector DB (Qdrant GPU), parallel embedding
+- Both cards can work simultaneously for different workloads
+
+### MacBook Pro 2024 (Unified Memory)
+
+| Component | Spec | Notes |
+|-----------|------|-------|
+| **Chip** | Apple M4 Max | GPU cores share unified memory |
+| **RAM** | 128GB Unified | Available to both CPU and GPU |
+| **Environment** | Docker Desktop for Mac | ARM containers |
+
+**GPU Strategy for Mac:**
+- M4 Max GPU acceleration via Metal (MPS backend in PyTorch)
+- 128GB unified memory = can load very large models
+- Limited Docker GPU passthrough (no CUDA) - prefer native Python for GPU workloads
+
+---
+
+## Corpus Size Projection (Answered Q-1)
+
+| Content Type | Initial | 6 Months | 1 Year | GPU Benefit |
+|--------------|---------|----------|--------|-------------|
+| Core docs (ADRs, DISCs, Plans) | ~100 | ~500 | ~1K | Low |
+| Chat logs | ~50 sessions | ~500 | ~2K | Medium |
+| Research papers | ~100 | ~1K | ~5K | **HIGH** |
+| Traces (Phoenix) | ~1K | ~50K | ~500K | **HIGH** |
+
+**Projection**: Within 6 months, corpus will justify GPU-accelerated vector search.
 
 ---
 
@@ -347,12 +392,58 @@ services:
 
 ### Recommendation
 
-**For AICM's current scale (likely <10K documents):** Stay with **Option A** (monolithic)
+**Given your hardware profile, recommend Option D (Hybrid) with phased rollout:**
 
-**When to upgrade:**
-- Document count >50K → Consider **Option C** (Qdrant)
-- Need local LLM → Add **Option B** (GPU sidecar)
-- Enterprise scale → Full **Option D** (hybrid)
+#### Phase 1: Now (Low Effort)
+Stay monolithic but prepare for GPU containers:
+```yaml
+# docker-compose.yml addition
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    volumes:
+      - qdrant_data:/qdrant/storage
+    ports:
+      - "6333:6333"
+```
+
+#### Phase 2: When Research Papers Hit 500+ 
+Add GPU-accelerated Qdrant:
+```yaml
+  qdrant:
+    image: qdrant/qdrant:v1.7.0-cuda  # GPU version
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['1']  # 3090 Ti
+              capabilities: [gpu]
+```
+
+#### Phase 3: When Local LLM Desired
+Add inference sidecar on 5090:
+```yaml
+  aidev-inference:
+    image: ollama/ollama:latest
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']  # 5090
+              capabilities: [gpu]
+    volumes:
+      - ollama_models:/root/.ollama
+    ports:
+      - "11434:11434"
+```
+
+**Rationale:**
+- 5090 (32GB) handles LLM inference (needs most VRAM)
+- 3090 Ti (24GB) handles vector DB + embeddings (parallel)
+- Both can run simultaneously on your MEG ACE board
+- Mac uses native Python for GPU (no Docker GPU passthrough on macOS)
 
 ---
 

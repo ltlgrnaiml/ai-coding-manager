@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
-import { Send, Bot, User, Loader2, Trash2, Copy, Check, Plus, MessageSquare, ChevronLeft, AlertCircle, ChevronDown, RefreshCw, BarChart3, X } from 'lucide-react'
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
+import { Send, Bot, User, Loader2, Trash2, Copy, Check, Plus, MessageSquare, ChevronLeft, AlertCircle, ChevronDown, RefreshCw, BarChart3, X, Wrench, Zap, Eye, Globe, Code, Brain, DollarSign, Settings2, Sparkles } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
@@ -19,10 +19,58 @@ interface Message {
   }
 }
 
+interface ModelPricing {
+  input_per_mtok: number
+  output_per_mtok: number
+  cache_read_per_mtok?: number
+  batch_input_per_mtok?: number
+}
+
+interface ModelCapabilities {
+  streaming: boolean
+  tools: boolean
+  vision: boolean
+  audio: boolean
+  video: boolean
+  code_execution: boolean
+  web_search: boolean
+  caching: boolean
+  batch: boolean
+  reasoning: boolean
+  json_mode: boolean
+  mcp: boolean
+}
+
 interface Model {
   id: string
   name: string
-  category: string
+  provider_id: string
+  family?: string
+  category?: string
+  context_window: number
+  pricing: ModelPricing
+  capabilities: ModelCapabilities
+}
+
+interface ToolInfo {
+  id: string
+  name: string
+  display_name: string
+  description?: string
+  price_per_use?: number
+  price_per_1k?: number
+  token_overhead: number
+}
+
+interface ModelAutocomplete {
+  model_id: string
+  model_name: string
+  provider_id: string
+  capabilities: ModelCapabilities
+  enabled_capabilities: string[]
+  tools: ToolInfo[]
+  supports_tools: boolean
+  supports_mcp: boolean
 }
 
 interface Conversation {
@@ -52,7 +100,25 @@ const STORAGE_KEY = 'ai-chat-conversations'
 const ACTIVE_CONV_KEY = 'ai-chat-active-conversation'
 const STATS_KEY = 'ai-chat-stats'
 const LAST_MODEL_KEY = 'ai-chat-last-model'
+const ENABLED_TOOLS_KEY = 'ai-chat-enabled-tools'
 const DEFAULT_MODEL = 'grok-4-fast-reasoning'
+
+const CAPABILITY_ICONS: Record<string, { icon: typeof Zap; color: string; label: string }> = {
+  tools: { icon: Wrench, color: 'text-blue-400', label: 'Tools' },
+  vision: { icon: Eye, color: 'text-purple-400', label: 'Vision' },
+  web_search: { icon: Globe, color: 'text-green-400', label: 'Web' },
+  code_execution: { icon: Code, color: 'text-yellow-400', label: 'Code' },
+  reasoning: { icon: Brain, color: 'text-pink-400', label: 'Reasoning' },
+  mcp: { icon: Sparkles, color: 'text-cyan-400', label: 'MCP' },
+}
+
+const PROVIDER_COLORS: Record<string, string> = {
+  anthropic: 'bg-orange-900/30 text-orange-300 border-orange-700',
+  google: 'bg-blue-900/30 text-blue-300 border-blue-700',
+  xai: 'bg-purple-900/30 text-purple-300 border-purple-700',
+  openai: 'bg-green-900/30 text-green-300 border-green-700',
+  local: 'bg-gray-900/30 text-gray-300 border-gray-700',
+}
 
 export default function ChatView() {
   const [conversations, setConversations] = useState<Conversation[]>([])
@@ -71,6 +137,11 @@ export default function ChatView() {
     lastUsedModel: DEFAULT_MODEL,
   })
   const [showStats, setShowStats] = useState(false)
+  const [showToolPanel, setShowToolPanel] = useState(false)
+  const [modelAutocomplete, setModelAutocomplete] = useState<ModelAutocomplete | null>(null)
+  const [enabledTools, setEnabledTools] = useState<string[]>([])
+  const [estimatedCost, setEstimatedCost] = useState<{ cost: number; breakdown: Record<string, number> } | null>(null)
+  const [isLoadingModels, setIsLoadingModels] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
@@ -232,12 +303,102 @@ export default function ChatView() {
     }
   }, [activeConversationId])
 
-  // Load models on mount
+  // Load models from registry on mount
   useEffect(() => {
-    fetch('/api/chat/models')
+    setIsLoadingModels(true)
+    fetch('/api/models')
       .then(res => res.json())
-      .then(data => setModels(data.models))
-      .catch(console.error)
+      .then((data: Model[]) => {
+        setModels(data)
+        setIsLoadingModels(false)
+      })
+      .catch(err => {
+        console.error('Failed to load models from registry:', err)
+        // Fallback to old endpoint
+        fetch('/api/chat/models')
+          .then(res => res.json())
+          .then(data => setModels(data.models?.map((m: { id: string; name: string; category: string }) => ({
+            ...m,
+            provider_id: 'unknown',
+            context_window: 128000,
+            pricing: { input_per_mtok: 0, output_per_mtok: 0 },
+            capabilities: { streaming: true, tools: false, vision: false, audio: false, video: false, code_execution: false, web_search: false, caching: false, batch: false, reasoning: false, json_mode: false, mcp: false }
+          })) || []))
+          .catch(console.error)
+          .finally(() => setIsLoadingModels(false))
+      })
+  }, [])
+
+  // Fetch autocomplete data when model changes
+  useEffect(() => {
+    if (!selectedModel) return
+    
+    fetch(`/api/models/${selectedModel}/autocomplete`)
+      .then(res => res.json())
+      .then((data: ModelAutocomplete) => {
+        setModelAutocomplete(data)
+        // Reset enabled tools if they're no longer available
+        setEnabledTools(prev => prev.filter(t => data.tools.some(tool => tool.name === t)))
+      })
+      .catch(err => {
+        console.error('Failed to load model autocomplete:', err)
+        setModelAutocomplete(null)
+      })
+  }, [selectedModel])
+
+  // Load saved enabled tools from localStorage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(ENABLED_TOOLS_KEY)
+      if (saved) {
+        setEnabledTools(JSON.parse(saved))
+      }
+    } catch (e) {
+      console.error('Failed to load enabled tools:', e)
+    }
+  }, [])
+
+  // Save enabled tools to localStorage
+  useEffect(() => {
+    localStorage.setItem(ENABLED_TOOLS_KEY, JSON.stringify(enabledTools))
+  }, [enabledTools])
+
+  // Estimate cost when input or tools change
+  useEffect(() => {
+    if (!selectedModel || !input.trim()) {
+      setEstimatedCost(null)
+      return
+    }
+
+    const estimateTokens = Math.ceil(input.length / 4) + messages.reduce((acc, m) => acc + Math.ceil(m.content.length / 4), 0)
+    const outputEstimate = 500 // Rough estimate for output
+
+    fetch('/api/models/estimate-cost', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model_id: selectedModel,
+        input_tokens: estimateTokens,
+        output_tokens: outputEstimate,
+        tools_used: enabledTools,
+        tool_calls: enabledTools.length > 0 ? 1 : 0,
+      }),
+    })
+      .then(res => res.json())
+      .then(data => setEstimatedCost({ cost: data.estimated_cost_usd, breakdown: data.breakdown }))
+      .catch(() => setEstimatedCost(null))
+  }, [selectedModel, input, messages.length, enabledTools])
+
+  // Get current model info
+  const currentModel = useMemo(() => models.find(m => m.id === selectedModel), [models, selectedModel])
+
+  // Toggle tool enabled/disabled
+  const toggleTool = useCallback((toolName: string) => {
+    setEnabledTools(prev => 
+      prev.includes(toolName) 
+        ? prev.filter(t => t !== toolName)
+        : [...prev, toolName]
+    )
   }, [])
 
   // Create initial conversation only if none exist AND we've finished loading
@@ -316,6 +477,7 @@ export default function ChatView() {
           messages: validMessages,
           model: selectedModel,
           stream: true,
+          tools: enabledTools.length > 0 ? enabledTools.map(name => ({ name })) : undefined,
         }),
       })
 
@@ -533,18 +695,88 @@ export default function ChatView() {
               <p className="text-sm text-gray-400">Powered by xAI Grok + Gemini</p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <select
-              value={selectedModel}
-              onChange={(e) => handleModelChange(e.target.value)}
-              className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-            >
-              {models.map(model => (
-                <option key={model.id} value={model.id}>
-                  {model.name}
-                </option>
-              ))}
-            </select>
+          <div className="flex items-center gap-3">
+            {/* Model Selector with Provider Badge */}
+            <div className="relative">
+              <select
+                value={selectedModel}
+                onChange={(e) => handleModelChange(e.target.value)}
+                disabled={isLoadingModels}
+                className="bg-gray-800 border border-gray-700 rounded-lg pl-3 pr-8 py-2 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 appearance-none min-w-[200px]"
+              >
+                {isLoadingModels ? (
+                  <option>Loading models...</option>
+                ) : (
+                  Object.entries(
+                    models.reduce((acc, model) => {
+                      const provider = model.provider_id || 'other'
+                      if (!acc[provider]) acc[provider] = []
+                      acc[provider].push(model)
+                      return acc
+                    }, {} as Record<string, Model[]>)
+                  ).map(([provider, providerModels]) => (
+                    <optgroup key={provider} label={provider.charAt(0).toUpperCase() + provider.slice(1)}>
+                      {providerModels.map(model => (
+                        <option key={model.id} value={model.id}>
+                          {model.name} {model.category ? `(${model.category})` : ''}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))
+                )}
+              </select>
+              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+            </div>
+
+            {/* Provider & Pricing Badge */}
+            {currentModel && (
+              <div className={`flex items-center gap-2 px-2 py-1 rounded-lg border text-xs ${PROVIDER_COLORS[currentModel.provider_id] || PROVIDER_COLORS.local}`}>
+                <span className="font-medium">{currentModel.provider_id}</span>
+                <span className="opacity-60">|</span>
+                <DollarSign className="w-3 h-3" />
+                <span>${currentModel.pricing.input_per_mtok}/{currentModel.pricing.output_per_mtok}</span>
+              </div>
+            )}
+
+            {/* Capability Badges */}
+            {currentModel && (
+              <div className="flex items-center gap-1">
+                {Object.entries(CAPABILITY_ICONS).map(([key, { icon: Icon, color, label }]) => {
+                  const isEnabled = currentModel.capabilities[key as keyof ModelCapabilities]
+                  if (!isEnabled) return null
+                  return (
+                    <div
+                      key={key}
+                      className={`p-1.5 rounded ${color} bg-gray-800/50`}
+                      title={label}
+                    >
+                      <Icon className="w-3.5 h-3.5" />
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+
+            {/* Tool Panel Toggle */}
+            {modelAutocomplete?.supports_tools && (
+              <button
+                onClick={() => setShowToolPanel(!showToolPanel)}
+                className={`p-2 rounded-lg transition-colors flex items-center gap-1 ${
+                  showToolPanel || enabledTools.length > 0
+                    ? 'text-cyan-400 bg-gray-800' 
+                    : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
+                }`}
+                title="Configure tools"
+              >
+                <Settings2 className="w-4 h-4" />
+                {enabledTools.length > 0 && (
+                  <span className="text-xs bg-cyan-600 text-white px-1.5 py-0.5 rounded-full">
+                    {enabledTools.length}
+                  </span>
+                )}
+              </button>
+            )}
+
             <button
               onClick={() => setShowStats(!showStats)}
               className={`p-2 rounded-lg transition-colors ${showStats ? 'text-cyan-400 bg-gray-800' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'}`}
@@ -626,6 +858,90 @@ export default function ChatView() {
                       </div>
                     )
                   })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Tool Panel */}
+        {showToolPanel && modelAutocomplete && (
+          <div className="border-b border-gray-800 bg-gray-900/50 px-6 py-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Wrench className="w-4 h-4 text-cyan-400" />
+                <h3 className="text-sm font-medium text-gray-300">Available Tools for {modelAutocomplete.model_name}</h3>
+              </div>
+              <button
+                onClick={() => setShowToolPanel(false)}
+                className="p-1 text-gray-500 hover:text-gray-300 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            
+            {modelAutocomplete.tools.length === 0 ? (
+              <p className="text-sm text-gray-500">No tools available for this model.</p>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                {modelAutocomplete.tools.map(tool => {
+                  const isEnabled = enabledTools.includes(tool.name)
+                  return (
+                    <button
+                      key={tool.id}
+                      onClick={() => toggleTool(tool.name)}
+                      className={`p-3 rounded-lg border transition-all text-left ${
+                        isEnabled
+                          ? 'bg-cyan-900/30 border-cyan-700 text-cyan-300'
+                          : 'bg-gray-800/50 border-gray-700 text-gray-400 hover:border-gray-600'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-medium text-sm">{tool.display_name}</span>
+                        <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
+                          isEnabled ? 'bg-cyan-500 border-cyan-500' : 'border-gray-600'
+                        }`}>
+                          {isEnabled && <Check className="w-3 h-3 text-white" />}
+                        </div>
+                      </div>
+                      {tool.description && (
+                        <p className="text-xs text-gray-500 line-clamp-2">{tool.description}</p>
+                      )}
+                      <div className="flex items-center gap-2 mt-2 text-xs">
+                        {tool.price_per_1k && (
+                          <span className="text-yellow-400">${tool.price_per_1k}/1K</span>
+                        )}
+                        {tool.price_per_use && (
+                          <span className="text-yellow-400">${tool.price_per_use}/use</span>
+                        )}
+                        {tool.token_overhead > 0 && (
+                          <span className="text-gray-500">+{tool.token_overhead} tokens</span>
+                        )}
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+
+            {/* Enabled Tools Summary */}
+            {enabledTools.length > 0 && (
+              <div className="mt-3 pt-3 border-t border-gray-800 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-500">Enabled:</span>
+                  <div className="flex gap-1">
+                    {enabledTools.map(name => (
+                      <span key={name} className="px-2 py-0.5 bg-cyan-900/50 text-cyan-300 rounded text-xs">
+                        {name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  onClick={() => setEnabledTools([])}
+                  className="text-xs text-gray-500 hover:text-gray-300"
+                >
+                  Clear all
+                </button>
               </div>
             )}
           </div>
@@ -781,13 +1097,46 @@ export default function ChatView() {
         {/* Input */}
         <div className="border-t border-gray-800 px-6 py-4">
           <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
+            {/* Input Status Bar */}
+            <div className="flex items-center justify-between mb-2 px-1">
+              <div className="flex items-center gap-3 text-xs">
+                {/* Enabled Tools Indicator */}
+                {enabledTools.length > 0 && (
+                  <div className="flex items-center gap-1 text-cyan-400">
+                    <Wrench className="w-3 h-3" />
+                    <span>{enabledTools.length} tool{enabledTools.length > 1 ? 's' : ''} active</span>
+                  </div>
+                )}
+                
+                {/* Model Context Info */}
+                {currentModel && (
+                  <div className="text-gray-500">
+                    <span className="text-gray-400">{currentModel.name}</span>
+                    <span className="mx-1">•</span>
+                    <span>{(currentModel.context_window / 1000).toFixed(0)}K context</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Cost Estimation */}
+              {estimatedCost && estimatedCost.cost > 0 && (
+                <div className="flex items-center gap-1 text-xs text-yellow-400" title="Estimated cost for this request">
+                  <DollarSign className="w-3 h-3" />
+                  <span>~${estimatedCost.cost.toFixed(4)}</span>
+                </div>
+              )}
+            </div>
+
             <div className="relative">
               <textarea
                 ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Type your message... (Shift+Enter for newline)"
+                placeholder={enabledTools.length > 0 
+                  ? `Type your message... (${enabledTools.join(', ')} enabled)`
+                  : "Type your message... (Shift+Enter for newline)"
+                }
                 className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 pr-12 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-none"
                 rows={1}
                 disabled={isLoading}
@@ -803,6 +1152,12 @@ export default function ChatView() {
                   <Send className="w-5 h-5 text-white" />
                 )}
               </button>
+            </div>
+
+            {/* Keyboard Shortcuts Hint */}
+            <div className="flex items-center justify-center gap-4 mt-2 text-xs text-gray-600">
+              <span><kbd className="px-1 py-0.5 bg-gray-800 rounded text-gray-500">Enter</kbd> to send</span>
+              <span><kbd className="px-1 py-0.5 bg-gray-800 rounded text-gray-500">Shift+Enter</kbd> for newline</span>
             </div>
           </form>
         </div>

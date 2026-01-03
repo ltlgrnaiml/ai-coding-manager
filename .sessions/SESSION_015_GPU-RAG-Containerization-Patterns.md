@@ -1,38 +1,48 @@
-# SESSION_015: GPU-Accelerated RAG Containerization Patterns
+# SESSION_015: GPU-Accelerated RAG & Cross-Platform Workflow
 
 **Date**: 2026-01-03
-**Status**: in_progress
-**Related DISC**: DISC-028
+**Status**: complete
+**Related DISCs**: DISC-028, DISC-029
 
-## Objective
+## Objectives
 
-Create a comprehensive discussion document exploring GPU-accelerated RAG system architectures in containerized environments. Address the user's question about whether separate GPU containers for database operations provide performance benefits.
+1. Create discussion on GPU-accelerated RAG containerization patterns
+2. Create strategy for cross-platform development (Mac native ↔ Win11 Docker)
 
-## Context
+## Deliverables
 
-User question: "Does it make sense to spin up separate containers that their only purpose is to serve up GPU accelerated DB info?"
+### DISC-028: GPU-Accelerated RAG Containerization
+- 4 common RAG deployment patterns documented
+- Hardware profile for Win11 (5090 + 3090 Ti) and Mac (M4 Max)
+- Phased rollout recommendation (Qdrant → GPU → Local LLM)
+- Performance comparison tables
 
-Key considerations:
-- Container networking overhead vs GPU acceleration benefits
-- Batching strategies for amortizing network latency
-- Vector database containerization patterns
-- Current AICM architecture uses SQLite + sentence-transformers locally
+### DISC-029: Cross-Platform Development Workflow
+- Machine switch protocol (switch_out.sh / switch_in.sh)
+- Environment detection system (detect_env.py)
+- Platform-aware Makefile
+- AI assistant context injection strategy
 
-## Research Sources Used
+### Scripts Created
+- `scripts/detect_env.py` - Environment detection
+- `scripts/switch_out.sh` - Before leaving machine
+- `scripts/switch_in.sh` - After arriving at machine
+- `scripts/switch_out.ps1` - Windows PowerShell version
+- `Makefile` - Platform-aware commands
 
-1. ADR-0002: Knowledge Archive & RAG System Architecture
-2. DISC-006: Knowledge Archive & RAG System (resolved)
-3. `backend/services/knowledge/enhanced_rag.py` - Current implementation
-4. `backend/services/knowledge/retrieval.py` - Current retrieval patterns
-5. `backend/services/knowledge/embedding_service.py` - Local embedding model
+## Key Decisions
 
-## Progress
-
-- [x] Reviewed existing RAG architecture in codebase
-- [x] Analyzed current embedding/retrieval patterns
-- [ ] Created DISC-028 with comprehensive flow diagrams
-- [ ] Document common RAG deployment patterns
+| Topic | Decision |
+|-------|----------|
+| GPU containers | Not needed now; add Qdrant when >500 research papers |
+| Machine sync | Git-based with switch scripts + CURRENT_MACHINE.md |
+| Environment detection | Python script used by code and AI assistants |
+| Mac execution | Native Python (no Docker for dev) |
+| Win11 execution | Docker + WSL2 (existing setup) |
 
 ## Handoff Notes
 
-(To be filled at session end)
+- Run `make help` to see all available commands
+- Before leaving Mac: `make switch-out` or `./scripts/switch_out.sh`
+- After arriving Win11: `git pull && ./scripts/switch_in.sh`
+- AI assistants should run `python scripts/detect_env.py` first
