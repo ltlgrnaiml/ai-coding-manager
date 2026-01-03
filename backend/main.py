@@ -138,6 +138,14 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"Failed to initialize P2RE database: {e}")
     
+    # Seed model registry with provider/model data
+    try:
+        from backend.services.p2re.model_registry import seed_all
+        result = seed_all()
+        logger.info(f"Model registry seeded: {result['providers']} providers, {result['models']} models, {result['tools']} tools")
+    except Exception as e:
+        logger.error(f"Failed to seed model registry: {e}")
+    
     # Initialize Memory database
     try:
         init_memory_database()
