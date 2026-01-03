@@ -35,6 +35,46 @@ function getYearColor(year: number, minYear: number, maxYear: number): string {
   return `rgb(${r}, ${g}, ${b})`
 }
 
+// Category colors for clustering
+const CATEGORY_COLORS: Record<string, string> = {
+  'agentic-ai': '#ef4444',
+  'rag': '#f97316',
+  'context': '#eab308',
+  'code-generation': '#22c55e',
+  'multi-agent': '#14b8a6',
+  'embedding': '#3b82f6',
+  'transformer': '#8b5cf6',
+  'prompt': '#ec4899',
+  'default': '#6366f1'
+}
+
+const CATEGORY_LABELS: Record<string, string> = {
+  'agentic-ai': 'Agentic AI',
+  'rag': 'RAG',
+  'context': 'Context',
+  'code-generation': 'Code Gen',
+  'multi-agent': 'Multi-Agent',
+  'embedding': 'Embedding',
+  'transformer': 'Transformer',
+  'prompt': 'Prompt Eng',
+  'default': 'Other'
+}
+
+// Detect category from paper
+function detectCategory(paper: Paper): string {
+  const text = ((paper.title || '') + ' ' + (paper.abstract || '')).toLowerCase()
+  
+  if (text.includes('agent') || text.includes('agentic')) return 'agentic-ai'
+  if (text.includes('retrieval') || text.includes('rag')) return 'rag'
+  if (text.includes('context') || text.includes('window') || text.includes('compress')) return 'context'
+  if (text.includes('code') && text.includes('generat')) return 'code-generation'
+  if (text.includes('multi-agent') || text.includes('collaborat')) return 'multi-agent'
+  if (text.includes('embed') || text.includes('vector')) return 'embedding'
+  if (text.includes('transformer') || text.includes('attention')) return 'transformer'
+  if (text.includes('prompt') || text.includes('instruct')) return 'prompt'
+  return 'default'
+}
+
 interface NodeData {
   id: string
   paper: Paper
@@ -44,6 +84,16 @@ interface NodeData {
   color: string
   year: number
   importance: number
+  category: string
+}
+
+interface ClusterRegion {
+  category: string
+  centerX: number
+  centerY: number
+  radiusX: number
+  radiusY: number
+  color: string
 }
 
 interface EdgeData {
@@ -68,6 +118,7 @@ function calculateLayout(papers: Paper[], width: number, height: number): NodeDa
     const importance = getImportance(paper)
     const year = extractYear(paper)
     
+    const category = detectCategory(paper)
     return {
       id: paper.paper_id,
       paper,
@@ -76,7 +127,8 @@ function calculateLayout(papers: Paper[], width: number, height: number): NodeDa
       size: 12 + importance * 25,
       color: getYearColor(year, minYear, maxYear),
       year,
-      importance
+      importance,
+      category
     }
   })
 
@@ -151,6 +203,46 @@ function calculateEdges(nodes: NodeData[]): EdgeData[] {
   return edges.sort((a, b) => b.weight - a.weight).slice(0, Math.min(edges.length, nodes.length * 2))
 }
 
+// Calculate cluster regions from nodes
+function calculateClusterRegions(nodes: NodeData[]): ClusterRegion[] {
+  const regions: ClusterRegion[] = []
+  const nodesByCategory: Map<string, NodeData[]> = new Map()
+
+  nodes.forEach(node => {
+    if (!nodesByCategory.has(node.category)) {
+      nodesByCategory.set(node.category, [])
+    }
+    nodesByCategory.get(node.category)!.push(node)
+  })
+
+  nodesByCategory.forEach((catNodes, category) => {
+    if (catNodes.length < 2) return // Need at least 2 nodes for a cluster
+
+    const xs = catNodes.map(n => n.x)
+    const ys = catNodes.map(n => n.y)
+    const centerX = xs.reduce((a, b) => a + b, 0) / xs.length
+    const centerY = ys.reduce((a, b) => a + b, 0) / ys.length
+
+    // Calculate radius to encompass all nodes with padding
+    let maxDistX = 0, maxDistY = 0
+    catNodes.forEach(n => {
+      maxDistX = Math.max(maxDistX, Math.abs(n.x - centerX) + n.size)
+      maxDistY = Math.max(maxDistY, Math.abs(n.y - centerY) + n.size)
+    })
+
+    regions.push({
+      category,
+      centerX,
+      centerY,
+      radiusX: maxDistX + 40,
+      radiusY: maxDistY + 40,
+      color: CATEGORY_COLORS[category] || CATEGORY_COLORS.default
+    })
+  })
+
+  return regions
+}
+
 export default function SimilarityGraphV2({ 
   papers, 
   onNodeClick,
@@ -161,6 +253,7 @@ export default function SimilarityGraphV2({
   const [hoveredNode, setHoveredNode] = useState<NodeData | null>(null)
   const [transform, setTransform] = useState({ x: 0, y: 0, scale: 1 })
   const [nodePositions, setNodePositions] = useState<Map<string, { x: number; y: number }>>(new Map())
+  const [hiddenCategories, setHiddenCategories] = useState<Set<string>>(new Set())
   const isPanning = useRef(false)
   const isDraggingNode = useRef<string | null>(null)
   const lastMouse = useRef({ x: 0, y: 0 })
@@ -189,7 +282,41 @@ export default function SimilarityGraphV2({
     })
   }, [initialNodes, nodePositions])
 
-  const edges = useMemo(() => calculateEdges(nodes), [nodes])
+  // Get unique categories
+  const categories = useMemo(() => {
+    const cats = new Set(nodes.map(n => n.category))
+    return Array.from(cats)
+  }, [nodes])
+
+  // Filter visible nodes
+  const visibleNodes = useMemo(() => {
+    return nodes.filter(n => !hiddenCategories.has(n.category))
+  }, [nodes, hiddenCategories])
+
+  // Calculate edges for visible nodes
+  const visibleEdges = useMemo(() => {
+    const allEdges = calculateEdges(nodes)
+    const visibleIds = new Set(visibleNodes.map(n => n.id))
+    return allEdges.filter(e => visibleIds.has(e.source) && visibleIds.has(e.target))
+  }, [nodes, visibleNodes])
+
+  // Calculate cluster regions
+  const clusterRegions = useMemo(() => {
+    return calculateClusterRegions(visibleNodes)
+  }, [visibleNodes])
+
+  // Toggle category visibility
+  const toggleCategory = useCallback((category: string) => {
+    setHiddenCategories(prev => {
+      const next = new Set(prev)
+      if (next.has(category)) {
+        next.delete(category)
+      } else {
+        next.add(category)
+      }
+      return next
+    })
+  }, [])
 
   // Resize observer
   useEffect(() => {
@@ -279,6 +406,8 @@ export default function SimilarityGraphV2({
   // Reset view
   const resetView = useCallback(() => {
     setTransform({ x: 0, y: 0, scale: 1 })
+    setNodePositions(new Map())
+    setHiddenCategories(new Set())
   }, [])
 
   if (papers.length === 0) {
@@ -289,7 +418,7 @@ export default function SimilarityGraphV2({
     )
   }
 
-  const nodeMap = new Map(nodes.map(n => [n.id, n]))
+  const nodeMap = new Map(visibleNodes.map(n => [n.id, n]))
 
   return (
     <div 
@@ -310,9 +439,42 @@ export default function SimilarityGraphV2({
           transformOrigin: '0 0'
         }}
       >
+        {/* Cluster background regions */}
+        <g opacity={0.15}>
+          {clusterRegions.map((region, i) => (
+            <ellipse
+              key={i}
+              cx={region.centerX}
+              cy={region.centerY}
+              rx={region.radiusX}
+              ry={region.radiusY}
+              fill={region.color}
+              stroke={region.color}
+              strokeWidth={2}
+              strokeDasharray="8,4"
+            />
+          ))}
+        </g>
+
+        {/* Cluster labels */}
+        {clusterRegions.map((region, i) => (
+          <text
+            key={`label-${i}`}
+            x={region.centerX}
+            y={region.centerY - region.radiusY + 15}
+            textAnchor="middle"
+            fill={region.color}
+            fontSize="11"
+            fontWeight="600"
+            opacity={0.7}
+          >
+            {CATEGORY_LABELS[region.category] || region.category}
+          </text>
+        ))}
+
         {/* Edges */}
         <g opacity={0.3}>
-          {edges.map((edge, i) => {
+          {visibleEdges.map((edge, i) => {
             const source = nodeMap.get(edge.source)
             const target = nodeMap.get(edge.target)
             if (!source || !target) return null
@@ -333,7 +495,7 @@ export default function SimilarityGraphV2({
         </g>
 
         {/* Nodes */}
-        {nodes.map(node => (
+        {visibleNodes.map(node => (
           <g 
             key={node.id}
             transform={`translate(${node.x}, ${node.y})`}
@@ -384,10 +546,10 @@ export default function SimilarityGraphV2({
         ))}
       </svg>
 
-      {/* Legend */}
-      <div className="absolute top-4 left-4 bg-white/95 border border-gray-200 rounded-xl p-4 shadow-lg backdrop-blur-sm">
-        <h3 className="text-sm font-semibold text-gray-700 mb-3">Year Published</h3>
-        <div className="flex items-center gap-2">
+      {/* Legend with filtering */}
+      <div className="absolute top-4 left-4 bg-white/95 border border-gray-200 rounded-xl p-4 shadow-lg backdrop-blur-sm max-w-xs">
+        <h3 className="text-sm font-semibold text-gray-700 mb-2">Year Published</h3>
+        <div className="flex items-center gap-2 mb-3">
           <div className="w-20 h-3 rounded-full" style={{
             background: 'linear-gradient(to right, rgb(200, 220, 255), rgb(100, 130, 220))'
           }} />
@@ -396,22 +558,47 @@ export default function SimilarityGraphV2({
             <span>{yearRange.max}</span>
           </div>
         </div>
+
+        <h4 className="text-xs font-semibold text-gray-600 mb-2">Categories (click to filter)</h4>
+        <div className="space-y-1 max-h-40 overflow-y-auto">
+          {categories.map(cat => {
+            const isHidden = hiddenCategories.has(cat)
+            const count = nodes.filter(n => n.category === cat).length
+            return (
+              <button
+                key={cat}
+                onClick={() => toggleCategory(cat)}
+                className={`flex items-center gap-2 w-full px-2 py-1 rounded text-left text-xs transition-all ${
+                  isHidden ? 'opacity-40 line-through' : 'hover:bg-gray-100'
+                }`}
+              >
+                <div
+                  className="w-3 h-3 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: CATEGORY_COLORS[cat] || CATEGORY_COLORS.default }}
+                />
+                <span className="text-gray-700 flex-1">{CATEGORY_LABELS[cat] || cat}</span>
+                <span className="text-gray-400">{count}</span>
+              </button>
+            )
+          })}
+        </div>
+
         <div className="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500">
-          <p><strong>Node size</strong> = relevance score</p>
-          <p className="mt-1"><strong>Drag</strong> to pan • <strong>Scroll</strong> to zoom</p>
+          <p><strong>Node size</strong> = relevance</p>
+          <p><strong>Regions</strong> = category clusters</p>
         </div>
         <button 
           onClick={resetView}
           className="mt-3 text-xs text-blue-600 hover:text-blue-800"
         >
-          Reset view
+          Reset view & filters
         </button>
       </div>
 
       {/* Stats */}
       <div className="absolute top-4 right-4 bg-white/95 border border-gray-200 rounded-lg px-4 py-2 shadow-sm backdrop-blur-sm">
         <p className="text-sm text-gray-600">
-          <span className="font-semibold text-blue-600">{papers.length}</span> papers • 
+          <span className="font-semibold text-blue-600">{visibleNodes.length}</span>/{papers.length} papers • 
           <span className="text-green-600 ml-1">SVG</span>
         </p>
       </div>

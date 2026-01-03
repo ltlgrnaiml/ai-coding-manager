@@ -1,13 +1,28 @@
-import { useEffect, useState, useCallback, useMemo, useRef } from 'react'
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { Paper } from '../../hooks/useResearch'
 
-interface PaperGraph2DProps {
+interface TimelineGraphProps {
   papers: Paper[]
   onNodeClick?: (paperId: string) => void
   className?: string
 }
 
-// Category colors - professional palette
+// Extract year from paper metadata
+function extractYear(paper: Paper): number {
+  if (paper.year) return paper.year
+  if (paper.published_date) {
+    const match = paper.published_date.match(/\d{4}/)
+    if (match) return parseInt(match[0])
+  }
+  return 2024
+}
+
+// Get importance score
+function getImportance(paper: Paper): number {
+  return paper.similarity || 0.5
+}
+
+// Category colors
 const CATEGORY_COLORS: Record<string, string> = {
   'agentic-ai': '#ef4444',
   'rag': '#f97316',
@@ -20,7 +35,19 @@ const CATEGORY_COLORS: Record<string, string> = {
   'default': '#6366f1'
 }
 
-// Detect category from paper content
+const CATEGORY_LABELS: Record<string, string> = {
+  'agentic-ai': 'Agentic AI',
+  'rag': 'RAG',
+  'context': 'Context',
+  'code-generation': 'Code Gen',
+  'multi-agent': 'Multi-Agent',
+  'embedding': 'Embedding',
+  'transformer': 'Transformer',
+  'prompt': 'Prompt Eng',
+  'default': 'Other'
+}
+
+// Detect category from paper
 function detectCategory(paper: Paper): string {
   const text = ((paper.title || '') + ' ' + (paper.abstract || '')).toLowerCase()
   
@@ -35,68 +62,6 @@ function detectCategory(paper: Paper): string {
   return 'default'
 }
 
-// Extract year from paper
-function extractYear(paper: Paper): number {
-  if (paper.year) return paper.year
-  if (paper.published_date) {
-    const match = paper.published_date.match(/\d{4}/)
-    if (match) return parseInt(match[0])
-  }
-  return 2024
-}
-
-// Get importance/relevance score
-function getImportance(paper: Paper): number {
-  return paper.similarity || 0.5
-}
-
-// Node shape paths (centered at 0,0)
-const SHAPES = {
-  circle: (size: number) => {
-    const r = size
-    return `M ${r},0 A ${r},${r} 0 1,1 ${-r},0 A ${r},${r} 0 1,1 ${r},0`
-  },
-  hexagon: (size: number) => {
-    const r = size
-    const points = []
-    for (let i = 0; i < 6; i++) {
-      const angle = (Math.PI / 3) * i - Math.PI / 6
-      points.push(`${r * Math.cos(angle)},${r * Math.sin(angle)}`)
-    }
-    return `M ${points.join(' L ')} Z`
-  },
-  diamond: (size: number) => {
-    const r = size * 1.2
-    return `M 0,${-r} L ${r},0 L 0,${r} L ${-r},0 Z`
-  },
-  square: (size: number) => {
-    const r = size * 0.85
-    return `M ${-r},${-r} L ${r},${-r} L ${r},${r} L ${-r},${r} Z`
-  },
-  triangle: (size: number) => {
-    const r = size * 1.1
-    return `M 0,${-r} L ${r * 0.866},${r * 0.5} L ${-r * 0.866},${r * 0.5} Z`
-  }
-}
-
-type ShapeType = keyof typeof SHAPES
-
-// Determine shape based on paper attributes
-function getNodeShape(paper: Paper, importance: number): ShapeType {
-  const year = extractYear(paper)
-  const currentYear = new Date().getFullYear()
-  
-  // Recent papers (last 2 years) = diamond
-  if (year >= currentYear - 1) return 'diamond'
-  // High importance = hexagon
-  if (importance > 0.7) return 'hexagon'
-  // Survey/review papers = square
-  const title = (paper.title || '').toLowerCase()
-  if (title.includes('survey') || title.includes('review') || title.includes('comprehensive')) return 'square'
-  // Default = circle
-  return 'circle'
-}
-
 interface NodeData {
   id: string
   paper: Paper
@@ -107,147 +72,116 @@ interface NodeData {
   category: string
   year: number
   importance: number
-  shape: ShapeType
-  column: number
+  lane: number
 }
 
-interface EdgeData {
+interface CitationEdge {
   source: string
   target: string
-  weight: number
+  yearDiff: number
 }
 
-// Calculate column-based layout (papers arranged by year, spread vertically)
-function calculateColumnLayout(papers: Paper[], width: number, height: number): NodeData[] {
-  if (papers.length === 0) return []
-
-  const padding = 100
-  const availableWidth = width - padding * 2
-  const availableHeight = height - padding * 2
-
-  // Group papers by year
-  const papersByYear: Map<number, Paper[]> = new Map()
-  papers.forEach(paper => {
-    const year = extractYear(paper)
-    if (!papersByYear.has(year)) {
-      papersByYear.set(year, [])
-    }
-    papersByYear.get(year)!.push(paper)
-  })
-
-  // Sort years
-  const years = Array.from(papersByYear.keys()).sort((a, b) => a - b)
-  const numColumns = years.length || 1
-  const columnWidth = availableWidth / numColumns
-
-  const nodes: NodeData[] = []
-
-  years.forEach((year, colIndex) => {
-    const papersInYear = papersByYear.get(year) || []
-    const numInColumn = papersInYear.length
-    const rowHeight = availableHeight / (numInColumn + 1)
-
-    // Sort papers in column by importance
-    papersInYear.sort((a, b) => getImportance(b) - getImportance(a))
-
-    papersInYear.forEach((paper, rowIndex) => {
-      const category = detectCategory(paper)
-      const importance = getImportance(paper)
-      const shape = getNodeShape(paper, importance)
-
-      // Add some horizontal jitter within column to avoid perfect grid
-      const jitterX = (Math.random() - 0.5) * columnWidth * 0.3
-
-      nodes.push({
-        id: paper.paper_id,
-        paper,
-        x: padding + colIndex * columnWidth + columnWidth / 2 + jitterX,
-        y: padding + (rowIndex + 1) * rowHeight,
-        size: 14 + importance * 20,
-        color: CATEGORY_COLORS[category] || CATEGORY_COLORS.default,
-        category,
-        year,
-        importance,
-        shape,
-        column: colIndex
-      })
-    })
-  })
-
-  return nodes
-}
-
-// Calculate edges (connect papers with similar categories or topics)
-function calculateEdges(nodes: NodeData[]): EdgeData[] {
-  const edges: EdgeData[] = []
-
-  for (let i = 0; i < nodes.length; i++) {
-    for (let j = i + 1; j < nodes.length; j++) {
-      const nodeA = nodes[i]
-      const nodeB = nodes[j]
-
-      // Same category = strong connection
-      let weight = nodeA.category === nodeB.category ? 0.8 : 0
-
-      // Adjacent years boost
-      if (Math.abs(nodeA.year - nodeB.year) <= 1) {
-        weight += 0.2
-      }
-
-      // Similar importance boost
-      const impDiff = Math.abs(nodeA.importance - nodeB.importance)
-      if (impDiff < 0.2) {
-        weight += 0.1
-      }
-
-      // Only show strong connections
-      if (weight >= 0.7) {
-        edges.push({
-          source: nodeA.id,
-          target: nodeB.id,
-          weight
-        })
-      }
-    }
-  }
-
-  // Limit edges to prevent clutter
-  return edges.sort((a, b) => b.weight - a.weight).slice(0, Math.min(edges.length, nodes.length * 1.5))
-}
-
-// Category labels for display
-const CATEGORY_LABELS: Record<string, string> = {
-  'agentic-ai': 'Agentic AI',
-  'rag': 'RAG',
-  'context': 'Context',
-  'code-generation': 'Code Gen',
-  'multi-agent': 'Multi-Agent',
-  'embedding': 'Embedding',
-  'transformer': 'Transformer',
-  'prompt': 'Prompt Eng',
-  'default': 'Other'
-}
-
-export default function PaperGraph2DV2({
-  papers,
+export default function TimelineGraphV2({ 
+  papers, 
   onNodeClick,
   className = ''
-}: PaperGraph2DProps) {
+}: TimelineGraphProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [dimensions, setDimensions] = useState({ width: 800, height: 600 })
+  const [dimensions, setDimensions] = useState({ width: 1000, height: 600 })
   const [hoveredNode, setHoveredNode] = useState<NodeData | null>(null)
   const [transform, setTransform] = useState({ x: 0, y: 0, scale: 1 })
-  const [nodePositions, setNodePositions] = useState<Map<string, { x: number; y: number }>>(new Map())
   const [hiddenCategories, setHiddenCategories] = useState<Set<string>>(new Set())
+  const [nodePositions, setNodePositions] = useState<Map<string, { x: number; y: number }>>(new Map())
   const isPanning = useRef(false)
   const isDraggingNode = useRef<string | null>(null)
   const lastMouse = useRef({ x: 0, y: 0 })
 
-  // Calculate layout
-  const initialNodes = useMemo(() => {
-    if (papers.length === 0) return []
-    return calculateColumnLayout(papers, dimensions.width, dimensions.height)
-  }, [papers, dimensions.width, dimensions.height])
+  // Calculate year range
+  const yearRange = useMemo(() => {
+    if (papers.length === 0) return { min: 2020, max: 2025 }
+    const years = papers.map(extractYear)
+    return { min: Math.min(...years), max: Math.max(...years) }
+  }, [papers])
+
+  // Calculate timeline layout with swim lanes per category
+  const { nodes: initialNodes, categories, citationEdges } = useMemo(() => {
+    if (papers.length === 0) return { nodes: [], categories: [], citationEdges: [] }
+
+    const padding = { top: 80, right: 60, bottom: 80, left: 120 }
+    const timelineWidth = dimensions.width - padding.left - padding.right
+    const timelineHeight = dimensions.height - padding.top - padding.bottom
+
+    // Group papers by category
+    const papersByCategory: Map<string, Paper[]> = new Map()
+    papers.forEach(paper => {
+      const cat = detectCategory(paper)
+      if (!papersByCategory.has(cat)) {
+        papersByCategory.set(cat, [])
+      }
+      papersByCategory.get(cat)!.push(paper)
+    })
+
+    const categoryList = Array.from(papersByCategory.keys()).sort()
+    const numLanes = categoryList.length || 1
+    const laneHeight = timelineHeight / numLanes
+
+    const nodes: NodeData[] = []
+
+    categoryList.forEach((category, laneIndex) => {
+      const papersInLane = papersByCategory.get(category) || []
+      const laneY = padding.top + laneIndex * laneHeight + laneHeight / 2
+
+      papersInLane.forEach(paper => {
+        const year = extractYear(paper)
+        const importance = getImportance(paper)
+        const yearProgress = (year - yearRange.min) / (yearRange.max - yearRange.min || 1)
+        
+        // Add some vertical jitter within lane
+        const jitterY = (Math.random() - 0.5) * laneHeight * 0.5
+
+        nodes.push({
+          id: paper.paper_id,
+          paper,
+          x: padding.left + yearProgress * timelineWidth,
+          y: laneY + jitterY,
+          size: 10 + importance * 20,
+          color: CATEGORY_COLORS[category] || CATEGORY_COLORS.default,
+          category,
+          year,
+          importance,
+          lane: laneIndex
+        })
+      })
+    })
+
+    // Calculate citation edges (connect papers that might cite each other)
+    const edges: CitationEdge[] = []
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const nodeA = nodes[i]
+        const nodeB = nodes[j]
+        const yearDiff = nodeB.year - nodeA.year
+
+        // Only show forward-in-time connections (citations go from newer to older)
+        if (yearDiff > 0 && yearDiff <= 3) {
+          // Same category or similar importance = likely citation
+          if (nodeA.category === nodeB.category || 
+              Math.abs(nodeA.importance - nodeB.importance) < 0.2) {
+            edges.push({
+              source: nodeA.id,
+              target: nodeB.id,
+              yearDiff
+            })
+          }
+        }
+      }
+    }
+
+    // Limit edges
+    const limitedEdges = edges.slice(0, Math.min(edges.length, nodes.length * 2))
+
+    return { nodes, categories: categoryList, citationEdges: limitedEdges }
+  }, [papers, dimensions, yearRange])
 
   // Merge with dragged positions
   const nodes = useMemo(() => {
@@ -260,43 +194,16 @@ export default function PaperGraph2DV2({
     })
   }, [initialNodes, nodePositions])
 
-  // Get unique categories for legend
-  const categories = useMemo(() => {
-    const cats = new Set(nodes.map(n => n.category))
-    return Array.from(cats)
-  }, [nodes])
-
-  // Filter visible nodes based on hidden categories
+  // Filter visible nodes
   const visibleNodes = useMemo(() => {
     return nodes.filter(n => !hiddenCategories.has(n.category))
   }, [nodes, hiddenCategories])
 
-  // Calculate edges only for visible nodes
+  // Filter visible edges
   const visibleEdges = useMemo(() => {
-    const allEdges = calculateEdges(nodes)
     const visibleIds = new Set(visibleNodes.map(n => n.id))
-    return allEdges.filter(e => visibleIds.has(e.source) && visibleIds.has(e.target))
-  }, [nodes, visibleNodes])
-
-  // Get year range
-  const yearRange = useMemo(() => {
-    if (nodes.length === 0) return { min: 2020, max: 2025 }
-    const years = nodes.map(n => n.year)
-    return { min: Math.min(...years), max: Math.max(...years) }
-  }, [nodes])
-
-  // Toggle category visibility
-  const toggleCategory = useCallback((category: string) => {
-    setHiddenCategories(prev => {
-      const next = new Set(prev)
-      if (next.has(category)) {
-        next.delete(category)
-      } else {
-        next.add(category)
-      }
-      return next
-    })
-  }, [])
+    return citationEdges.filter(e => visibleIds.has(e.source) && visibleIds.has(e.target))
+  }, [citationEdges, visibleNodes])
 
   // Resize observer
   useEffect(() => {
@@ -314,6 +221,19 @@ export default function PaperGraph2DV2({
 
     observer.observe(container)
     return () => observer.disconnect()
+  }, [])
+
+  // Toggle category visibility
+  const toggleCategory = useCallback((category: string) => {
+    setHiddenCategories(prev => {
+      const next = new Set(prev)
+      if (next.has(category)) {
+        next.delete(category)
+      } else {
+        next.add(category)
+      }
+      return next
+    })
   }, [])
 
   // Node drag handlers
@@ -396,11 +316,12 @@ export default function PaperGraph2DV2({
   }
 
   const nodeMap = new Map(visibleNodes.map(n => [n.id, n]))
+  const padding = { top: 80, right: 60, bottom: 80, left: 120 }
 
   return (
     <div
       ref={containerRef}
-      className={`h-full w-full relative bg-gradient-to-br from-gray-50 to-indigo-50 overflow-hidden ${className}`}
+      className={`h-full w-full relative bg-gradient-to-br from-slate-50 to-amber-50 overflow-hidden ${className}`}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -416,54 +337,117 @@ export default function PaperGraph2DV2({
           transformOrigin: '0 0'
         }}
       >
-        {/* Year column headers */}
-        {Array.from(new Set(nodes.map(n => n.year))).sort().map((year, i, arr) => {
-          const columnWidth = (dimensions.width - 200) / arr.length
-          const x = 100 + i * columnWidth + columnWidth / 2
+        {/* Background swim lane regions */}
+        {categories.map((category, i) => {
+          const laneHeight = (dimensions.height - padding.top - padding.bottom) / categories.length
+          const laneY = padding.top + i * laneHeight
+          const isHidden = hiddenCategories.has(category)
+          
           return (
-            <g key={year}>
+            <g key={category} opacity={isHidden ? 0.3 : 1}>
+              {/* Lane background */}
+              <rect
+                x={padding.left - 10}
+                y={laneY}
+                width={dimensions.width - padding.left - padding.right + 20}
+                height={laneHeight}
+                fill={i % 2 === 0 ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.02)'}
+                rx={4}
+              />
+              {/* Lane label */}
               <text
-                x={x}
-                y={40}
-                textAnchor="middle"
-                fill="#6b7280"
-                fontSize="14"
+                x={padding.left - 20}
+                y={laneY + laneHeight / 2}
+                textAnchor="end"
+                dominantBaseline="middle"
+                fill={CATEGORY_COLORS[category]}
+                fontSize="11"
                 fontWeight="600"
               >
-                {year}
+                {CATEGORY_LABELS[category] || category}
               </text>
-              <line
-                x1={x}
-                y1={55}
-                x2={x}
-                y2={dimensions.height - 50}
-                stroke="#e5e7eb"
-                strokeWidth={1}
-                strokeDasharray="4,4"
-              />
             </g>
           )
         })}
 
-        {/* Edges - curved horizontal connections */}
+        {/* Timeline axis */}
+        <line
+          x1={padding.left}
+          y1={dimensions.height - padding.bottom + 20}
+          x2={dimensions.width - padding.right}
+          y2={dimensions.height - padding.bottom + 20}
+          stroke="#374151"
+          strokeWidth={2}
+        />
+
+        {/* Year tick marks */}
+        {Array.from({ length: yearRange.max - yearRange.min + 1 }, (_, i) => yearRange.min + i).map(year => {
+          const x = padding.left + ((year - yearRange.min) / (yearRange.max - yearRange.min || 1)) * (dimensions.width - padding.left - padding.right)
+          return (
+            <g key={year}>
+              <line
+                x1={x}
+                y1={dimensions.height - padding.bottom + 15}
+                x2={x}
+                y2={dimensions.height - padding.bottom + 25}
+                stroke="#374151"
+                strokeWidth={2}
+              />
+              <line
+                x1={x}
+                y1={padding.top}
+                x2={x}
+                y2={dimensions.height - padding.bottom + 15}
+                stroke="#e5e7eb"
+                strokeWidth={1}
+                strokeDasharray="4,4"
+              />
+              <text
+                x={x}
+                y={dimensions.height - padding.bottom + 40}
+                textAnchor="middle"
+                fill="#374151"
+                fontSize="12"
+                fontWeight="600"
+              >
+                {year}
+              </text>
+            </g>
+          )
+        })}
+
+        {/* Citation arrows */}
+        <defs>
+          <marker
+            id="arrowhead"
+            markerWidth="10"
+            markerHeight="7"
+            refX="9"
+            refY="3.5"
+            orient="auto"
+          >
+            <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8" />
+          </marker>
+        </defs>
         <g opacity={0.4}>
           {visibleEdges.map((edge, i) => {
             const source = nodeMap.get(edge.source)
             const target = nodeMap.get(edge.target)
             if (!source || !target) return null
 
-            // Create curved path for horizontal flow
+            // Curved arrow from newer paper pointing to older paper (citation)
             const midX = (source.x + target.x) / 2
-            const curveOffset = Math.abs(source.y - target.y) * 0.3
+            const midY = Math.min(source.y, target.y) - 30
 
             return (
               <path
                 key={i}
-                d={`M ${source.x} ${source.y} C ${midX} ${source.y - curveOffset}, ${midX} ${target.y - curveOffset}, ${target.x} ${target.y}`}
-                stroke={source.color}
-                strokeWidth={edge.weight * 2}
-                strokeOpacity={edge.weight * 0.6}
+                d={`M ${target.x} ${target.y} Q ${midX} ${midY}, ${source.x} ${source.y}`}
+                stroke="#94a3b8"
+                strokeWidth={1.5}
                 fill="none"
+                markerEnd="url(#arrowhead)"
+                strokeDasharray={edge.yearDiff > 2 ? "4,2" : undefined}
               />
             )
           })}
@@ -484,9 +468,9 @@ export default function PaperGraph2DV2({
             onMouseEnter={() => setHoveredNode(node)}
             onMouseLeave={() => setHoveredNode(null)}
           >
-            {/* Node shape */}
-            <path
-              d={SHAPES[node.shape](node.size)}
+            {/* Node circle */}
+            <circle
+              r={node.size}
               fill={hoveredNode?.id === node.id ? '#1e40af' : node.color}
               stroke="#fff"
               strokeWidth={2}
@@ -498,34 +482,46 @@ export default function PaperGraph2DV2({
               }}
             />
 
-            {/* Label with background */}
+            {/* Label */}
             <rect
-              x={-55}
+              x={-50}
               y={node.size + 4}
-              width={110}
-              height={16}
+              width={100}
+              height={14}
               fill="rgba(255,255,255,0.9)"
               rx={3}
               style={{ pointerEvents: 'none' }}
             />
             <text
-              y={node.size + 15}
+              y={node.size + 14}
               textAnchor="middle"
               fill="#374151"
               fontSize="9"
               fontWeight="500"
               style={{ pointerEvents: 'none' }}
             >
-              {node.paper.title?.slice(0, 18)}{(node.paper.title?.length || 0) > 18 ? '...' : ''}
+              {node.paper.title?.slice(0, 16)}{(node.paper.title?.length || 0) > 16 ? '...' : ''}
             </text>
           </g>
         ))}
+
+        {/* Axis label */}
+        <text
+          x={dimensions.width / 2}
+          y={dimensions.height - 15}
+          textAnchor="middle"
+          fill="#374151"
+          fontSize="13"
+          fontWeight="600"
+        >
+          Publication Timeline →
+        </text>
       </svg>
 
       {/* Legend with filtering */}
       <div className="absolute top-4 left-4 bg-white/95 border border-gray-200 rounded-xl p-4 shadow-lg backdrop-blur-sm max-w-xs">
         <h3 className="text-sm font-semibold text-gray-700 mb-3">Categories (click to filter)</h3>
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           {categories.map(cat => {
             const isHidden = hiddenCategories.has(cat)
             const count = nodes.filter(n => n.category === cat).length
@@ -548,19 +544,9 @@ export default function PaperGraph2DV2({
           })}
         </div>
 
-        <div className="mt-3 pt-3 border-t border-gray-100">
-          <h4 className="text-xs font-semibold text-gray-600 mb-2">Shapes</h4>
-          <div className="grid grid-cols-2 gap-1 text-xs text-gray-500">
-            <span>◇ Recent</span>
-            <span>⬡ High match</span>
-            <span>□ Survey</span>
-            <span>○ Standard</span>
-          </div>
-        </div>
-
         <div className="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500">
-          <p><strong>Columns</strong> = Years ({yearRange.min}–{yearRange.max})</p>
-          <p className="mt-1"><strong>Drag</strong> to pan • <strong>Scroll</strong> to zoom</p>
+          <p>← <strong>Arrows</strong> = citation flow</p>
+          <p className="mt-1"><strong>Lanes</strong> = category groups</p>
         </div>
 
         <button
@@ -574,8 +560,8 @@ export default function PaperGraph2DV2({
       {/* Stats */}
       <div className="absolute top-4 right-4 bg-white/95 border border-gray-200 rounded-lg px-4 py-2 shadow-sm backdrop-blur-sm">
         <p className="text-sm text-gray-600">
-          <span className="font-semibold text-indigo-600">{visibleNodes.length}</span>/{papers.length} papers •
-          <span className="text-green-600 ml-1">SVG</span>
+          <span className="font-semibold text-amber-600">{visibleNodes.length}</span>/{papers.length} papers •
+          <span className="text-green-600 ml-1">Timeline</span>
         </p>
       </div>
 
@@ -599,7 +585,7 @@ export default function PaperGraph2DV2({
               className="px-2 py-0.5 rounded text-white"
               style={{ backgroundColor: hoveredNode.color }}
             >
-              {hoveredNode.category.replace(/-/g, ' ')}
+              {CATEGORY_LABELS[hoveredNode.category] || hoveredNode.category}
             </span>
             <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded">
               {(hoveredNode.importance * 100).toFixed(0)}% match

@@ -25,7 +25,7 @@ import { useResearch, Paper } from '../hooks/useResearch'
 import { PaperCard, PaperDetailModal, PaperGraph3D } from '../components/research'
 import PaperGraph2D from '../components/research/PaperGraph2DV2'
 import SimilarityGraph from '../components/research/SimilarityGraphV2'
-import TimelineGraph from '../components/research/TimelineGraph'
+import TimelineGraph from '../components/research/TimelineGraphV2'
 import TopicTreemap from '../components/research/TopicTreemap'
 
 type ViewMode = 'list' | 'grid' | 'similarity' | 'timeline' | 'treemap' | '2d' | '3d'
