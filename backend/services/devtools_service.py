@@ -8,7 +8,7 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field, ValidationError
@@ -999,7 +999,15 @@ async def generate_all_endpoint(
 # Research Paper API Endpoints
 # =============================================================================
 
-from .research_service import research_service
+# Optional research service import (may not be available in Docker)
+try:
+    from .research_service import research_service
+    RESEARCH_SERVICE_AVAILABLE = True
+except ImportError as e:
+    RESEARCH_SERVICE_AVAILABLE = False
+    research_service = None
+    import logging
+    logging.warning(f"Research service not available: {e}")
 
 
 @router.get("/research/search", response_model=List[Dict[str, Any]])
@@ -1020,6 +1028,8 @@ async def search_research_papers(
     Returns:
         List of search results.
     """
+    if not RESEARCH_SERVICE_AVAILABLE:
+        raise HTTPException(503, "Research service not available")
     return research_service.search_papers(query, method, limit, category)
 
 
@@ -1037,6 +1047,8 @@ async def get_research_paper(
     Returns:
         Paper details with metadata and content.
     """
+    if not RESEARCH_SERVICE_AVAILABLE:
+        raise HTTPException(503, "Research service not available")
     return research_service.get_paper_details(paper_id, query)
 
 
@@ -1056,6 +1068,8 @@ async def get_paper_rag_context(
     Returns:
         RAG-optimized context.
     """
+    if not RESEARCH_SERVICE_AVAILABLE:
+        raise HTTPException(503, "Research service not available")
     return research_service.get_paper_context_for_rag(paper_id, query, max_chunks)
 
 
@@ -1066,6 +1080,8 @@ async def get_research_categories() -> List[Dict[str, Any]]:
     Returns:
         List of categories with paper counts.
     """
+    if not RESEARCH_SERVICE_AVAILABLE:
+        raise HTTPException(503, "Research service not available")
     return research_service.get_categories()
 
 
@@ -1083,6 +1099,8 @@ async def get_papers_by_category(
     Returns:
         List of papers in the category.
     """
+    if not RESEARCH_SERVICE_AVAILABLE:
+        raise HTTPException(503, "Research service not available")
     return research_service.list_papers_by_category(category, limit)
 
 
@@ -1093,6 +1111,8 @@ async def get_research_stats() -> Dict[str, Any]:
     Returns:
         Database statistics including paper counts, categories, etc.
     """
+    if not RESEARCH_SERVICE_AVAILABLE:
+        raise HTTPException(503, "Research service not available")
     return research_service.get_database_stats()
 
 
@@ -1110,6 +1130,8 @@ async def ingest_research_paper(
     Returns:
         Ingestion result with paper details.
     """
+    if not RESEARCH_SERVICE_AVAILABLE:
+        raise HTTPException(503, "Research service not available")
     return research_service.ingest_paper_from_path(pdf_path, category)
 
 
@@ -1125,6 +1147,8 @@ async def get_paper_pdf(paper_id: str):
     """
     from fastapi.responses import Response
     
+    if not RESEARCH_SERVICE_AVAILABLE:
+        raise HTTPException(503, "Research service not available")
     pdf_data = research_service.get_paper_pdf(paper_id)
     if not pdf_data:
         raise HTTPException(status_code=404, detail="PDF not found")
@@ -1153,6 +1177,8 @@ async def get_paper_images(
     Returns:
         List of image metadata (without BLOB data).
     """
+    if not RESEARCH_SERVICE_AVAILABLE:
+        raise HTTPException(503, "Research service not available")
     return research_service.get_paper_images_list(paper_id, plots_only)
 
 
@@ -1169,6 +1195,8 @@ async def get_paper_image(paper_id: str, image_id: int):
     """
     from fastapi.responses import Response
     
+    if not RESEARCH_SERVICE_AVAILABLE:
+        raise HTTPException(503, "Research service not available")
     image_data = research_service.get_paper_image_data(paper_id, image_id)
     if not image_data:
         raise HTTPException(status_code=404, detail="Image not found")
@@ -1193,6 +1221,8 @@ async def get_paper_plots(paper_id: str) -> List[Dict[str, Any]]:
     Returns:
         List of plot metadata.
     """
+    if not RESEARCH_SERVICE_AVAILABLE:
+        raise HTTPException(503, "Research service not available")
     return research_service.get_paper_images_list(paper_id, plots_only=True)
 
 

@@ -24,6 +24,15 @@ from pydantic import BaseModel, Field
 from backend.services.devtools_service import router as devtools_router
 from backend.services.knowledge.database import init_database
 
+# Import research API as sub-application
+try:
+    from backend.services.research_api import app as research_app
+    RESEARCH_API_AVAILABLE = True
+except ImportError as e:
+    RESEARCH_API_AVAILABLE = False
+    research_app = None
+    print(f"Research API not available: {e}")
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -112,6 +121,12 @@ app.add_middleware(
 
 # Include routers
 app.include_router(devtools_router, prefix="/api/devtools", tags=["devtools"])
+
+# Mount research API as sub-application (provides /api/gpu/*, /api/aikh/*, etc.)
+# Mount at root since research_api already has /api/* prefixed routes
+if RESEARCH_API_AVAILABLE and research_app:
+    app.mount("", research_app)
+    logger.info("Research API mounted (provides /api/gpu/*, /api/aikh/*)")
 
 # Workspace paths
 WORKSPACE_ROOT = Path(os.getenv("WORKSPACE_ROOT", "."))

@@ -13,6 +13,9 @@ import {
   Clock,
   Sparkles,
   ChevronRight,
+  ChevronLeft,
+  PanelLeftClose,
+  PanelLeft,
   Layers
 } from 'lucide-react'
 import { useResearch, Paper } from '../hooks/useResearch'
@@ -90,6 +93,14 @@ export default function ResearchPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [categories] = useState<Category[]>(SAMPLE_CATEGORIES)
   const [concepts] = useState<Concept[]>(SAMPLE_CONCEPTS)
+  const [sidebarOpen, setSidebarOpen] = useState(true)
+
+  // Auto-collapse sidebar when viewing graphs
+  useEffect(() => {
+    if (viewMode === '2d' || viewMode === '3d') {
+      setSidebarOpen(false)
+    }
+  }, [viewMode])
   
   const { searchPapers, listAllPapers, getGPUStats, copyBibtex } = useResearch()
   const [gpuStats, setGpuStats] = useState<{ papersEmbedded: number; totalPapers: number } | null>(null)
@@ -156,14 +167,34 @@ export default function ResearchPage() {
   const is3DAvailable = gpuCapabilities?.webgl2 && papers.length < (gpuCapabilities?.estimatedMaxNodes || 1000)
 
   return (
-    <div className="flex-1 flex h-full bg-gray-950">
+    <div className="flex-1 flex h-full bg-gray-950 relative">
+      {/* Sidebar Toggle Button (visible when collapsed) */}
+      {!sidebarOpen && (
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="absolute left-2 top-2 z-20 p-2 bg-gray-800 hover:bg-gray-700 rounded-lg border border-gray-700 transition-colors"
+          title="Open sidebar"
+        >
+          <PanelLeft className="w-5 h-5 text-gray-400" />
+        </button>
+      )}
+
       {/* Left Sidebar - Discovery Panel */}
-      <aside className="w-64 border-r border-gray-800 flex flex-col bg-gray-900/50 overflow-y-auto">
+      <aside className={`${sidebarOpen ? 'w-64' : 'w-0'} border-r border-gray-800 flex flex-col bg-gray-900/50 overflow-hidden transition-all duration-300 ease-in-out`}>
         {/* Stats Header */}
-        <div className="p-4 border-b border-gray-800">
-          <div className="flex items-center gap-2 text-purple-400 mb-2">
-            <Layers className="w-5 h-5" />
-            <span className="font-semibold">Knowledge Base</span>
+        <div className="p-4 border-b border-gray-800 min-w-[256px]">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2 text-purple-400">
+              <Layers className="w-5 h-5" />
+              <span className="font-semibold">Knowledge Base</span>
+            </div>
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="p-1 hover:bg-gray-700 rounded transition-colors"
+              title="Close sidebar"
+            >
+              <PanelLeftClose className="w-4 h-4 text-gray-500" />
+            </button>
           </div>
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div className="bg-gray-800/50 rounded-lg p-2 text-center">

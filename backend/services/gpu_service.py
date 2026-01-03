@@ -42,8 +42,10 @@ try:
 except ImportError:
     SBERT_AVAILABLE = False
 
-# Database path
-DB_PATH = Path(".workspace/research_papers.db")
+# Database path - use WORKSPACE_ROOT env var in Docker
+import os
+WORKSPACE_ROOT = Path(os.getenv("WORKSPACE_ROOT", "."))
+DB_PATH = WORKSPACE_ROOT / ".workspace/research_papers.db"
 
 # Optimal batch sizes by VRAM
 BATCH_SIZE_BY_VRAM = {
