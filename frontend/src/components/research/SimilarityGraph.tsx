@@ -124,8 +124,17 @@ function LoadGraphData({
 }) {
   const loadGraph = useLoadGraph()
   const sigma = useSigma()
+  const initializedRef = useRef(false)
+  const paperIdsRef = useRef<string>('')
 
   useEffect(() => {
+    // Only re-initialize if papers actually changed
+    const paperIds = papers.map(p => p.paper_id).sort().join(',')
+    if (initializedRef.current && paperIds === paperIdsRef.current) {
+      return
+    }
+    paperIdsRef.current = paperIds
+
     const graph = new Graph()
     
     if (papers.length === 0) return
@@ -191,10 +200,13 @@ function LoadGraphData({
 
     loadGraph(graph)
     
-    // Center and zoom to fit
-    setTimeout(() => {
-      sigma.getCamera().animatedReset()
-    }, 100)
+    // Center and zoom to fit only on first load
+    if (!initializedRef.current) {
+      initializedRef.current = true
+      setTimeout(() => {
+        sigma.getCamera().animatedReset()
+      }, 100)
+    }
   }, [loadGraph, papers, yearRange, sigma])
 
   return null

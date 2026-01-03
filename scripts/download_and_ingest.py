@@ -28,6 +28,7 @@ import requests
 sys.path.append(str(Path(__file__).parent.parent / "src"))
 
 from ai_dev_orchestrator.knowledge.research_ingestion import ResearchPaperIngestion
+from gpu_batch_embedder import GPUBatchEmbedder
 
 
 def extract_paper_id(url: str) -> str:
@@ -129,6 +130,11 @@ def main():
         default=1.0,
         help="Delay between downloads in seconds (be nice to servers)"
     )
+    parser.add_argument(
+        "--skip-gpu-embed",
+        action="store_true",
+        help="Skip GPU embedding phase (run gpu_batch_embedder.py manually later)"
+    )
     
     args = parser.parse_args()
     
@@ -198,7 +204,8 @@ def main():
     print("PHASE 2: Ingesting into Research Database")
     print("=" * 60)
     
-    ingestion = ResearchPaperIngestion()
+    # Use skip_embeddings=True for fast ingestion, GPU embedder handles embeddings
+    ingestion = ResearchPaperIngestion(skip_embeddings=True)
     
     try:
         results = ingestion.ingest_batch(
@@ -229,6 +236,35 @@ def main():
     
     finally:
         ingestion.close()
+    
+    # Phase 3: GPU Embedding
+    if not args.skip_gpu_embed:
+        print()
+        print("=" * 60)
+        print("PHASE 3: GPU Embedding Generation (RTX 5090)")
+        print("=" * 60)
+        
+        try:
+            embedder = GPUBatchEmbedder()
+            print(f"GPU: {embedder.device}")
+            print(f"Model: {embedder.model_name}")
+            print(f"Batch size: {embedder.batch_size}")
+            print()
+            
+            # Embed papers first (summaries)
+            paper_count, paper_time = embedder.process_papers()
+            
+            # Then embed chunks (for detailed search)
+            chunk_count, chunk_time = embedder.process_chunks()
+            
+            print()
+            print("GPU Embedding Summary:")
+            print(f"  Papers: {paper_count} ({paper_time:.1f}s)")
+            print(f"  Chunks: {chunk_count} ({chunk_time:.1f}s)")
+            
+        except Exception as e:
+            print(f"⚠️  GPU embedding failed: {e}")
+            print("   Run manually: python scripts/gpu_batch_embedder.py")
 
 
 if __name__ == "__main__":
