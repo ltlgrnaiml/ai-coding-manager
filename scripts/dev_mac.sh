@@ -94,7 +94,7 @@ fi
 # Start Frontend
 echo -e "${CYAN}Starting Frontend (port 3100)...${NC}"
 cd frontend
-npm run dev -- --port 3100 > /tmp/aicm-frontend.log 2>&1 &
+npm run dev > /tmp/aicm-frontend.log 2>&1 &
 PID_FRONTEND=$!
 PIDS+=($PID_FRONTEND)
 cd ..
