@@ -1,0 +1,7 @@
+# Generated databases - regenerate on each device
+*.db
+*.db-shm
+*.db-wal
+
+# Windows Zone Identifier files (NTFS Alternate Data Streams)
+*:Zone.Identifier
