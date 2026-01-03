@@ -16,12 +16,18 @@ import {
   ChevronLeft,
   PanelLeftClose,
   PanelLeft,
-  Layers
+  Layers,
+  Link2,
+  Calendar,
+  LayoutGrid
 } from 'lucide-react'
 import { useResearch, Paper } from '../hooks/useResearch'
 import { PaperCard, PaperDetailModal, PaperGraph2D, PaperGraph3D } from '../components/research'
+import SimilarityGraph from '../components/research/SimilarityGraph'
+import TimelineGraph from '../components/research/TimelineGraph'
+import TopicTreemap from '../components/research/TopicTreemap'
 
-type ViewMode = 'list' | 'grid' | '2d' | '3d'
+type ViewMode = 'list' | 'grid' | 'similarity' | 'timeline' | 'treemap' | '2d' | '3d'
 
 interface GPUCapabilities {
   webgl2: boolean
@@ -97,7 +103,7 @@ export default function ResearchPage() {
 
   // Auto-collapse sidebar when viewing graphs
   useEffect(() => {
-    if (viewMode === '2d' || viewMode === '3d') {
+    if (viewMode === '2d' || viewMode === '3d' || viewMode === 'similarity' || viewMode === 'timeline' || viewMode === 'treemap') {
       setSidebarOpen(false)
     }
   }, [viewMode])
@@ -356,12 +362,41 @@ export default function ResearchPage() {
               >
                 <Grid3X3 className="w-5 h-5" />
               </button>
+              <div className="w-px h-6 bg-gray-700 mx-1" />
+              <button
+                onClick={() => setViewMode('similarity')}
+                className={`p-2 rounded-md transition-colors ${
+                  viewMode === 'similarity' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'
+                }`}
+                title="Similarity Graph (Connected Papers style)"
+              >
+                <Link2 className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setViewMode('timeline')}
+                className={`p-2 rounded-md transition-colors ${
+                  viewMode === 'timeline' ? 'bg-amber-600 text-white' : 'text-gray-400 hover:text-white'
+                }`}
+                title="Timeline (Litmaps style)"
+              >
+                <Calendar className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setViewMode('treemap')}
+                className={`p-2 rounded-md transition-colors ${
+                  viewMode === 'treemap' ? 'bg-green-600 text-white' : 'text-gray-400 hover:text-white'
+                }`}
+                title="Topic Treemap"
+              >
+                <LayoutGrid className="w-5 h-5" />
+              </button>
+              <div className="w-px h-6 bg-gray-700 mx-1" />
               <button
                 onClick={() => setViewMode('2d')}
                 className={`p-2 rounded-md transition-colors ${
                   viewMode === '2d' ? 'bg-purple-600 text-white' : 'text-gray-400 hover:text-white'
                 }`}
-                title="2D Graph (WebGL)"
+                title="2D Graph (Legacy)"
               >
                 <Network className="w-5 h-5" />
               </button>
@@ -430,6 +465,36 @@ export default function ResearchPage() {
                 ))
               )}
             </div>
+          ) : viewMode === 'similarity' ? (
+            <SimilarityGraph
+              key={`similarity-${papers.length}`}
+              papers={papers}
+              onNodeClick={(paperId) => {
+                const paper = papers.find(p => p.paper_id === paperId)
+                if (paper) setSelectedPaper(paper)
+              }}
+              className="h-full"
+            />
+          ) : viewMode === 'timeline' ? (
+            <TimelineGraph
+              key={`timeline-${papers.length}`}
+              papers={papers}
+              onNodeClick={(paperId) => {
+                const paper = papers.find(p => p.paper_id === paperId)
+                if (paper) setSelectedPaper(paper)
+              }}
+              className="h-full"
+            />
+          ) : viewMode === 'treemap' ? (
+            <TopicTreemap
+              key={`treemap-${papers.length}`}
+              papers={papers}
+              onNodeClick={(paperId) => {
+                const paper = papers.find(p => p.paper_id === paperId)
+                if (paper) setSelectedPaper(paper)
+              }}
+              className="h-full"
+            />
           ) : viewMode === '2d' ? (
             <PaperGraph2D
               key={`2d-${papers.length}`}

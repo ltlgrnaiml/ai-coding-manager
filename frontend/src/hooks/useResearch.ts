@@ -10,6 +10,10 @@ export interface Paper {
   authors?: string;
   arxiv_id?: string;
   similarity?: number;
+  year?: number;
+  published_date?: string;
+  citation_count?: number;
+  category?: string;
 }
 
 export interface Concept {
