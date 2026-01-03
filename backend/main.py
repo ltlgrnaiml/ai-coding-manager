@@ -26,6 +26,7 @@ from backend.services.research_api import router as research_router
 from backend.services.chatlog_service import router as chatlog_router
 from backend.services.p2re import router as p2re_router
 from backend.services.p2re import model_router
+from backend.services.performance_router import router as performance_router
 from backend.services.p2re.database import init_database as init_p2re_database
 from backend.services.knowledge.database import init_database
 from backend.services.knowledge.archive_service import ArchiveService
@@ -195,6 +196,7 @@ app.include_router(research_router, tags=["research"])
 app.include_router(chatlog_router, tags=["chatlogs"])
 app.include_router(p2re_router, tags=["P2RE - Trace Observability"])
 app.include_router(model_router, tags=["Model Registry"])
+app.include_router(performance_router, tags=["Performance & Caching"])
 
 # Workspace paths
 WORKSPACE_ROOT = Path(os.getenv("WORKSPACE_ROOT", "."))
