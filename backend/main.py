@@ -24,6 +24,8 @@ from pydantic import BaseModel, Field
 from backend.services.devtools_service import router as devtools_router
 from backend.services.research_api import router as research_router
 from backend.services.chatlog_service import router as chatlog_router
+from backend.services.p2re import router as p2re_router
+from backend.services.p2re.database import init_database as init_p2re_database
 from backend.services.knowledge.database import init_database
 from backend.services.knowledge.archive_service import ArchiveService
 from backend.services.knowledge.sync_service import SyncService
@@ -122,6 +124,13 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"Failed to initialize database: {e}")
     
+    # Initialize P2RE trace database
+    try:
+        init_p2re_database()
+        logger.info("P2RE trace database initialized")
+    except Exception as e:
+        logger.error(f"Failed to initialize P2RE database: {e}")
+    
     # Note: Phoenix tracing already initialized at module load time
     
     # Initialize sync service and run backfill
@@ -183,6 +192,7 @@ app.add_middleware(
 app.include_router(devtools_router, prefix="/api/devtools", tags=["devtools"])
 app.include_router(research_router, tags=["research"])
 app.include_router(chatlog_router, tags=["chatlogs"])
+app.include_router(p2re_router, tags=["P2RE - Trace Observability"])
 
 # Workspace paths
 WORKSPACE_ROOT = Path(os.getenv("WORKSPACE_ROOT", "."))
@@ -373,11 +383,14 @@ async def stream_chat_response(
     temperature: float,
     max_tokens: int,
     use_rag: bool = True,
+    session_id: str | None = None,
 ) -> AsyncGenerator[str, None]:
     """Stream chat response from appropriate provider based on model."""
     import logging
+    import time
     from backend.services.llm.registry import get_provider_for_model
     from backend.services.llm.types import ChatMessage as LLMMessage
+    from backend.services.p2re import capture_trace, complete_trace
     
     logging.info(f"Chat request using model: {model}")
     
@@ -385,28 +398,94 @@ async def stream_chat_response(
     if use_rag and messages:
         messages = _inject_rag_context(messages)
     
-    # Route to appropriate provider based on model
-    is_gemini = model.startswith("gemini")
+    # Extract user prompt for trace capture
+    user_prompt = ""
+    system_prompt = None
+    for msg in messages:
+        if msg.role == "user":
+            user_prompt = msg.content
+        elif msg.role == "system":
+            system_prompt = msg.content
     
-    if is_gemini:
-        # Use Google Gemini API (not yet in adapter system)
-        async for chunk in _stream_gemini(messages, model, temperature, max_tokens):
-            yield chunk
-    else:
-        # Try adapter-based providers first (xAI, Anthropic)
-        provider = get_provider_for_model(model)
-        if provider:
-            # Convert messages to LLM types
-            llm_messages = [LLMMessage(role=m.role, content=m.content) for m in messages]
-            async for chunk in provider.chat_stream(llm_messages, model, temperature, max_tokens):
-                if chunk.is_final:
-                    yield "data: [DONE]\n\n"
-                elif chunk.content:
-                    yield f"data: {json.dumps({'content': chunk.content, 'model': model, 'provider': provider.name})}\n\n"
-        else:
-            # Fallback to xAI streaming
-            async for chunk in _stream_xai(messages, model, temperature, max_tokens):
+    # Determine provider name
+    is_gemini = model.startswith("gemini")
+    provider_name = "google" if is_gemini else "xai"
+    provider = None if is_gemini else get_provider_for_model(model)
+    if provider:
+        provider_name = provider.name
+    
+    # Capture trace at request time
+    trace_id = None
+    start_time = time.time()
+    try:
+        trace_id = capture_trace(
+            provider=provider_name,
+            model=model,
+            user_prompt=user_prompt or "No user message",
+            system_prompt=system_prompt,
+            messages=[{"role": m.role, "content": m.content} for m in messages],
+            session_id=session_id,
+            source_file="backend/main.py",
+            source_function="stream_chat_response",
+            tags=["chat", "streaming"],
+        )
+    except Exception as e:
+        logging.warning(f"Failed to capture trace: {e}")
+    
+    # Collect full response for trace completion
+    full_response = []
+    tokens_out = 0
+    error_occurred = None
+    
+    try:
+        if is_gemini:
+            async for chunk in _stream_gemini(messages, model, temperature, max_tokens):
                 yield chunk
+                # Extract content from SSE data
+                if chunk.startswith("data: ") and "content" in chunk:
+                    try:
+                        data = json.loads(chunk[6:])
+                        if "content" in data:
+                            full_response.append(data["content"])
+                    except:
+                        pass
+        else:
+            if provider:
+                llm_messages = [LLMMessage(role=m.role, content=m.content) for m in messages]
+                async for chunk in provider.chat_stream(llm_messages, model, temperature, max_tokens):
+                    if chunk.is_final:
+                        yield "data: [DONE]\n\n"
+                    elif chunk.content:
+                        full_response.append(chunk.content)
+                        yield f"data: {json.dumps({'content': chunk.content, 'model': model, 'provider': provider.name})}\n\n"
+            else:
+                async for chunk in _stream_xai(messages, model, temperature, max_tokens):
+                    yield chunk
+                    if chunk.startswith("data: ") and "content" in chunk:
+                        try:
+                            data = json.loads(chunk[6:])
+                            if "content" in data:
+                                full_response.append(data["content"])
+                        except:
+                            pass
+    except Exception as e:
+        error_occurred = e
+        logging.error(f"Error during streaming: {e}")
+        raise
+    finally:
+        # Complete trace with response data
+        if trace_id:
+            latency_ms = int((time.time() - start_time) * 1000)
+            try:
+                complete_trace(
+                    trace_id=trace_id,
+                    response_content="".join(full_response),
+                    tokens_out=tokens_out or len("".join(full_response)) // 4,  # Estimate if not provided
+                    latency_ms=latency_ms,
+                    error=error_occurred,
+                )
+            except Exception as e:
+                logging.warning(f"Failed to complete trace: {e}")
 
 
 def _inject_rag_context(messages: list[ChatMessage]) -> list[ChatMessage]:

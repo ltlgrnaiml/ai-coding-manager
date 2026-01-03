@@ -19,8 +19,8 @@ __version__ = "2025.12.01"
 class ArtifactType(str, Enum):
     """Types of workflow artifacts per UAM (DISC-011).
     
-    Six Pillars: EXPLORE (DISC), DECIDE (ADR), DEFINE (SPEC), 
-    SHAPE (Contract), EXECUTE (PLAN), GUIDE
+    Seven Pillars: EXPLORE (DISC), DECIDE (ADR), DEFINE (SPEC), 
+    SHAPE (Contract), EXECUTE (PLAN), GUIDE, OBSERVE (P2RE/Trace)
     Plus supporting artifacts: SESSION, BUG
     """
 
@@ -33,6 +33,7 @@ class ArtifactType(str, Enum):
     BUG = "bug"
     GUIDE = "guide"
     CHAT_LOG = "chatlog"
+    TRACE = "trace"  # P2RE - LLM interaction traces
 
 
 class ArtifactStatus(str, Enum):
