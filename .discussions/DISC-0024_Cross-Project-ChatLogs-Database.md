@@ -102,6 +102,112 @@ This keeps the database alongside the source markdown files, making the folder s
 
 ---
 
+## Cross-Device Portability Architecture
+
+### The Challenge
+
+The user needs access to chat logs and research papers across multiple devices (workstation, laptop, etc.). This requires a clear separation between:
+
+1. **Portable Source Data** - The actual content that must travel with the user
+2. **Generated Databases** - Derived artifacts that can be regenerated locally
+
+### Architecture Decision: Source-First Portability
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    PORTABLE (Sync Across Devices)                   │
+├─────────────────────────────────────────────────────────────────────┤
+│  /home/mycahya/coding/ChatLogs/                                     │
+│  ├── *.md (50 chat log files, ~3.5MB)      ← SOURCE OF TRUTH       │
+│  └── .gitignore (excludes *.db files)                               │
+│                                                                     │
+│  /home/mycahya/coding/AI Papers/                                    │
+│  ├── *.pdf (research papers)               ← SOURCE OF TRUTH       │
+│  └── extracted_papers/ (optional, can regenerate)                   │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                 GENERATED (Device-Local, Regenerable)               │
+├─────────────────────────────────────────────────────────────────────┤
+│  /home/mycahya/coding/ChatLogs/                                     │
+│  └── chathistory.db        ← GENERATED, in .gitignore               │
+│                                                                     │
+│  /home/mycahya/coding/AI Papers/                                    │
+│  └── research_papers.db    ← GENERATED, in .gitignore               │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### Sync Strategy
+
+| Resource | Sync Method | Notes |
+|----------|-------------|-------|
+| `ChatLogs/*.md` | Cloud sync (OneDrive, Dropbox, Syncthing) | ~3.5MB, syncs quickly |
+| `AI Papers/*.pdf` | Cloud sync | Larger (~500MB+), sync selectively |
+| `chathistory.db` | **DO NOT SYNC** | Regenerate on each device |
+| `research_papers.db` | **DO NOT SYNC** | Regenerate on each device |
+
+### Why Not Sync Databases?
+
+1. **SQLite lock conflicts** - Concurrent access from sync clients causes corruption
+2. **Platform differences** - WAL files, page sizes may differ
+3. **Regeneration is cheap** - Initial ingest takes <60 seconds
+4. **Embeddings are expensive** - GPU embeddings should be generated per-device anyway
+
+### Device Bootstrap Workflow
+
+When setting up a new device:
+
+```bash
+# 1. Clone AICM repo
+git clone https://github.com/ltlgrnaiml/ai-coding-manager.git
+
+# 2. Sync ChatLogs and AI Papers folders from cloud storage
+# (OneDrive, Dropbox, or Syncthing)
+
+# 3. Create symlinks in AICM workspace
+cd ai-coding-manager
+ln -s /path/to/ChatLogs ./ChatLogs
+ln -s /path/to/AI\ Papers ./AI_Papers
+
+# 4. Regenerate databases (runs automatically on first API call, or manually):
+uv run python -m ai_dev_orchestrator.knowledge.chatlog_parser /path/to/ChatLogs
+
+# 5. (Optional) Generate GPU embeddings if device has GPU
+uv run python scripts/gpu_batch_embedder.py
+```
+
+### Folder Structure for Portability
+
+Both `ChatLogs/` and `AI Papers/` should have a `.gitignore` to exclude generated files:
+
+```gitignore
+# ChatLogs/.gitignore
+*.db
+*.db-shm
+*.db-wal
+```
+
+```gitignore
+# AI Papers/.gitignore
+*.db
+*.db-shm
+*.db-wal
+extracted_papers/  # Optional: include if you want to avoid re-extraction
+```
+
+### Environment Variable Overrides
+
+For flexibility across devices with different paths:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `CHATLOG_DB_PATH` | `<ChatLogs>/chathistory.db` | Override database location |
+| `CHATLOG_SOURCE_PATH` | `/home/mycahya/coding/ChatLogs` | Source markdown files |
+| `PAPERS_DB_PATH` | `<AI Papers>/research_papers.db` | Research papers DB |
+| `PAPERS_SOURCE_PATH` | `/home/mycahya/coding/AI Papers` | Source PDF files |
+
+---
+
 ## Database Schema Design
 
 ### Tables
