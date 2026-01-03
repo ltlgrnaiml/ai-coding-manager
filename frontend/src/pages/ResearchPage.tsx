@@ -404,10 +404,13 @@ export default function ResearchPage() {
                   <p className="text-lg">No papers found</p>
                   <p className="text-sm mb-4">Try selecting a topic from the sidebar</p>
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       setSearchQuery('')
                       setSelectedCategory(null)
-                      listAllPapers(79).then(setPapers)
+                      setIsLoading(true)
+                      const results = await listAllPapers(79)
+                      setPapers(results)
+                      setIsLoading(false)
                     }}
                     className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-500"
                   >
@@ -429,6 +432,7 @@ export default function ResearchPage() {
             </div>
           ) : viewMode === '2d' ? (
             <PaperGraph2D
+              key={`2d-${papers.length}`}
               papers={papers}
               onNodeClick={(paperId) => {
                 const paper = papers.find(p => p.paper_id === paperId)
@@ -438,6 +442,7 @@ export default function ResearchPage() {
             />
           ) : (
             <PaperGraph3D
+              key={`3d-${papers.length}`}
               papers={papers}
               onNodeClick={(paperId) => {
                 const paper = papers.find(p => p.paper_id === paperId)

@@ -138,6 +138,15 @@ function GraphEvents({
         sigma.refresh()
       }
     })
+    
+    // Cleanup on unmount - kill sigma instance to prevent WebGL context issues
+    return () => {
+      try {
+        sigma.kill()
+      } catch {
+        // Ignore cleanup errors
+      }
+    }
   }, [registerEvents, papers, onNodeClick, onHover, sigma])
 
   return null
