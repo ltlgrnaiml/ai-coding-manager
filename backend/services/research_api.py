@@ -10,7 +10,7 @@ Usage:
     uvicorn backend.services.research_api:app --reload --port 8001
 """
 
-from fastapi import FastAPI, Query, HTTPException
+from fastapi import FastAPI, APIRouter, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
@@ -47,6 +47,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Router for inclusion in main app (avoids shadowing main routes)
+router = APIRouter(tags=["research"])
 
 # Lazy-loaded organizer
 _organizer = None
@@ -348,7 +351,7 @@ class EnrichResponse(BaseModel):
     related_concepts: List[Dict[str, Any]]
 
 
-@app.post("/api/aikh/enrich", response_model=EnrichResponse)
+@router.post("/api/aikh/enrich", response_model=EnrichResponse)
 async def enrich_context(request: EnrichRequest):
     """Enrich a message with relevant papers and concepts for AI context."""
     org = get_organizer()
@@ -403,7 +406,7 @@ class AutocompleteResult(BaseModel):
     metadata: Optional[Dict[str, Any]] = None
 
 
-@app.get("/api/aikh/autocomplete", response_model=List[AutocompleteResult])
+@router.get("/api/aikh/autocomplete", response_model=List[AutocompleteResult])
 async def autocomplete(
     prefix: str = Query(..., min_length=2, description="Search prefix"),
     type: Optional[str] = Query(None, description="Filter: paper, concept, author"),
@@ -464,7 +467,7 @@ async def autocomplete(
     return results[:limit]
 
 
-@app.get("/api/aikh/papers/{paper_id}/bibtex")
+@router.get("/api/aikh/papers/{paper_id}/bibtex")
 async def get_bibtex(paper_id: str):
     """Generate BibTeX citation for a paper."""
     org = get_organizer()
@@ -509,7 +512,7 @@ async def get_bibtex(paper_id: str):
         }
 
 
-@app.post("/api/aikh/refs/create")
+@router.post("/api/aikh/refs/create")
 async def create_reference(
     artifact_type: str = Query(..., description="disc, adr, spec, plan"),
     artifact_id: str = Query(..., description="e.g., DISC-0022"),
@@ -531,7 +534,7 @@ async def create_reference(
     return {"status": "created", "artifact": f"{artifact_type}:{artifact_id}"}
 
 
-@app.get("/api/aikh/refs/artifact/{artifact_type}/{artifact_id}")
+@router.get("/api/aikh/refs/artifact/{artifact_type}/{artifact_id}")
 async def get_artifact_refs(artifact_type: str, artifact_id: str):
     """Get all knowledge references for an artifact."""
     org = get_organizer()
@@ -576,7 +579,7 @@ class GPUSearchResult(BaseModel):
     chunk_content: Optional[str] = None
 
 
-@app.post("/api/gpu/search", response_model=List[GPUSearchResult])
+@router.post("/api/gpu/search", response_model=List[GPUSearchResult])
 async def gpu_search(request: GPUSearchRequest):
     """GPU-accelerated semantic search.
     
@@ -619,7 +622,7 @@ async def gpu_search(request: GPUSearchRequest):
     ]
 
 
-@app.get("/api/gpu/stats")
+@router.get("/api/gpu/stats")
 async def gpu_stats():
     """Get GPU and embedding statistics."""
     if not GPU_SERVICE_AVAILABLE:
@@ -632,7 +635,7 @@ async def gpu_stats():
     return gpu.get_gpu_stats()
 
 
-@app.post("/api/gpu/embed-paper/{paper_id}")
+@router.post("/api/gpu/embed-paper/{paper_id}")
 async def embed_paper(paper_id: str):
     """Generate GPU embedding for a specific paper.
     
@@ -650,7 +653,7 @@ async def embed_paper(paper_id: str):
         raise HTTPException(404, "Paper not found or could not be embedded")
 
 
-@app.post("/api/gpu/batch-embed")
+@router.post("/api/gpu/batch-embed")
 async def trigger_batch_embed(
     papers_only: bool = Query(False),
     chunks_only: bool = Query(False)
@@ -678,7 +681,7 @@ async def trigger_batch_embed(
 
 
 # Override the enrich endpoint to use GPU when available
-@app.post("/api/aikh/enrich/gpu", response_model=EnrichResponse)
+@router.post("/api/aikh/enrich/gpu", response_model=EnrichResponse)
 async def enrich_context_gpu(request: EnrichRequest):
     """GPU-accelerated context enrichment.
     

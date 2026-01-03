@@ -122,11 +122,15 @@ app.add_middleware(
 # Include routers
 app.include_router(devtools_router, prefix="/api/devtools", tags=["devtools"])
 
-# Mount research API as sub-application (provides /api/gpu/*, /api/aikh/*, etc.)
-# Mount at root since research_api already has /api/* prefixed routes
-if RESEARCH_API_AVAILABLE and research_app:
-    app.mount("", research_app)
-    logger.info("Research API mounted (provides /api/gpu/*, /api/aikh/*)")
+# Include research API routes (GPU search, AIKH endpoints)
+# NOTE: We import and include the router, not mount the app, to avoid shadowing main routes
+if RESEARCH_API_AVAILABLE:
+    try:
+        from backend.services.research_api import router as research_router
+        app.include_router(research_router)
+        logger.info("Research API router included (provides /api/gpu/*, /api/aikh/*)")
+    except ImportError as e:
+        logger.warning(f"Could not import research router: {e}")
 
 # Workspace paths
 WORKSPACE_ROOT = Path(os.getenv("WORKSPACE_ROOT", "."))
