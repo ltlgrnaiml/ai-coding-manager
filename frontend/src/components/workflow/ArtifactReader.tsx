@@ -48,15 +48,22 @@ export function ArtifactReader({ artifactId, artifactType, fileFormat: propFileF
           else if (ext === 'py') setFileFormat('python')
         }
         
-        // Check if this is a chat record
-        const filename = data.file_path?.toLowerCase() || ''
-        const contentStr = typeof data.content === 'string' ? data.content.toLowerCase() : ''
-        const chatIndicators = ['chat', 'conversation', 'cascade', 'session', 'dialogue', 'transcript']
-        const contentIndicators = ['user:', 'assistant:', 'human:', 'ai:', 'claude:']
+        // Check if this is a chat record (be specific to avoid false positives)
+        // Chat records are typically exported chat logs, not DISC/ADR/SPEC artifacts
+        const filename = (data.file_path?.split('/').pop() || '').toLowerCase()
+        const contentStr = typeof data.content === 'string' ? data.content : ''
         
-        const isChat = chatIndicators.some(indicator => filename.includes(indicator)) ||
-                      contentIndicators.some(indicator => contentStr.includes(indicator))
-        setIsChatRecord(isChat)
+        // Only match explicit chat file patterns in filename (not path)
+        const isChatFilename = /^(chat|conversation|transcript|dialogue)[_-]/.test(filename) ||
+                              filename.includes('_chat_') ||
+                              filename.endsWith('_chat.md')
+        
+        // Check for structured chat format (multiple alternating user/assistant blocks)
+        const userMatches = (contentStr.match(/^(user|human):/gim) || []).length
+        const assistantMatches = (contentStr.match(/^(assistant|ai|claude):/gim) || []).length
+        const hasStructuredChat = userMatches >= 3 && assistantMatches >= 3
+        
+        setIsChatRecord(isChatFilename || hasStructuredChat)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error')
       } finally {

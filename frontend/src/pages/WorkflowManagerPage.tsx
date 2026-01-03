@@ -161,7 +161,11 @@ export function WorkflowManagerPage() {
         {/* Research Papers Button - Find related papers for selected artifact */}
         {selectedArtifact && (
           <button
-            onClick={() => findRelatedPapers(selectedArtifact.id)}
+            onClick={() => {
+              const artifact = allArtifacts.find(a => a.id === selectedArtifact.id)
+              const searchQuery = artifact?.title || selectedArtifact.id
+              findRelatedPapers(searchQuery)
+            }}
             className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded text-sm bg-purple-600/20 text-purple-300 hover:bg-purple-600/30 transition-colors"
             title="Find related research papers"
           >

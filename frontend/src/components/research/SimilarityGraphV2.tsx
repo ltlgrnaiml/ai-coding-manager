@@ -160,7 +160,9 @@ export default function SimilarityGraphV2({
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 })
   const [hoveredNode, setHoveredNode] = useState<NodeData | null>(null)
   const [transform, setTransform] = useState({ x: 0, y: 0, scale: 1 })
-  const isDragging = useRef(false)
+  const [nodePositions, setNodePositions] = useState<Map<string, { x: number; y: number }>>(new Map())
+  const isPanning = useRef(false)
+  const isDraggingNode = useRef<string | null>(null)
   const lastMouse = useRef({ x: 0, y: 0 })
 
   // Calculate year range for legend
@@ -170,11 +172,22 @@ export default function SimilarityGraphV2({
     return { min: Math.min(...years), max: Math.max(...years) }
   }, [papers])
 
-  // Calculate layout once when papers change
-  const nodes = useMemo(() => {
+  // Calculate initial layout when papers change
+  const initialNodes = useMemo(() => {
     if (papers.length === 0) return []
     return calculateLayout(papers, dimensions.width, dimensions.height)
   }, [papers, dimensions.width, dimensions.height])
+
+  // Merge initial positions with dragged positions
+  const nodes = useMemo(() => {
+    return initialNodes.map(node => {
+      const customPos = nodePositions.get(node.id)
+      if (customPos) {
+        return { ...node, x: customPos.x, y: customPos.y }
+      }
+      return node
+    })
+  }, [initialNodes, nodePositions])
 
   const edges = useMemo(() => calculateEdges(nodes), [nodes])
 
@@ -196,25 +209,50 @@ export default function SimilarityGraphV2({
     return () => observer.disconnect()
   }, [])
 
-  // Pan handlers
+  // Node drag handlers
+  const handleNodeMouseDown = useCallback((e: React.MouseEvent, nodeId: string) => {
+    e.stopPropagation()
+    isDraggingNode.current = nodeId
+    lastMouse.current = { x: e.clientX, y: e.clientY }
+  }, [])
+
+  // Pan handlers (for background)
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (e.button === 0) {
-      isDragging.current = true
+    if (e.button === 0 && !isDraggingNode.current) {
+      isPanning.current = true
       lastMouse.current = { x: e.clientX, y: e.clientY }
     }
   }, [])
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (isDragging.current) {
-      const dx = e.clientX - lastMouse.current.x
-      const dy = e.clientY - lastMouse.current.y
-      lastMouse.current = { x: e.clientX, y: e.clientY }
+    const dx = e.clientX - lastMouse.current.x
+    const dy = e.clientY - lastMouse.current.y
+    lastMouse.current = { x: e.clientX, y: e.clientY }
+
+    if (isDraggingNode.current) {
+      // Move the node
+      const nodeId = isDraggingNode.current
+      const scaledDx = dx / transform.scale
+      const scaledDy = dy / transform.scale
+      
+      setNodePositions(prev => {
+        const newMap = new Map(prev)
+        const currentNode = nodes.find(n => n.id === nodeId)
+        if (currentNode) {
+          const currentPos = prev.get(nodeId) || { x: currentNode.x, y: currentNode.y }
+          newMap.set(nodeId, { x: currentPos.x + scaledDx, y: currentPos.y + scaledDy })
+        }
+        return newMap
+      })
+    } else if (isPanning.current) {
+      // Pan the view
       setTransform(t => ({ ...t, x: t.x + dx, y: t.y + dy }))
     }
-  }, [])
+  }, [transform.scale, nodes])
 
   const handleMouseUp = useCallback(() => {
-    isDragging.current = false
+    isPanning.current = false
+    isDraggingNode.current = null
   }, [])
 
   // Zoom handler
@@ -262,7 +300,7 @@ export default function SimilarityGraphV2({
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
       onWheel={handleWheel}
-      style={{ cursor: isDragging.current ? 'grabbing' : 'grab' }}
+      style={{ cursor: isPanning.current || isDraggingNode.current ? 'grabbing' : 'grab' }}
     >
       <svg 
         width={dimensions.width} 
@@ -299,8 +337,14 @@ export default function SimilarityGraphV2({
           <g 
             key={node.id}
             transform={`translate(${node.x}, ${node.y})`}
-            style={{ cursor: 'pointer' }}
-            onClick={() => onNodeClick?.(node.id)}
+            style={{ cursor: isDraggingNode.current === node.id ? 'grabbing' : 'grab' }}
+            onMouseDown={(e) => handleNodeMouseDown(e, node.id)}
+            onClick={(e) => {
+              // Only trigger click if we weren't dragging
+              if (!nodePositions.has(node.id) || e.detail === 2) {
+                onNodeClick?.(node.id)
+              }
+            }}
             onMouseEnter={() => setHoveredNode(node)}
             onMouseLeave={() => setHoveredNode(null)}
           >
@@ -316,22 +360,26 @@ export default function SimilarityGraphV2({
               }}
             />
             
-            {/* Label (only show for larger nodes or when hovered) */}
-            {(node.size > 20 || hoveredNode?.id === node.id) && (
-              <text
-                y={node.size + 14}
-                textAnchor="middle"
-                fill="#374151"
-                fontSize="11"
-                fontWeight="500"
-                style={{ 
-                  pointerEvents: 'none',
-                  textShadow: '0 1px 2px rgba(255,255,255,0.8)'
-                }}
-              >
-                {node.paper.title?.slice(0, 25)}{(node.paper.title?.length || 0) > 25 ? '...' : ''}
-              </text>
-            )}
+            {/* Label - always show but with background for readability */}
+            <rect
+              x={-60}
+              y={node.size + 4}
+              width={120}
+              height={18}
+              fill="rgba(255,255,255,0.85)"
+              rx={4}
+              style={{ pointerEvents: 'none' }}
+            />
+            <text
+              y={node.size + 16}
+              textAnchor="middle"
+              fill="#1f2937"
+              fontSize="10"
+              fontWeight="500"
+              style={{ pointerEvents: 'none' }}
+            >
+              {node.paper.title?.slice(0, 20)}{(node.paper.title?.length || 0) > 20 ? '...' : ''}
+            </text>
           </g>
         ))}
       </svg>
