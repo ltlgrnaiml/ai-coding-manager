@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
-import { MessageSquare, GitBranch, Settings, Zap } from 'lucide-react'
+import { MessageSquare, GitBranch, Settings, Zap, BookOpen } from 'lucide-react'
 import ChatView from './views/ChatView'
 import { WorkflowManagerPage } from './pages/WorkflowManagerPage'
+import ResearchPage from './pages/ResearchPage'
 
 function App() {
   const location = useLocation()
@@ -19,6 +20,7 @@ function App() {
   const navItems = [
     { path: '/', icon: MessageSquare, label: 'Chat' },
     { path: '/workflow', icon: GitBranch, label: 'Workflow' },
+    { path: '/research', icon: BookOpen, label: 'Research' },
   ]
 
   return (
@@ -77,6 +79,7 @@ function App() {
         <Routes>
           <Route path="/" element={<ChatView />} />
           <Route path="/workflow" element={<WorkflowManagerPage />} />
+          <Route path="/research" element={<ResearchPage />} />
         </Routes>
       </main>
     </div>

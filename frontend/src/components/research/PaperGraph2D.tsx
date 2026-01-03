@@ -2,7 +2,8 @@ import { useEffect, useState, useCallback, useMemo, Component, ReactNode } from 
 import Graph from 'graphology'
 import { SigmaContainer, useLoadGraph, useSigma, useRegisterEvents } from '@react-sigma/core'
 import forceAtlas2 from 'graphology-layout-forceatlas2'
-import '@react-sigma/core/lib/style.css'
+// CSS import removed - styles bundled in newer versions
+// import '@react-sigma/core/lib/style.css'
 import { Paper } from '../../hooks/useResearch'
 
 // Error boundary for Sigma WebGL errors
