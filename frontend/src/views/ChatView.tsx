@@ -251,7 +251,15 @@ export default function ChatView() {
               if (parsed.error) {
                 setMessages(prev => prev.map(m =>
                   m.id === assistantMessage.id
-                    ? { ...m, content: `Error: ${parsed.error}`, isStreaming: false }
+                    ? { 
+                        ...m, 
+                        content: '', 
+                        isStreaming: false,
+                        error: {
+                          message: parsed.error,
+                          details: `Model: ${parsed.model || 'unknown'}\nProvider: ${parsed.provider || 'unknown'}\nTimestamp: ${new Date().toISOString()}`,
+                        }
+                      }
                     : m
                 ))
               }

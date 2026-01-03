@@ -22,6 +22,7 @@ class AnthropicProvider(LLMProvider):
     def __init__(self):
         self._api_key = os.getenv("ANTHROPIC_API_KEY", "")
         self._client = None
+        self._async_client = None
     
     @property
     def name(self) -> str:
@@ -36,6 +37,12 @@ class AnthropicProvider(LLMProvider):
             import anthropic
             self._client = anthropic.Anthropic(api_key=self._api_key)
         return self._client
+    
+    def _get_async_client(self):
+        if self._async_client is None:
+            import anthropic
+            self._async_client = anthropic.AsyncAnthropic(api_key=self._api_key)
+        return self._async_client
     
     def get_models(self) -> list[ModelInfo]:
         return [
@@ -196,7 +203,7 @@ class AnthropicProvider(LLMProvider):
         max_tokens: int = 4096,
         tools: list[ToolDefinition] | None = None,
     ) -> AsyncGenerator[StreamChunk, None]:
-        client = self._get_client()
+        client = self._get_async_client()
         system_prompt, anthropic_messages = self._convert_messages(messages)
         
         kwargs: dict[str, Any] = {
@@ -213,8 +220,8 @@ class AnthropicProvider(LLMProvider):
             kwargs["tools"] = self._convert_tools(tools)
         
         try:
-            with client.messages.stream(**kwargs) as stream:
-                for text in stream.text_stream:
+            async with client.messages.stream(**kwargs) as stream:
+                async for text in stream.text_stream:
                     yield StreamChunk(
                         content=text,
                         model=model,

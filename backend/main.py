@@ -453,11 +453,17 @@ async def stream_chat_response(
             if provider:
                 llm_messages = [LLMMessage(role=m.role, content=m.content) for m in messages]
                 async for chunk in provider.chat_stream(llm_messages, model, temperature, max_tokens):
+                    # Handle error content (may come with is_final=True)
+                    if chunk.content:
+                        if chunk.content.startswith("Error:"):
+                            # Send error as proper error payload
+                            yield f"data: {json.dumps({'error': chunk.content, 'model': model, 'provider': provider.name})}\n\n"
+                            error_occurred = Exception(chunk.content)
+                        else:
+                            full_response.append(chunk.content)
+                            yield f"data: {json.dumps({'content': chunk.content, 'model': model, 'provider': provider.name})}\n\n"
                     if chunk.is_final:
                         yield "data: [DONE]\n\n"
-                    elif chunk.content:
-                        full_response.append(chunk.content)
-                        yield f"data: {json.dumps({'content': chunk.content, 'model': model, 'provider': provider.name})}\n\n"
             else:
                 async for chunk in _stream_xai(messages, model, temperature, max_tokens):
                     yield chunk
