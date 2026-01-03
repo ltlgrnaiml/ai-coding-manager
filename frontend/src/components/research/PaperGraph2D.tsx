@@ -236,7 +236,7 @@ function LoadGraphData({
           graph.addEdge(paper.paper_id, other.paper_id, {
             size: 1.5,
             color: CATEGORY_COLORS[paperCategory] + '40', // 25% opacity
-            type: 'curve'
+            type: 'line'
           })
         }
         // Occasionally connect across categories
@@ -244,7 +244,7 @@ function LoadGraphData({
           graph.addEdge(paper.paper_id, other.paper_id, {
             size: 0.5,
             color: '#37415150',
-            type: 'curve'
+            type: 'line'
           })
         }
       })
@@ -345,7 +345,7 @@ export function PaperGraph2D({ papers, onNodeClick, className = '' }: PaperGraph
           labelFont: 'Inter, system-ui, sans-serif',
           defaultNodeColor: '#6366f1',
           defaultEdgeColor: '#374151',
-          defaultEdgeType: 'curve',
+          defaultEdgeType: 'line',
           minCameraRatio: 0.1,
           maxCameraRatio: 10,
           labelRenderedSizeThreshold: 4,
