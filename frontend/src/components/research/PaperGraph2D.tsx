@@ -1,9 +1,32 @@
-import { useEffect, useState, useCallback, useMemo } from 'react'
+import { useEffect, useState, useCallback, useMemo, Component, ReactNode } from 'react'
 import Graph from 'graphology'
 import { SigmaContainer, useLoadGraph, useSigma, useRegisterEvents } from '@react-sigma/core'
 import forceAtlas2 from 'graphology-layout-forceatlas2'
 import '@react-sigma/core/lib/style.css'
 import { Paper } from '../../hooks/useResearch'
+
+// Error boundary for Sigma WebGL errors
+class SigmaErrorBoundary extends Component<{ children: ReactNode; onError: (error: string) => void }, { hasError: boolean }> {
+  constructor(props: { children: ReactNode; onError: (error: string) => void }) {
+    super(props)
+    this.state = { hasError: false }
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true }
+  }
+
+  componentDidCatch(error: Error) {
+    this.props.onError(error.message)
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return null
+    }
+    return this.props.children
+  }
+}
 
 interface PaperGraph2DProps {
   papers: Paper[]
@@ -138,15 +161,6 @@ function GraphEvents({
         sigma.refresh()
       }
     })
-    
-    // Cleanup on unmount - kill sigma instance to prevent WebGL context issues
-    return () => {
-      try {
-        sigma.kill()
-      } catch {
-        // Ignore cleanup errors
-      }
-    }
   }, [registerEvents, papers, onNodeClick, onHover, sigma])
 
   return null
@@ -293,6 +307,8 @@ export function PaperGraph2D({ papers, onNodeClick, className = '' }: PaperGraph
     setHoverPosition(pos)
   }, [])
 
+  const [graphError, setGraphError] = useState<string | null>(null)
+
   if (papers.length === 0) {
     return (
       <div className={`flex items-center justify-center h-full bg-gray-900 ${className}`}>
@@ -301,11 +317,27 @@ export function PaperGraph2D({ papers, onNodeClick, className = '' }: PaperGraph
     )
   }
 
+  if (graphError) {
+    return (
+      <div className={`flex flex-col items-center justify-center h-full bg-gray-900 ${className}`}>
+        <p className="text-red-400 mb-4">Graph rendering error</p>
+        <p className="text-gray-500 text-sm mb-4">{graphError}</p>
+        <button 
+          onClick={() => setGraphError(null)}
+          className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-500"
+        >
+          Retry
+        </button>
+      </div>
+    )
+  }
+
   return (
     <div className={`h-full w-full relative ${className}`}>
-      <SigmaContainer
-        style={{ height: '100%', width: '100%', background: '#0f172a' }}
-        settings={{
+      <SigmaErrorBoundary onError={setGraphError}>
+        <SigmaContainer
+          style={{ height: '100%', width: '100%', background: '#0f172a' }}
+          settings={{
           renderLabels: true,
           labelSize: 11,
           labelWeight: 'bold',
@@ -330,7 +362,8 @@ export function PaperGraph2D({ papers, onNodeClick, className = '' }: PaperGraph
       >
         <LoadGraphData papers={papers} activeCategories={activeCategories} />
         <GraphEvents papers={papers} onNodeClick={onNodeClick} onHover={handleHover} />
-      </SigmaContainer>
+        </SigmaContainer>
+      </SigmaErrorBoundary>
 
       {/* Legend */}
       <GraphLegend 
