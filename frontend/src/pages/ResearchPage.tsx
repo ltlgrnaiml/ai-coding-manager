@@ -23,7 +23,7 @@ import {
 } from 'lucide-react'
 import { useResearch, Paper } from '../hooks/useResearch'
 import { PaperCard, PaperDetailModal, PaperGraph2D, PaperGraph3D } from '../components/research'
-import SimilarityGraph from '../components/research/SimilarityGraph'
+import SimilarityGraph from '../components/research/SimilarityGraphV2'
 import TimelineGraph from '../components/research/TimelineGraph'
 import TopicTreemap from '../components/research/TopicTreemap'
 
