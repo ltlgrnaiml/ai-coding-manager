@@ -22,17 +22,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from backend.services.devtools_service import router as devtools_router
-from backend.services.chatlog_service import router as chatlog_router
 from backend.services.knowledge.database import init_database
-
-# Import research API as sub-application
-try:
-    from backend.services.research_api import app as research_app
-    RESEARCH_API_AVAILABLE = True
-except ImportError as e:
-    RESEARCH_API_AVAILABLE = False
-    research_app = None
-    print(f"Research API not available: {e}")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -122,17 +112,6 @@ app.add_middleware(
 
 # Include routers
 app.include_router(devtools_router, prefix="/api/devtools", tags=["devtools"])
-app.include_router(chatlog_router)  # Per DISC-0024: Cross-project chat logs
-
-# Include research API routes (GPU search, AIKH endpoints)
-# NOTE: We import and include the router, not mount the app, to avoid shadowing main routes
-if RESEARCH_API_AVAILABLE:
-    try:
-        from backend.services.research_api import router as research_router
-        app.include_router(research_router)
-        logger.info("Research API router included (provides /api/gpu/*, /api/aikh/*)")
-    except ImportError as e:
-        logger.warning(f"Could not import research router: {e}")
 
 # Workspace paths
 WORKSPACE_ROOT = Path(os.getenv("WORKSPACE_ROOT", "."))

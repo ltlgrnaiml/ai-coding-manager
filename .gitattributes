@@ -1,0 +1,46 @@
+# Cross-platform line ending normalization
+# Ensures consistent behavior between macOS and WSL2/Linux
+
+# Default: auto-detect text files and normalize to LF
+* text=auto eol=lf
+
+# Explicitly mark shell scripts as LF (critical for Docker/Linux)
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Python files
+*.py text eol=lf
+
+# JavaScript/TypeScript
+*.js text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.jsx text eol=lf
+*.json text eol=lf
+
+# Config files
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.conf text eol=lf
+*.cfg text eol=lf
+Dockerfile text eol=lf
+*.Dockerfile text eol=lf
+
+# Markdown/docs
+*.md text eol=lf
+*.txt text eol=lf
+
+# Keep Windows batch files as CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary files - no conversion
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.db binary

@@ -30,7 +30,6 @@ x-backend-base: &backend-base
     - ./.sessions:/workspace/.sessions
     - ./.questions:/workspace/.questions
     - ./.workspace:/workspace/.workspace
-    - /home/mycahya/coding/ChatLogs:/chatlogs  # Per DISC-0024: Cross-project chat logs
   healthcheck: &backend-healthcheck
     test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
     interval: 30s

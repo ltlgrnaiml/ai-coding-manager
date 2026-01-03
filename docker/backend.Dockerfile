@@ -17,6 +17,15 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 COPY backend/ ./backend/
 COPY contracts/ ./contracts/
 
+# Copy main package files
+COPY pyproject.toml README.md uv.lock ./
+COPY src/ ./src/
+COPY scripts/ ./scripts/
+
+# Install the main package
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install -e .
+
 # Expose port
 EXPOSE 8000
 
