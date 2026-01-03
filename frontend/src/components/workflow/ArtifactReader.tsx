@@ -6,6 +6,7 @@ import { CodeRenderer } from './CodeRenderer'
 import { SchemaInterpreter } from './SchemaInterpreter'
 import { ChatRecordViewer } from './ChatRecordViewer'
 import { SessionViewer } from './SessionViewer'
+import { ChatLogViewer } from './ChatLogViewer'
 import { usePrompt } from '../../hooks/useWorkflowApi'
 import type { ArtifactType, FileFormat } from './types'
 
@@ -125,6 +126,11 @@ export function ArtifactReader({ artifactId, artifactType, fileFormat: propFileF
     if (!content) return <div className="p-4 text-zinc-500">No content available</div>
 
     try {
+      // Chat log from chatlogs.db - use dedicated viewer
+      if (artifactType === 'chatlog') {
+        return <ChatLogViewer chatlogId={parseInt(artifactId, 10)} className="h-full" />
+      }
+      
       // Session - use specialized viewer (PLAN-0005 M03)
       if (artifactType === 'session') {
         return <SessionViewer artifactId={artifactId} filePath={filePath} className="h-full" />

@@ -54,7 +54,27 @@ Fixed multiple UI issues related to chat logs integration, keyboard navigation, 
 - Frontend builds successfully
 - Docker containers rebuilt and deployed
 
-## Next Steps
+## Additional Fix: Chat Log Viewer Integration
 
-- Test chat log viewer rendering
-- Consider adding chat log content viewer component
+### Problem
+Chat logs displayed raw JSON instead of formatted conversation view.
+
+### Solution
+- `ChatLogViewer` component already existed but wasn't wired up
+- Updated `ArtifactReader` to use `ChatLogViewer` for `artifactType === 'chatlog'`
+
+### Features of ChatLogViewer
+- **Conversation tab**: User/Assistant messages with avatars, markdown rendering
+- **Files tab**: Referenced file paths with project tags
+- **Commands tab**: Extracted shell commands with accept/reject status
+- **Search**: Filter turns by content
+- **Header**: Title, date, turn count, word count, project badges
+
+## Files Modified (Additional)
+
+| File | Change |
+|------|--------|
+| `frontend/src/components/workflow/ArtifactReader.tsx` | Import and use `ChatLogViewer` for chatlog type |
+
+## Status
+✅ Complete - All fixes deployed to Docker containers
