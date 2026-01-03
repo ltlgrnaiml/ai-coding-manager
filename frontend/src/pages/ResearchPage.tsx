@@ -23,7 +23,7 @@ import {
 } from 'lucide-react'
 import { useResearch, Paper } from '../hooks/useResearch'
 import { PaperCard, PaperDetailModal, PaperGraph3D } from '../components/research'
-import PaperGraph2D from '../components/research/PaperGraph2DV2'
+import RelationshipGraph from '../components/research/RelationshipGraph'
 import SimilarityGraph from '../components/research/SimilarityGraphV2'
 import TimelineGraph from '../components/research/TimelineGraphV2'
 import TopicTreemap from '../components/research/TopicTreemap'
@@ -406,7 +406,7 @@ export default function ResearchPage() {
                 className={`p-2 rounded-md transition-colors ${
                   viewMode === '2d' ? 'bg-purple-600 text-white' : 'text-gray-400 hover:text-white'
                 }`}
-                title="2D Graph (Legacy)"
+                title="Relationship Explorer"
               >
                 <Network className="w-5 h-5" />
               </button>
@@ -506,8 +506,8 @@ export default function ResearchPage() {
               className="h-full"
             />
           ) : viewMode === '2d' ? (
-            <PaperGraph2D
-              key={`2d-${papers.length}`}
+            <RelationshipGraph
+              key={`rel-${papers.length}`}
               papers={papers}
               onNodeClick={(paperId) => {
                 const paper = papers.find(p => p.paper_id === paperId)
