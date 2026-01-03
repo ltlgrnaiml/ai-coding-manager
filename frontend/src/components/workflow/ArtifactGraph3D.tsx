@@ -14,6 +14,10 @@ const TYPE_COLORS: Record<ArtifactType, string> = {
   spec: '#EAB308',
   contract: '#A855F7',
   plan: '#EF4444',
+  session: '#F97316',
+  bug: '#DC2626',
+  guide: '#06B6D4',
+  chatlog: '#8B5CF6',
 }
 
 const TYPE_LABELS: Record<ArtifactType, string> = {
@@ -22,6 +26,10 @@ const TYPE_LABELS: Record<ArtifactType, string> = {
   spec: 'SPEC',
   contract: 'Contract',
   plan: 'Plan',
+  session: 'Session',
+  bug: 'Bug',
+  guide: 'Guide',
+  chatlog: 'Chat Log',
 }
 
 interface ExtendedGraphNode extends GraphNode {
