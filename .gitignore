@@ -68,3 +68,8 @@ research_papers/
 # Frontend
 frontend/dist/
 frontend/node_modules/
+
+# External resources (symlinks to cross-project data)
+# Per DISC-0024: These are separate from the main repo
+ChatLogs
+AI_Papers

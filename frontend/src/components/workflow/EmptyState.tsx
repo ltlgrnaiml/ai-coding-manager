@@ -52,6 +52,12 @@ const EMPTY_STATE_CONTENT: Record<ArtifactType, { icon: React.ReactNode; title: 
     description: 'Guides document processes and best practices.',
     cta: 'Create a Guide',
   },
+  chatlog: {
+    icon: <MessageSquare size={48} className="text-indigo-400" />,
+    title: 'No chat logs yet',
+    description: 'Chat logs capture AI conversations from external chat exports.',
+    cta: 'Import Chat Log',
+  },
 }
 
 const STAGE_TO_ARTIFACT: Record<WorkflowStage, ArtifactType> = {

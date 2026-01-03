@@ -32,6 +32,7 @@ const TYPE_LABELS: Record<ArtifactType, string> = {
   session: 'Session',
   bug: 'Bug',
   guide: 'Guide',
+  chatlog: 'Chat Log',
 }
 
 const TYPE_COLORS: Record<ArtifactType, string> = {
@@ -43,6 +44,7 @@ const TYPE_COLORS: Record<ArtifactType, string> = {
   session: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
   bug: 'bg-orange-500/20 text-orange-300 border-orange-500/30',
   guide: 'bg-slate-500/20 text-slate-300 border-slate-500/30',
+  chatlog: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
 }
 
 export function ReviewApprovePanel({

@@ -22,6 +22,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from backend.services.devtools_service import router as devtools_router
+from backend.services.chatlog_service import router as chatlog_router
 from backend.services.knowledge.database import init_database
 
 # Import research API as sub-application
@@ -121,6 +122,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(devtools_router, prefix="/api/devtools", tags=["devtools"])
+app.include_router(chatlog_router)  # Per DISC-0024: Cross-project chat logs
 
 # Include research API routes (GPU search, AIKH endpoints)
 # NOTE: We import and include the router, not mount the app, to avoid shadowing main routes

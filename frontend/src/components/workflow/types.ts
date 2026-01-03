@@ -1,4 +1,4 @@
-export type ArtifactType = 'discussion' | 'adr' | 'spec' | 'plan' | 'contract' | 'session' | 'bug' | 'guide'
+export type ArtifactType = 'discussion' | 'adr' | 'spec' | 'plan' | 'contract' | 'session' | 'bug' | 'guide' | 'chatlog'
 
 export type ArtifactStatus = 'draft' | 'active' | 'deprecated' | 'superseded' | 'completed'
 

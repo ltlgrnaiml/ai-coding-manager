@@ -16,6 +16,7 @@ const TYPE_COLORS: Record<ArtifactType, string> = {
   session: '#06B6D4',    // cyan
   bug: '#F97316',        // orange
   guide: '#64748B',      // slate
+  chatlog: '#818CF8',    // indigo
 }
 
 const TYPE_LABELS: Record<ArtifactType, string> = {
@@ -27,6 +28,7 @@ const TYPE_LABELS: Record<ArtifactType, string> = {
   session: 'Session',
   bug: 'Bug',
   guide: 'Guide',
+  chatlog: 'Chatlog',
 }
 
 interface ArtifactGraphProps {

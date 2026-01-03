@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Search, FileJson, FileText, MessageSquare, ListTodo, Code2, BookOpen, Bug, FileQuestion } from 'lucide-react'
+import { Search, FileJson, FileText, MessageSquare, ListTodo, Code2, BookOpen, Bug, FileQuestion, MessagesSquare } from 'lucide-react'
 import { cn } from '../../lib/utils'
 import type { ArtifactSummary, ArtifactType } from './types'
 
@@ -12,6 +12,7 @@ const TYPE_ICONS: Record<ArtifactType, React.ReactNode> = {
   session: <BookOpen size={14} />,
   bug: <Bug size={14} />,
   guide: <FileQuestion size={14} />,
+  chatlog: <MessagesSquare size={14} />,
 }
 
 interface CommandPaletteProps {

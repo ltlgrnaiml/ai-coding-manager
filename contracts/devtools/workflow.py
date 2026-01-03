@@ -32,6 +32,7 @@ class ArtifactType(str, Enum):
     SESSION = "session"
     BUG = "bug"
     GUIDE = "guide"
+    CHAT_LOG = "chatlog"
 
 
 class ArtifactStatus(str, Enum):

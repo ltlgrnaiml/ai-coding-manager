@@ -17,6 +17,7 @@ const TYPE_COLORS: Record<ArtifactType, string> = {
   session: '#06B6D4',
   bug: '#F97316',
   guide: '#64748B',
+  chatlog: '#818CF8',
 }
 
 const TYPE_LABELS: Record<ArtifactType, string> = {
@@ -28,6 +29,7 @@ const TYPE_LABELS: Record<ArtifactType, string> = {
   session: 'Session',
   bug: 'Bug',
   guide: 'Guide',
+  chatlog: 'Chat Log',
 }
 
 interface ExtendedGraphNode extends GraphNode {

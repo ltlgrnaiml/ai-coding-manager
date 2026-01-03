@@ -21,6 +21,7 @@ export { PlanViewer } from './PlanViewer'
 export { SchemaViewer } from './SchemaViewer'
 export { SchemaInterpreter } from './SchemaInterpreter'
 export { SessionViewer } from './SessionViewer'
+export { ChatLogViewer } from './ChatLogViewer'
 
 // Editor
 export { ArtifactEditor } from './ArtifactEditor'
