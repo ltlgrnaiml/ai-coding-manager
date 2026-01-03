@@ -33,8 +33,14 @@ import sqlite3
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 sys.path.insert(0, str(Path(__file__).parent))
 
-# Default database path
-DEFAULT_DB_PATH = Path(".workspace") / "research_papers.db"
+# Default database path - use AIKH centralized location
+def _get_aikh_db_path() -> Path:
+    """Get AIKH research database path."""
+    if aikh_home := os.getenv("AIKH_HOME"):
+        return Path(aikh_home) / "research.db"
+    return Path.home() / ".aikh" / "research.db"
+
+DEFAULT_DB_PATH = _get_aikh_db_path()
 
 
 def _get_db_connection(db_path: Optional[Path] = None) -> sqlite3.Connection:

@@ -11,7 +11,12 @@ from datetime import datetime
 sys.path.insert(0, str(Path(__file__).parent))
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-DB_PATH = Path(".workspace/research_papers.db")
+import os
+def _get_aikh_db() -> Path:
+    if aikh_home := os.getenv("AIKH_HOME"):
+        return Path(aikh_home) / "research.db"
+    return Path.home() / ".aikh" / "research.db"
+DB_PATH = _get_aikh_db()
 
 def get_content_hash(text: str) -> str:
     """Generate content hash for deduplication."""
@@ -101,7 +106,12 @@ def ingest_one(conn: sqlite3.Connection, pdf_path: str, category: str = None):
         return None, {"status": "error", "error": str(e)}
 
 def main():
-    source_dir = Path("/home/mycahya/coding/AI Papers")
+    # Default to .research_papers in project root, or pass as arg
+    import sys
+    if len(sys.argv) > 1:
+        source_dir = Path(sys.argv[1])
+    else:
+        source_dir = Path(__file__).parent.parent / ".research_papers"
     category = "ai-research"
     
     print("=" * 60)
