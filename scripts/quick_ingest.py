@@ -49,8 +49,8 @@ def ingest_one(conn: sqlite3.Connection, pdf_path: str, category: str = None):
         print(f"EXTRACT FAILED: {e}")
         return None, {"status": "error", "error": str(e)}
     
-    # Generate IDs
-    full_text = paper_dict.get("full_text_preview", "")
+    # Generate IDs - use full_text, fallback to preview
+    full_text = paper_dict.get("full_text", "") or paper_dict.get("full_text_preview", "")
     content_hash = get_content_hash(full_text)
     paper_id = f"paper_{content_hash}"
     

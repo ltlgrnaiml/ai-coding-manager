@@ -76,16 +76,60 @@ class ExtractedPaper:
     word_count: int
 
 
-def extract_metadata_from_text(text: str) -> PaperMetadata:
+def extract_metadata_from_text(text: str, first_page_text: str = "") -> PaperMetadata:
     """Extract paper metadata from text content.
 
     Args:
         text: Full text content of the paper.
+        first_page_text: Text from first page only (better for title/author extraction).
 
     Returns:
         PaperMetadata object with extracted fields.
     """
     metadata = PaperMetadata()
+    
+    # Use first page text for title/author extraction if available
+    header_text = first_page_text if first_page_text else text[:3000]
+
+    # Try to extract title - usually first substantial line before "Abstract" or authors
+    # Look for title patterns (typically before abstract, all caps or title case, no special chars)
+    title_patterns = [
+        # Title followed by author names (Name Name, Name Name pattern)
+        r"^[\s\n]*([A-Z][^\n]{10,150}?)\n+(?:[A-Z][a-z]+ [A-Z][a-z]+|[A-Z]\. [A-Z][a-z]+)",
+        # Title before "Abstract"  
+        r"^[\s\n]*([A-Z][^\n]{10,150}?)\n+(?:Abstract|ABSTRACT)",
+        # arXiv style - title after arXiv ID line
+        r"arXiv:\d{4}\.\d+[^\n]*\n+([A-Z][^\n]{10,150})",
+    ]
+    for pattern in title_patterns:
+        title_match = re.search(pattern, header_text, re.MULTILINE)
+        if title_match:
+            title = title_match.group(1).strip()
+            # Clean up title - remove trailing punctuation, numbers
+            title = re.sub(r'[\d∗†‡§¶]+$', '', title).strip()
+            if len(title) > 10 and not title.startswith(('http', 'arXiv', 'doi')):
+                metadata.title = title
+                break
+    
+    # Try to extract authors - look for name patterns after title, before abstract
+    # Authors typically appear as: "FirstName LastName, FirstName LastName" or with affiliations
+    author_patterns = [
+        # Multiple authors with commas or "and"
+        r"(?:^|\n)([A-Z][a-z]+(?:\s+[A-Z]\.?)?\s+[A-Z][a-z]+(?:\s*[,∗†‡§¶\d]*\s*(?:,|and)\s*[A-Z][a-z]+(?:\s+[A-Z]\.?)?\s+[A-Z][a-z]+)+)",
+        # Single author or few authors
+        r"(?:^|\n)([A-Z][a-z]+\s+[A-Z][a-z]+(?:\s*[,∗†‡§¶\d]*)?(?:\s*,\s*[A-Z][a-z]+\s+[A-Z][a-z]+)*)",
+    ]
+    for pattern in author_patterns:
+        author_match = re.search(pattern, header_text[:1500])
+        if author_match:
+            author_text = author_match.group(1)
+            # Clean and split authors
+            author_text = re.sub(r'[∗†‡§¶\d]+', '', author_text)
+            authors = re.split(r'\s*(?:,|and)\s*', author_text)
+            authors = [a.strip() for a in authors if a.strip() and len(a.strip()) > 3]
+            if authors and len(authors[0].split()) >= 2:  # At least first and last name
+                metadata.authors = authors[:20]  # Limit to 20 authors
+                break
 
     # Try to extract arXiv ID
     arxiv_pattern = r"arXiv:(\d{4}\.\d{4,5}(?:v\d+)?)"
@@ -253,17 +297,18 @@ def extract_paper(pdf_path: str, output_dir: str) -> ExtractedPaper:
         pass  # Skip if table extraction fails
 
     # Extract metadata and sections
-    metadata = extract_metadata_from_text(full_text)
+    first_page_text = full_text_parts[0] if full_text_parts else ""
+    metadata = extract_metadata_from_text(full_text, first_page_text)
     sections = extract_sections(full_text)
 
-    # Try to get title from first page
-    first_page_text = full_text_parts[0] if full_text_parts else ""
-    lines = [l.strip() for l in first_page_text.split("\n") if l.strip()]
-    if lines:
-        # First non-empty line is often the title
-        potential_title = lines[0]
-        if len(potential_title) < 200:
-            metadata.title = potential_title
+    # Fallback: try to get title from first line if extraction failed
+    if not metadata.title:
+        lines = [l.strip() for l in first_page_text.split("\n") if l.strip()]
+        if lines:
+            potential_title = lines[0]
+            # Only use if it looks like a title (not too long, not a header/footer)
+            if 10 < len(potential_title) < 200 and not potential_title.startswith(('arXiv', 'http', 'Published')):
+                metadata.title = potential_title
 
     # Calculate content hash
     content_hash = hashlib.sha256(full_text.encode()).hexdigest()[:16]
@@ -329,6 +374,7 @@ def paper_to_dict(paper: ExtractedPaper) -> dict[str, Any]:
         ],
         "page_count": paper.page_count,
         "word_count": paper.word_count,
+        "full_text": paper.full_text,
         "full_text_preview": paper.full_text[:5000] + "..."
         if len(paper.full_text) > 5000
         else paper.full_text,
