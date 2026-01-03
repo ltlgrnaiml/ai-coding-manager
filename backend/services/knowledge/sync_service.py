@@ -3,6 +3,7 @@
 File watcher for automatic document sync.
 """
 
+import os
 from pathlib import Path
 from threading import Timer
 
@@ -10,13 +11,17 @@ from backend.services.knowledge.archive_service import ArchiveService
 from backend.services.knowledge.parsers import parse_document
 from contracts.knowledge.archive import SyncConfig, SyncStatus
 
+# Use WORKSPACE_ROOT for Docker compatibility
+WORKSPACE_ROOT = Path(os.getenv("WORKSPACE_ROOT", "."))
+
 DEFAULT_WATCH_PATHS = [
-    Path('.sessions'),
-    Path('.plans'),
-    Path('.discussions'),
-    Path('.adrs'),
-    Path('docs/specs'),
-    Path('shared/contracts'),
+    WORKSPACE_ROOT / '.sessions',
+    WORKSPACE_ROOT / '.plans',
+    WORKSPACE_ROOT / '.discussions',
+    WORKSPACE_ROOT / '.adrs',
+    WORKSPACE_ROOT / 'docs/specs',
+    WORKSPACE_ROOT / 'shared/contracts',
+    WORKSPACE_ROOT / '.research_papers',
 ]
 
 
