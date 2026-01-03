@@ -214,11 +214,11 @@ export default function ResearchPage() {
           </div>
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div className="bg-gray-800/50 rounded-lg p-2 text-center">
-              <p className="text-2xl font-bold text-white">{gpuStats?.totalPapers || 79}</p>
+              <p className="text-2xl font-bold text-white">{gpuStats?.totalPapers ?? 0}</p>
               <p className="text-gray-400">Papers</p>
             </div>
             <div className="bg-gray-800/50 rounded-lg p-2 text-center">
-              <p className="text-2xl font-bold text-green-400">{gpuStats?.papersEmbedded || 79}</p>
+              <p className="text-2xl font-bold text-green-400">{gpuStats?.papersEmbedded ?? 0}</p>
               <p className="text-gray-400">Embedded</p>
             </div>
           </div>

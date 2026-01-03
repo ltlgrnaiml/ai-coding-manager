@@ -42,10 +42,52 @@ try:
 except ImportError:
     SBERT_AVAILABLE = False
 
-# Database path - use WORKSPACE_ROOT env var in Docker
+# Database path - use AIKH_HOME for centralized AIKH databases
 import os
-WORKSPACE_ROOT = Path(os.getenv("WORKSPACE_ROOT", "."))
-DB_PATH = WORKSPACE_ROOT / ".workspace/research_papers.db"
+
+def get_aikh_research_db() -> Path:
+    """Get AIKH research database path."""
+    # Docker mount takes priority
+    if Path("/aikh/research.db").exists():
+        return Path("/aikh/research.db")
+    # Environment variable
+    if aikh_home := os.getenv("AIKH_HOME"):
+        return Path(aikh_home) / "research.db"
+    # User home default
+    return Path.home() / ".aikh" / "research.db"
+
+DB_PATH = get_aikh_research_db()
+
+# GPU embeddings table schema
+GPU_EMBEDDINGS_SCHEMA = """
+CREATE TABLE IF NOT EXISTS paper_embeddings_gpu (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    paper_id TEXT NOT NULL,
+    chunk_id INTEGER,
+    embedding_type TEXT NOT NULL CHECK(embedding_type IN ('paper', 'chunk')),
+    model_name TEXT NOT NULL,
+    embedding BLOB NOT NULL,
+    embedding_dim INTEGER NOT NULL,
+    created_at TEXT DEFAULT (datetime('now')),
+    UNIQUE(paper_id, chunk_id, embedding_type)
+);
+
+CREATE INDEX IF NOT EXISTS idx_gpu_emb_paper ON paper_embeddings_gpu(paper_id);
+CREATE INDEX IF NOT EXISTS idx_gpu_emb_type ON paper_embeddings_gpu(embedding_type);
+"""
+
+def init_gpu_tables(db_path: Path = DB_PATH) -> bool:
+    """Initialize GPU-specific tables in the research database."""
+    try:
+        db_path.parent.mkdir(parents=True, exist_ok=True)
+        conn = sqlite3.connect(db_path)
+        conn.executescript(GPU_EMBEDDINGS_SCHEMA)
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"Failed to init GPU tables: {e}")
+        return False
 
 # Optimal batch sizes by VRAM
 BATCH_SIZE_BY_VRAM = {

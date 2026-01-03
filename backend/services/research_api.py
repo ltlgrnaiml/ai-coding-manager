@@ -27,8 +27,10 @@ except ImportError:
 
 # GPU-accelerated service
 try:
-    from backend.services.gpu_service import get_gpu_service, GPUSearchService
+    from backend.services.gpu_service import get_gpu_service, GPUSearchService, init_gpu_tables
     GPU_SERVICE_AVAILABLE = True
+    # Initialize GPU tables on import
+    init_gpu_tables()
 except ImportError:
     GPU_SERVICE_AVAILABLE = False
     get_gpu_service = None
