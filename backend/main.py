@@ -23,6 +23,11 @@ from pydantic import BaseModel, Field
 
 from backend.services.devtools_service import router as devtools_router
 from backend.services.knowledge.database import init_database
+from backend.services.knowledge.archive_service import ArchiveService
+from backend.services.knowledge.sync_service import SyncService
+
+# Global sync service for watchdog
+_sync_service: SyncService | None = None
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -69,6 +74,8 @@ def init_phoenix():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan - startup and shutdown."""
+    global _sync_service
+    
     # Startup
     logger.info("Starting AI Dev Orchestrator...")
     
@@ -82,10 +89,36 @@ async def lifespan(app: FastAPI):
     # Initialize Phoenix tracing (connects to external Phoenix container)
     init_phoenix()
     
+    # Initialize sync service and run backfill
+    try:
+        archive = ArchiveService()
+        _sync_service = SyncService(archive)
+        
+        # Backfill: sync all workspace documents to database
+        sync_count = _sync_service.sync_all()
+        logger.info(f"Backfill complete: {sync_count} documents synced to AIKH")
+        
+        # Start watchdog file watcher
+        if _sync_service.start_watching():
+            logger.info("Watchdog file watcher started - monitoring workspace for changes")
+        else:
+            logger.warning("Watchdog not available - install 'watchdog' for auto-sync")
+    except Exception as e:
+        logger.error(f"Failed to initialize sync service: {e}")
+    
     yield
     
     # Shutdown
     logger.info("Shutting down...")
+    
+    # Stop watchdog
+    if _sync_service:
+        try:
+            _sync_service.stop_watching()
+            logger.info("Watchdog stopped")
+        except:
+            pass
+    
     if _tracer_provider:
         try:
             _tracer_provider.shutdown()
