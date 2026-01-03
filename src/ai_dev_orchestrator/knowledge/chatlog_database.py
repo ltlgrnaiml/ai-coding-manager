@@ -1,7 +1,13 @@
-"""Cross-Project Chat Logs Database.
+"""AIKH Chat Logs Database.
 
-Per DISC-0024: Separate SQLite database for cross-project chat logs.
-Location: /home/mycahya/coding/ChatLogs/chathistory.db
+AI Knowledge Hub (AIKH) - Chat Logs Store
+Cross-project chat history and conversation logs.
+
+This database stores:
+- Chat log files and metadata
+- Individual conversation turns
+- File references and commands extracted from chats
+- Embeddings for semantic search across chat history
 """
 
 import os
@@ -10,29 +16,39 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-# Default paths - Docker uses /chatlogs, local uses full path
-LOCAL_DB_PATH = Path("/home/mycahya/coding/ChatLogs/chathistory.db")
+from .aikh_config import CHATLOGS_DB_PATH, get_aikh_home
+
+# Legacy paths for backward compatibility
+LEGACY_LOCAL_PATH = Path("/home/mycahya/coding/ChatLogs/chathistory.db")
 DOCKER_DB_PATH = Path("/chatlogs/chathistory.db")
 
 
 def get_db_path() -> Path:
-    """Get the chat log database path from environment or detect Docker."""
+    """Get the chat log database path.
+    
+    Priority:
+    1. CHATLOG_DB_PATH environment variable
+    2. Docker path (/chatlogs) if mounted
+    3. AIKH centralized path (~/.aikh/chatlogs.db)
+    """
     env_path = os.environ.get("CHATLOG_DB_PATH")
     if env_path:
         return Path(env_path)
     # Detect if running in Docker (check for /chatlogs mount)
     if DOCKER_DB_PATH.parent.exists():
         return DOCKER_DB_PATH
-    return LOCAL_DB_PATH
+    # Use AIKH centralized path
+    return CHATLOGS_DB_PATH
 
 
 def get_connection() -> sqlite3.Connection:
-    """Get a connection to the chat logs database."""
+    """Get a connection to the AIKH chat logs database."""
     db_path = get_db_path()
     db_path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(db_path))
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
+    conn.execute("PRAGMA journal_mode = WAL")
     return conn
 
 

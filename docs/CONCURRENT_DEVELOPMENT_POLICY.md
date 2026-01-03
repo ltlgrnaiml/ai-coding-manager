@@ -199,6 +199,97 @@ If not committed, Git can't help. Consider:
 
 ---
 
+## 8. AI Knowledge Hub (AIKH) - Cross-Platform Data
+
+### Centralized Database Location
+
+All AIKH databases are stored in a centralized, platform-agnostic location:
+
+| Platform | AIKH Home |
+|----------|-----------|
+| **macOS** | `~/.aikh/` → `/Users/<user>/.aikh/` |
+| **WSL2/Linux** | `~/.aikh/` → `/home/<user>/.aikh/` |
+| **Docker** | `/aikh/` (mounted volume) |
+
+### Database Files
+
+| Database | File | Purpose |
+|----------|------|---------|
+| **Artifacts** | `artifacts.db` | Documents, chunks, embeddings, RAG |
+| **Chat Logs** | `chatlogs.db` | Cross-project conversation history |
+| **Research** | `research.db` | Academic papers, citations, PDFs |
+
+### Syncing AIKH Data
+
+AIKH databases are **local per machine** and NOT synced via Git. Options:
+
+1. **Manual sync**: Copy `~/.aikh/*.db` between machines
+2. **Cloud sync**: Use Dropbox/OneDrive symlink to `~/.aikh/`
+3. **Fresh rebuild**: Re-ingest from source files
+
+---
+
+## 9. GPU/ML Acceleration Strategy
+
+### GPU-First Policy
+
+All ML operations (embeddings, inference) should use GPU acceleration when available.
+
+### Platform Configuration
+
+| Platform | Hardware | Framework | PyTorch Device |
+|----------|----------|-----------|----------------|
+| **Windows/WSL2** | NVIDIA RTX 5090 | CUDA/cuDNN | `cuda` |
+| **macOS** | Apple M4 Max | Metal Performance Shaders | `mps` |
+| **Fallback** | CPU | - | `cpu` |
+
+### Detection Code
+
+```python
+import torch
+
+def get_device():
+    if torch.cuda.is_available():
+        return "cuda"  # NVIDIA GPU
+    elif torch.backends.mps.is_available():
+        return "mps"   # Apple Silicon
+    return "cpu"
+```
+
+### M4 Max Specifics (macOS)
+
+The M4 Max chip provides:
+- **38-core GPU** for ML inference via Metal
+- **16-core Neural Engine** (not directly accessible via PyTorch)
+- **Unified Memory** (up to 128GB shared between CPU/GPU)
+
+To enable MPS acceleration:
+```bash
+# Ensure PyTorch with MPS support
+pip install torch torchvision torchaudio
+
+# Verify MPS availability
+python -c "import torch; print(torch.backends.mps.is_available())"
+```
+
+### RTX 5090 Specifics (Windows/WSL2)
+
+The RTX 5090 provides:
+- **32GB GDDR7** dedicated VRAM
+- **CUDA 12.x** compute capability
+- **Tensor Cores** for accelerated inference
+
+To enable CUDA acceleration:
+```bash
+# Ensure CUDA toolkit installed
+nvidia-smi  # Verify driver
+
+# Install PyTorch with CUDA
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+```
+
+---
+
 ## Summary
 
 | Question | Answer |
@@ -208,3 +299,6 @@ If not committed, Git can't help. Consider:
 | Why doesn't Windows have my changes? | Not committed/pushed yet |
 | Best practice? | Commit often, push before switching devices |
 | Can AI sessions conflict? | Yes, use SESSION files to coordinate |
+| Where is AIKH data? | `~/.aikh/` (local per machine) |
+| GPU on Mac? | MPS (Metal) via `torch.device("mps")` |
+| GPU on Windows? | CUDA via `torch.device("cuda")` |

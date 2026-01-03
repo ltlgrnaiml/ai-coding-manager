@@ -1,7 +1,15 @@
-"""Research Paper Database Schema and Management.
+"""AIKH Research Paper Database Schema and Management.
 
+AI Knowledge Hub (AIKH) - Research Store
 Dedicated database for academic papers with specialized schema for research metadata,
 citations, and integration with the main RAG system.
+
+This database stores:
+- Research papers with academic metadata (arXiv, DOI, authors, etc.)
+- Paper sections and chunks for RAG integration
+- Embeddings for semantic search
+- Images, tables, and citations
+- Paper files (PDFs) as BLOBs
 
 Citation: [Engineering-Tools-2025] "PDF Paper Extraction Tool"
           https://github.com/ltlgrnaiml/engineering-tools
@@ -16,9 +24,11 @@ from dataclasses import dataclass
 import json
 from datetime import datetime
 
-# Research paper database path
+from .aikh_config import RESEARCH_DB_PATH as AIKH_RESEARCH_PATH
+
+# Legacy support - prefer AIKH path
 WORKSPACE_DIR = Path(os.getenv("AI_DEV_WORKSPACE", ".workspace"))
-RESEARCH_DB_PATH = WORKSPACE_DIR / "research_papers.db"
+RESEARCH_DB_PATH = AIKH_RESEARCH_PATH  # Now uses ~/.aikh/research.db
 
 RESEARCH_SCHEMA = """
 -- Research papers table with academic metadata

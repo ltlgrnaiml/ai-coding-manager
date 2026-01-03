@@ -1,15 +1,25 @@
-"""Database Schema and Initialization.
+"""AIKH Artifacts Database Schema and Initialization.
 
+AI Knowledge Hub (AIKH) - Artifacts Store
 SQLite database with FTS5 for full-text search and vector storage for embeddings.
+
+This database stores:
+- Documents (ADRs, specs, plans, etc.)
+- Chunks for RAG retrieval
+- Embeddings for semantic search
+- Document relationships for graph-aware retrieval
+- LLM call history
 """
 
 import os
 import sqlite3
 from pathlib import Path
 
-# Default workspace directory
+from .aikh_config import get_database_path, ARTIFACTS_DB_PATH
+
+# Legacy support - prefer AIKH path, fallback to workspace
 WORKSPACE_DIR = Path(os.getenv("AI_DEV_WORKSPACE", ".workspace"))
-DB_PATH = WORKSPACE_DIR / "knowledge.db"
+DB_PATH = ARTIFACTS_DB_PATH  # Now uses ~/.aikh/artifacts.db
 
 SCHEMA = """
 -- Documents table
