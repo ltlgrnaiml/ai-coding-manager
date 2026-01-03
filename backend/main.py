@@ -36,6 +36,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Phoenix tracing initialization (sends to external Phoenix container)
+# IMPORTANT: Must be initialized at module load time, BEFORE any LLM clients are imported
 _tracer_provider = None
 
 def init_phoenix():
@@ -45,32 +46,65 @@ def init_phoenix():
     phoenix_endpoint = os.getenv("PHOENIX_COLLECTOR_ENDPOINT", "http://localhost:4317")
     
     try:
-        from opentelemetry import trace
-        from opentelemetry.sdk.trace import TracerProvider
-        from opentelemetry.sdk.trace.export import BatchSpanProcessor
-        from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
-        from openinference.instrumentation.openai import OpenAIInstrumentor
+        # Use Phoenix OTEL for simpler setup
+        from phoenix.otel import register
         
-        # Create OTLP exporter pointing to Phoenix collector
-        exporter = OTLPSpanExporter(endpoint=phoenix_endpoint, insecure=True)
-        
-        # Set up tracer provider with batch processor
-        _tracer_provider = TracerProvider()
-        _tracer_provider.add_span_processor(BatchSpanProcessor(exporter))
-        trace.set_tracer_provider(_tracer_provider)
+        _tracer_provider = register(
+            project_name="ai-dev-orchestrator",
+            endpoint=phoenix_endpoint,
+        )
         
         # Instrument OpenAI SDK (works for xAI too)
+        from openinference.instrumentation.openai import OpenAIInstrumentor
         OpenAIInstrumentor().instrument(tracer_provider=_tracer_provider)
+        
+        # Instrument Anthropic SDK
+        try:
+            from openinference.instrumentation.anthropic import AnthropicInstrumentor
+            AnthropicInstrumentor().instrument(tracer_provider=_tracer_provider)
+            logger.info("Anthropic SDK instrumented for tracing")
+        except ImportError:
+            logger.warning("Anthropic instrumentation not available")
         
         logger.info(f"Phoenix tracing initialized - sending to {phoenix_endpoint}")
         logger.info("Phoenix UI available at http://localhost:6006")
         return True
     except ImportError as e:
-        logger.warning(f"OpenTelemetry/Phoenix instrumentation not available: {e}")
-        return False
+        logger.warning(f"Phoenix OTEL not available: {e}")
+        # Fallback to manual OTEL setup
+        try:
+            from opentelemetry import trace
+            from opentelemetry.sdk.trace import TracerProvider
+            from opentelemetry.sdk.trace.export import SimpleSpanProcessor
+            from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+            from openinference.instrumentation.openai import OpenAIInstrumentor
+            
+            exporter = OTLPSpanExporter(endpoint=phoenix_endpoint, insecure=True)
+            _tracer_provider = TracerProvider()
+            _tracer_provider.add_span_processor(SimpleSpanProcessor(exporter))
+            trace.set_tracer_provider(_tracer_provider)
+            
+            OpenAIInstrumentor().instrument(tracer_provider=_tracer_provider)
+            
+            try:
+                from openinference.instrumentation.anthropic import AnthropicInstrumentor
+                AnthropicInstrumentor().instrument(tracer_provider=_tracer_provider)
+                logger.info("Anthropic SDK instrumented for tracing (fallback)")
+            except ImportError:
+                pass
+            
+            logger.info(f"Phoenix tracing initialized (fallback) - sending to {phoenix_endpoint}")
+            return True
+        except Exception as e2:
+            logger.error(f"Failed to initialize Phoenix tracing: {e2}")
+            return False
     except Exception as e:
         logger.error(f"Failed to initialize Phoenix tracing: {e}")
         return False
+
+# Initialize Phoenix at module load time - BEFORE any LLM SDK imports
+# This ensures instrumentation patches are applied before clients are created
+init_phoenix()
 
 
 @asynccontextmanager
@@ -88,8 +122,7 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"Failed to initialize database: {e}")
     
-    # Initialize Phoenix tracing (connects to external Phoenix container)
-    init_phoenix()
+    # Note: Phoenix tracing already initialized at module load time
     
     # Initialize sync service and run backfill
     try:
@@ -123,6 +156,7 @@ async def lifespan(app: FastAPI):
     
     if _tracer_provider:
         try:
+            _tracer_provider.force_flush()  # Ensure all spans are exported
             _tracer_provider.shutdown()
         except:
             pass
