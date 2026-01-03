@@ -67,11 +67,12 @@ echo ""
 
 # Start Phoenix (observability)
 echo -e "${CYAN}Starting Phoenix (port 6006)...${NC}"
-python -m phoenix.server.main serve --port 6006 > /tmp/aicm-phoenix.log 2>&1 &
-PIDS+=($!)
+PHOENIX_PORT=6006 python -m phoenix.server.main serve > /tmp/aicm-phoenix.log 2>&1 &
+PID_PHOENIX=$!
+PIDS+=($PID_PHOENIX)
 sleep 2
 
-if ! kill -0 ${PIDS[-1]} 2>/dev/null; then
+if ! kill -0 $PID_PHOENIX 2>/dev/null; then
     echo -e "${RED}❌ Phoenix failed to start. Check /tmp/aicm-phoenix.log${NC}"
 else
     echo -e "${GREEN}✅ Phoenix running at http://localhost:6006${NC}"
@@ -80,10 +81,11 @@ fi
 # Start Backend
 echo -e "${CYAN}Starting Backend (port 8100)...${NC}"
 python -m uvicorn backend.main:app --reload --port 8100 > /tmp/aicm-backend.log 2>&1 &
-PIDS+=($!)
+PID_BACKEND=$!
+PIDS+=($PID_BACKEND)
 sleep 2
 
-if ! kill -0 ${PIDS[-1]} 2>/dev/null; then
+if ! kill -0 $PID_BACKEND 2>/dev/null; then
     echo -e "${RED}❌ Backend failed to start. Check /tmp/aicm-backend.log${NC}"
 else
     echo -e "${GREEN}✅ Backend running at http://localhost:8100${NC}"
@@ -93,11 +95,12 @@ fi
 echo -e "${CYAN}Starting Frontend (port 3100)...${NC}"
 cd frontend
 npm run dev -- --port 3100 > /tmp/aicm-frontend.log 2>&1 &
-PIDS+=($!)
+PID_FRONTEND=$!
+PIDS+=($PID_FRONTEND)
 cd ..
 sleep 3
 
-if ! kill -0 ${PIDS[-1]} 2>/dev/null; then
+if ! kill -0 $PID_FRONTEND 2>/dev/null; then
     echo -e "${RED}❌ Frontend failed to start. Check /tmp/aicm-frontend.log${NC}"
 else
     echo -e "${GREEN}✅ Frontend running at http://localhost:3100${NC}"
