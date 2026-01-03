@@ -20,6 +20,7 @@ x-backend-base: &backend-base
     dockerfile: docker/backend.Dockerfile
   environment: &backend-env
     XAI_API_KEY: ${XAI_API_KEY}
+    ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
     GOOGLE_API_KEY: ${GOOGLE_API_KEY}
     WORKSPACE_ROOT: /workspace
     KNOWLEDGE_EMBEDDING_MODE: local

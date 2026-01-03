@@ -340,8 +340,11 @@ async def stream_chat_response(
     max_tokens: int,
     use_rag: bool = True,
 ) -> AsyncGenerator[str, None]:
-    """Stream chat response from xAI or Google API based on model."""
+    """Stream chat response from appropriate provider based on model."""
     import logging
+    from backend.services.llm.registry import get_provider_for_model
+    from backend.services.llm.types import ChatMessage as LLMMessage
+    
     logging.info(f"Chat request using model: {model}")
     
     # Inject RAG context if enabled and there are user messages
@@ -352,13 +355,24 @@ async def stream_chat_response(
     is_gemini = model.startswith("gemini")
     
     if is_gemini:
-        # Use Google Gemini API
+        # Use Google Gemini API (not yet in adapter system)
         async for chunk in _stream_gemini(messages, model, temperature, max_tokens):
             yield chunk
     else:
-        # Use xAI API
-        async for chunk in _stream_xai(messages, model, temperature, max_tokens):
-            yield chunk
+        # Try adapter-based providers first (xAI, Anthropic)
+        provider = get_provider_for_model(model)
+        if provider:
+            # Convert messages to LLM types
+            llm_messages = [LLMMessage(role=m.role, content=m.content) for m in messages]
+            async for chunk in provider.chat_stream(llm_messages, model, temperature, max_tokens):
+                if chunk.is_final:
+                    yield "data: [DONE]\n\n"
+                elif chunk.content:
+                    yield f"data: {json.dumps({'content': chunk.content, 'model': model, 'provider': provider.name})}\n\n"
+        else:
+            # Fallback to xAI streaming
+            async for chunk in _stream_xai(messages, model, temperature, max_tokens):
+                yield chunk
 
 
 def _inject_rag_context(messages: list[ChatMessage]) -> list[ChatMessage]:
@@ -513,30 +527,23 @@ async def chat_stream(request: ChatRequest):
 
 @app.get("/api/chat/models")
 async def list_models():
-    """List available chat models."""
+    """List available chat models from all providers."""
+    from backend.services.llm.registry import get_models_for_api, get_available_providers
+    
+    models = get_models_for_api()
+    providers = [p.name for p in get_available_providers()]
+    
+    # Add Gemini models (not yet in adapter system)
+    gemini_models = [
+        {"id": "gemini-2.0-flash", "name": "Gemini 2.0 Flash", "category": "gemini", "context": "1M", "provider": "google", "supports_tools": True, "supports_vision": False},
+        {"id": "gemini-2.0-flash-thinking", "name": "Gemini 2.0 Flash Thinking", "category": "gemini-reasoning", "context": "32K", "provider": "google", "supports_tools": True, "supports_vision": False},
+        {"id": "gemini-1.5-pro", "name": "Gemini 1.5 Pro", "category": "gemini", "context": "2M", "provider": "google", "supports_tools": True, "supports_vision": True},
+        {"id": "gemini-1.5-flash", "name": "Gemini 1.5 Flash", "category": "gemini", "context": "1M", "provider": "google", "supports_tools": True, "supports_vision": False},
+    ]
+    
     return {
-        "models": [
-            # Fast reasoning models (2M context)
-            {"id": "grok-4-1-fast-reasoning", "name": "Grok 4.1 Fast (Reasoning)", "category": "reasoning", "context": "2M"},
-            {"id": "grok-4-fast-reasoning", "name": "Grok 4 Fast (Reasoning)", "category": "reasoning", "context": "2M"},
-            # Fast non-reasoning models (2M context)
-            {"id": "grok-4-1-fast-non-reasoning", "name": "Grok 4.1 Fast", "category": "fast", "context": "2M"},
-            {"id": "grok-4-fast-non-reasoning", "name": "Grok 4 Fast", "category": "fast", "context": "2M"},
-            # Code-optimized model (256K context)
-            {"id": "grok-code-fast-1", "name": "Grok Code Fast", "category": "code", "context": "256K"},
-            # Premium models
-            {"id": "grok-4-0709", "name": "Grok 4 (Premium)", "category": "premium", "context": "256K"},
-            {"id": "grok-3", "name": "Grok 3", "category": "premium", "context": "131K"},
-            # Budget model
-            {"id": "grok-3-mini", "name": "Grok 3 Mini", "category": "budget", "context": "131K"},
-            # Vision model
-            {"id": "grok-2-vision-1212", "name": "Grok 2 Vision", "category": "vision", "context": "32K"},
-            # Google Gemini models
-            {"id": "gemini-2.0-flash", "name": "Gemini 2.0 Flash", "category": "gemini", "context": "1M", "provider": "google"},
-            {"id": "gemini-2.0-flash-thinking", "name": "Gemini 2.0 Flash Thinking", "category": "gemini-reasoning", "context": "32K", "provider": "google"},
-            {"id": "gemini-1.5-pro", "name": "Gemini 1.5 Pro", "category": "gemini", "context": "2M", "provider": "google"},
-            {"id": "gemini-1.5-flash", "name": "Gemini 1.5 Flash", "category": "gemini", "context": "1M", "provider": "google"},
-        ]
+        "models": models + gemini_models,
+        "providers": providers + (["google"] if os.getenv("GOOGLE_API_KEY") else []),
     }
 
 
