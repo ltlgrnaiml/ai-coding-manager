@@ -1,0 +1,69 @@
+{
+  "schema_type": "adr",
+  "id": "ADR-0003",
+  "title": "AI-Assisted Development Patterns",
+  "status": "active",
+  "date": "2025-12-31",
+  "review_date": "2026-06-30",
+  "author": "Mycahya Eggleston",
+  "scope": "core",
+  "origin": "Extracted from engineering-tools ADR-0034",
+  "context": {
+    "description": "AI assistants perform best when code follows predictable patterns, uses consistent naming conventions, and provides clear structural signals.",
+    "problem": "Without explicit AI-optimization patterns, AI assistants may generate inconsistent code, misunderstand project conventions, or require excessive context."
+  },
+  "decision": {
+    "summary": "All code patterns MUST be AI-parseable and predictable.",
+    "patterns": {
+      "file_naming": {
+        "pattern": "{domain}_{action}.py",
+        "examples": ["dataset_loader.py", "stage_orchestrator.py"],
+        "rationale": "AI can infer file purpose from name without reading contents"
+      },
+      "function_naming": {
+        "pattern": "{verb}_{noun}",
+        "verbs": {
+          "data_access": ["load", "save", "fetch", "read", "write"],
+          "transformation": ["parse", "render", "convert", "transform"],
+          "validation": ["validate", "check", "verify", "ensure"],
+          "lifecycle": ["create", "delete", "update", "initialize"],
+          "queries": ["get", "find", "list", "search", "filter"]
+        },
+        "rationale": "Verb-noun pattern enables AI to understand function purpose"
+      },
+      "docstring_format": {
+        "style": "Google-style",
+        "required_sections": ["Summary", "Args", "Returns", "Raises"],
+        "optional_sections": ["Example", "Note"]
+      },
+      "comment_philosophy": {
+        "rule": "Comments explain WHY, never WHAT",
+        "correct": "# SHA-256 chosen for collision resistance per ADR-0001",
+        "incorrect": "# Load the dataset"
+      },
+      "import_organization": {
+        "order": ["Standard library", "Third-party", "Local application"],
+        "rule": "Absolute imports only, no relative imports"
+      }
+    }
+  },
+  "consequences": {
+    "positive": [
+      "AI assistants generate consistent code matching project patterns",
+      "AI can locate files by inferring path from name",
+      "AI can understand function purpose from name alone",
+      "Docstrings provide AI with structured metadata"
+    ],
+    "negative": [
+      "More verbose file/function names",
+      "Docstring requirement adds upfront effort"
+    ]
+  },
+  "guardrails": [
+    {"id": "file-naming", "rule": "All Python files MUST follow {domain}_{action}.py pattern"},
+    {"id": "function-naming", "rule": "All functions MUST follow {verb}_{noun} pattern"},
+    {"id": "docstring-required", "rule": "All public functions MUST have Google-style docstrings"},
+    {"id": "absolute-imports", "rule": "All imports MUST be absolute"}
+  ],
+  "tags": ["ai-assisted", "naming-conventions", "docstrings", "code-organization"]
+}

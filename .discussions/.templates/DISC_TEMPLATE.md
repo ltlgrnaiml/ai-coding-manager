@@ -1,12 +1,13 @@
-# DISC-{NNN}: {Title}
+# DISC-{NNNN}: {Title}
 
-> **Status**: `draft` | `active` | `resolved` | `abandoned`
+> **Status**: `draft` | `active` | `resolved`
 > **Created**: {YYYY-MM-DD}
-> **Updated**: {YYYY-MM-DD}
+> **Source Chat**: `{chat_log_file.md}` (required - every DISC traces to a chat)
+> **Session**: SESSION_{XXXX}
 > **Author**: {Name}
-> **AI Session**: SESSION_{XXX}
-> **Depends On**: {DISC-XXX, DISC-YYY} | None
-> **Blocks**: {DISC-ZZZ} | None
+> **AI Session**: SESSION_{XXXX}
+> **Depends On**: {DISC-XXXX, DISC-YYYY} | None
+> **Blocks**: {DISC-ZZZZ | None
 > **Dependency Level**: L0 | L1 | L2 | ...
 
 <!-- ============================================================
@@ -16,15 +17,15 @@
 > **🌂 UMBRELLA DISC**
 > **Is Umbrella**: `true`
 > **Child Discussions**:
-> - DISC-XXX: {Title}
-> - DISC-YYY: {Title}
+> - DISC-XXXX: {Title}
+> - DISC-YYYY: {Title}
 -->
 
 <!-- ============================================================
      CHILD FIELDS: Add this section if this is a child of an umbrella
      ============================================================ -->
 <!--
-> **Parent Discussion**: DISC-{XXX} ({Parent Title})
+> **Parent Discussion**: DISC-{XXXX} ({Parent Title})
 > **Delegation Scope**: {What specific aspect this child addresses}
 > **Inherits Context**: `true`
 -->
@@ -155,7 +156,7 @@
 
 | Dependency | Type | Status | Blocker For | Notes |
 |------------|------|--------|-------------|-------|
-| DISC-{XXX} | `FS` / `FF` / `SS` / `soft` | `pending` / `stub` / `resolved` | {Milestones} | {Notes} |
+| DISC-{XXXX} | `FS` / `FF` / `SS` / `soft` | `pending` / `stub` / `resolved` | {Milestones} | {Notes} |
 
 ### Stub Strategy (if applicable)
 
@@ -163,7 +164,7 @@
 
 | DISC | Stub Location | Stub Behavior |
 |------|---------------|---------------|
-| DISC-{XXX} | `path/to/stub.py` | {What the stub does} |
+| DISC-{XXXX} | `path/to/stub.py` | {What the stub does} |
 
 ---
 
@@ -174,9 +175,9 @@
 | Artifact Type | ID | Title | Status |
 |---------------|----|-------|--------|
 | ADR | ADR-{XXXX} | {Title} | `draft` / `active` |
-| SPEC | SPEC-{XXX} | {Title} | `draft` / `active` |
+| SPEC | SPEC-{XXXX} | {Title} | `draft` / `active` |
 | Contract | `shared/contracts/{path}` | {Description} | `created` |
-| Plan | PLAN-{XXX} | {Title} | `draft` / `active` |
+| Plan | PLAN-{XXXX} | {Title} | `draft` / `active` |
 
 ---
 
@@ -184,7 +185,7 @@
 
 <!-- Key points from AI ↔ Human discussion (auto-updated by AI) -->
 
-### {YYYY-MM-DD} - SESSION_{XXX}
+### {YYYY-MM-DD} - SESSION_{XXXX}
 
 **Topics Discussed**:
 - {Topic 1}
