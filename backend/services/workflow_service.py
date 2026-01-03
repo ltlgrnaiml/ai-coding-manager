@@ -47,6 +47,7 @@ ARTIFACT_DIRECTORIES: dict[ArtifactType, str] = {
     ArtifactType.BUG: ".bugs",
     ArtifactType.GUIDE: "docs/guides",
     ArtifactType.CHAT_LOG: ".chatlogs",
+    ArtifactType.TRACE: ".traces",  # P2RE traces (stored in DB, directory unused)
 }
 
 # In-memory workflow storage (POC - would be file-based in production)
