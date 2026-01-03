@@ -1,4 +1,4 @@
-import { MessageSquare, FileJson, FileText, ListTodo, Code2, ScrollText, Bug, BookOpen, MessagesSquare, Activity } from 'lucide-react'
+import { MessageSquare, FileJson, FileText, ListTodo, Code2, ScrollText, Bug, BookOpen, MessagesSquare } from 'lucide-react'
 import { cn } from '../../lib/utils'
 import type { ArtifactType } from './types'
 
@@ -12,7 +12,6 @@ const TABS: { type: ArtifactType; icon: React.ReactNode; label: string }[] = [
   { type: 'session', icon: <ScrollText size={16} />, label: 'Sessions' },
   { type: 'bug', icon: <Bug size={16} />, label: 'Bugs' },
   { type: 'guide', icon: <BookOpen size={16} />, label: 'Guides' },
-  { type: 'trace', icon: <Activity size={16} />, label: 'P2RE Tools' },
 ]
 
 interface SidebarTabsProps {

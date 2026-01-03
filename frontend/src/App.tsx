@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
-import { MessageSquare, GitBranch, Settings, Zap, BookOpen } from 'lucide-react'
+import { MessageSquare, GitBranch, Settings, Zap, BookOpen, Activity } from 'lucide-react'
 import ChatView from './views/ChatView'
 import { WorkflowManagerPage } from './pages/WorkflowManagerPage'
 import ResearchPage from './pages/ResearchPage'
+import { P2REPage } from './pages/P2REPage'
 
 function App() {
   const location = useLocation()
@@ -21,6 +22,7 @@ function App() {
     { path: '/', icon: MessageSquare, label: 'Chat' },
     { path: '/workflow', icon: GitBranch, label: 'Workflow' },
     { path: '/research', icon: BookOpen, label: 'Research' },
+    { path: '/p2re', icon: Activity, label: 'P2RE Tools' },
   ]
 
   return (
@@ -80,6 +82,7 @@ function App() {
           <Route path="/" element={<ChatView />} />
           <Route path="/workflow" element={<WorkflowManagerPage />} />
           <Route path="/research" element={<ResearchPage />} />
+          <Route path="/p2re" element={<P2REPage />} />
         </Routes>
       </main>
     </div>
