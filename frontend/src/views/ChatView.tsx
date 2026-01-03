@@ -301,14 +301,19 @@ export default function ChatView() {
     setIsLoading(true)
 
     try {
+      // Filter out empty messages and error messages before sending
+      const validMessages = [...messages, userMessage]
+        .filter(m => m.content && m.content.trim() && !m.error)
+        .map(m => ({
+          role: m.role,
+          content: m.content,
+        }))
+
       const response = await fetch('/api/chat/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: [...messages, userMessage].map(m => ({
-            role: m.role,
-            content: m.content,
-          })),
+          messages: validMessages,
           model: selectedModel,
           stream: true,
         }),
