@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { Send, Bot, User, Loader2, Trash2, Copy, Check, Plus, MessageSquare, ChevronLeft } from 'lucide-react'
+import { Send, Bot, User, Loader2, Trash2, Copy, Check, Plus, MessageSquare, ChevronLeft, AlertCircle, ChevronDown, RefreshCw } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
@@ -12,6 +12,11 @@ interface Message {
   isStreaming?: boolean
   model?: string
   provider?: string
+  error?: {
+    message: string
+    details?: string
+    status?: number
+  }
 }
 
 interface Model {
@@ -41,6 +46,7 @@ export default function ChatView() {
   const [selectedModel, setSelectedModel] = useState('grok-4-fast-reasoning')
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [showSidebar, setShowSidebar] = useState(true)
+  const [expandedErrors, setExpandedErrors] = useState<Set<string>>(new Set())
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
@@ -206,6 +212,11 @@ export default function ChatView() {
         }),
       })
 
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`API Error (${response.status}): ${errorText || response.statusText}`)
+      }
+
       const reader = response.body?.getReader()
       const decoder = new TextDecoder()
 
@@ -265,10 +276,21 @@ export default function ChatView() {
       })
     } catch (error) {
       console.error('Chat error:', error)
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      const errorDetails = error instanceof Error ? error.stack : JSON.stringify(error, null, 2)
+      
       setMessages(prev => {
         const updated = prev.map(m =>
           m.id === assistantMessage.id
-            ? { ...m, content: `Error: ${error}`, isStreaming: false }
+            ? { 
+                ...m, 
+                content: '', 
+                isStreaming: false,
+                error: {
+                  message: errorMessage,
+                  details: errorDetails,
+                }
+              }
             : m
         )
         if (activeConversationId) {
@@ -279,6 +301,37 @@ export default function ChatView() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const toggleErrorExpanded = (messageId: string) => {
+    setExpandedErrors(prev => {
+      const next = new Set(prev)
+      if (next.has(messageId)) {
+        next.delete(messageId)
+      } else {
+        next.add(messageId)
+      }
+      return next
+    })
+  }
+
+  const retryMessage = async (failedMessageId: string) => {
+    // Find the user message before the failed assistant message
+    const messageIndex = messages.findIndex(m => m.id === failedMessageId)
+    if (messageIndex <= 0) return
+    
+    const userMessage = messages[messageIndex - 1]
+    if (userMessage.role !== 'user') return
+    
+    // Remove the failed message and retry
+    setMessages(prev => prev.filter(m => m.id !== failedMessageId))
+    setInput(userMessage.content)
+  }
+
+  const copyErrorDetails = async (details: string, messageId: string) => {
+    await navigator.clipboard.writeText(details)
+    setCopiedId(messageId + '-error')
+    setTimeout(() => setCopiedId(null), 2000)
   }
 
   const clearMessages = () => {
@@ -408,7 +461,50 @@ export default function ChatView() {
                         : 'bg-gray-800 text-gray-100'
                     }`}
                   >
-                    {message.role === 'assistant' ? (
+                    {message.error ? (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-red-400">
+                          <AlertCircle className="w-4 h-4" />
+                          <span className="font-medium">Failed to send</span>
+                        </div>
+                        <p className="text-sm text-red-300">{message.error.message}</p>
+                        
+                        <div className="flex items-center gap-2 mt-2">
+                          <button
+                            onClick={() => retryMessage(message.id)}
+                            className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 rounded transition-colors"
+                          >
+                            <RefreshCw className="w-3 h-3" /> Retry
+                          </button>
+                          <button
+                            onClick={() => toggleErrorExpanded(message.id)}
+                            className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 rounded transition-colors"
+                          >
+                            <ChevronDown className={`w-3 h-3 transition-transform ${expandedErrors.has(message.id) ? 'rotate-180' : ''}`} />
+                            {expandedErrors.has(message.id) ? 'Hide' : 'Show'} Details
+                          </button>
+                        </div>
+                        
+                        {expandedErrors.has(message.id) && message.error.details && (
+                          <div className="mt-2 p-2 bg-gray-900 rounded text-xs font-mono text-gray-400 overflow-x-auto">
+                            <div className="flex justify-between items-start mb-2">
+                              <span className="text-gray-500">Debug Info:</span>
+                              <button
+                                onClick={() => copyErrorDetails(message.error!.details!, message.id)}
+                                className="flex items-center gap-1 text-gray-500 hover:text-gray-300"
+                              >
+                                {copiedId === message.id + '-error' ? (
+                                  <><Check className="w-3 h-3" /> Copied</>
+                                ) : (
+                                  <><Copy className="w-3 h-3" /> Copy</>
+                                )}
+                              </button>
+                            </div>
+                            <pre className="whitespace-pre-wrap break-all">{message.error.details}</pre>
+                          </div>
+                        )}
+                      </div>
+                    ) : message.role === 'assistant' ? (
                       <div className={`prose prose-invert max-w-none ${message.isStreaming ? 'streaming-cursor' : ''}`}>
                         <ReactMarkdown
                           components={{
