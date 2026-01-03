@@ -141,7 +141,6 @@ function GraphEvents({
   onNodeClick?: (paperId: string) => void
   onHover: (paper: Paper | null, pos: { x: number; y: number }) => void
 }) {
-  const sigma = useSigma()
   const registerEvents = useRegisterEvents()
 
   useEffect(() => {
@@ -152,16 +151,12 @@ function GraphEvents({
         if (paper) {
           onHover(paper, { x: event.x, y: event.y })
         }
-        sigma.getGraph().setNodeAttribute(node, 'highlighted', true)
-        sigma.refresh()
       },
-      leaveNode: ({ node }) => {
+      leaveNode: () => {
         onHover(null, { x: 0, y: 0 })
-        sigma.getGraph().setNodeAttribute(node, 'highlighted', false)
-        sigma.refresh()
       }
     })
-  }, [registerEvents, papers, onNodeClick, onHover, sigma])
+  }, [registerEvents, papers, onNodeClick, onHover])
 
   return null
 }

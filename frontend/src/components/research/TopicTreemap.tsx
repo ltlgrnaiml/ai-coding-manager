@@ -84,6 +84,10 @@ function layoutTreemap(
       rowHeight = 0
     }
 
+    // Ensure positive dimensions
+    const finalWidth = Math.max(20, Math.min(nodeWidth, availableWidth - (currentX - padding)))
+    const finalHeight = Math.max(20, Math.min(nodeHeight, availableHeight - (currentY - padding)))
+
     nodes.push({
       name: category,
       category,
@@ -92,8 +96,8 @@ function layoutTreemap(
       color: CATEGORY_COLORS[category] || CATEGORY_COLORS.default,
       x: currentX,
       y: currentY,
-      width: Math.min(nodeWidth, availableWidth - (currentX - padding)),
-      height: Math.min(nodeHeight, availableHeight - (currentY - padding))
+      width: finalWidth,
+      height: finalHeight
     })
 
     currentX += nodeWidth + padding
