@@ -46,6 +46,7 @@ ARTIFACT_DIRECTORIES: dict[ArtifactType, str] = {
     ArtifactType.SESSION: ".sessions",
     ArtifactType.BUG: ".bugs",
     ArtifactType.GUIDE: "docs/guides",
+    ArtifactType.CHAT_LOG: ".chatlogs",
 }
 
 # In-memory workflow storage (POC - would be file-based in production)
