@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   CloudRain,
   ChevronRight,
@@ -114,6 +115,8 @@ interface DiscSummary {
 }
 
 export function WorkflowPage() {
+  const navigate = useNavigate()
+  
   // State
   const [discs, setDiscs] = useState<DiscSummary[]>([])
   const [selectedDiscIds, setSelectedDiscIds] = useState<string[]>([])
@@ -358,7 +361,10 @@ export function WorkflowPage() {
         <div className="space-y-3">
           {selectedNode.status === 'exists' ? (
             <>
-              <button className="w-full flex items-center gap-3 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors">
+              <button 
+                onClick={() => navigate(`/artifacts?id=${selectedNode.id}`)}
+                className="w-full flex items-center gap-3 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
+              >
                 <Eye size={18} className="text-zinc-400" />
                 <div className="text-left">
                   <div className="font-medium">View Artifact</div>
