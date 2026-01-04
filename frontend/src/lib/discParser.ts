@@ -920,9 +920,13 @@ ${buildComponentSpecs()}
 
 ${buildUIUXRequirements()}
 
-${buildImplementationPhases()}
+${buildDependencies()}
 
 ${buildExistingArtifacts()}
+
+${buildArchivedReferences()}
+
+${buildKeyInsights()}
 
 ---
 
@@ -1077,11 +1081,15 @@ ${buildProblemContext()}
 
 ${buildRequirements()}
 
+${buildKeyQuestions()}
+
 ${buildImplementationPhases()}
 
 ${buildDependencies()}
 
 ${buildExistingArtifacts()}
+
+${buildArchivedReferences()}
 
 ${buildKeyInsights()}
 
@@ -1174,7 +1182,11 @@ ${buildProblemContext()}
 
 ${buildComponentSpecs()}
 
+${buildDependencies()}
+
 ${buildExistingArtifacts()}
+
+${buildArchivedReferences()}
 
 ---
 
@@ -1287,13 +1299,17 @@ ${buildProblemContext()}
 
 ${buildRequirements()}
 
+${buildKeyQuestions()}
+
 ${buildComponentSpecs()}
 
 ${buildImplementationPhases()}
 
-${buildKeyQuestions()}
+${buildDependencies()}
 
 ${buildExistingArtifacts()}
+
+${buildArchivedReferences()}
 
 ${buildKeyInsights()}
 
@@ -1336,7 +1352,11 @@ Include the full delegation scope: ${parsedDisc.delegationScope || '[Define scop
 
 Create an atomic, testable unit of work from the parent Plan.
 
+${buildDependencies()}
+
 ${buildExistingArtifacts()}
+
+${buildArchivedReferences()}
 
 Fragments should be small enough to complete in a single session.
 `,
