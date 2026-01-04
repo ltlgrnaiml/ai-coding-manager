@@ -181,6 +181,13 @@ interface [Request/Response] {
 
 ## ✅ SECTION 6: VERIFICATION GATES
 
+### Gate 0: Environment Detection (REQUIRED - Run First)
+```bash
+python scripts/detect_env.py
+# Expected: Shows "Mac Native Mode" or "Win11 Docker Mode"
+# This determines which verification commands to use below
+```
+
 ### Gate 1: [Name] (REQUIRED)
 ```bash
 [command]
@@ -191,6 +198,17 @@ interface [Request/Response] {
 ```bash
 [command]
 # Expected: [outcome]
+```
+
+### Gate FINAL: Post-Change Verification (REQUIRED)
+```bash
+# Mac Native:
+pytest tests/ -v
+# Expected: All tests pass
+
+# Win11 Docker:
+./scripts/verify-changes.sh
+# Expected: All checks pass, containers rebuilt
 ```
 
 ---

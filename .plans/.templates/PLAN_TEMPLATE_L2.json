@@ -75,6 +75,12 @@
       "id": "AC-GLOBAL-02",
       "description": "No lint errors",
       "verification_command": "ruff check ."
+    },
+    {
+      "id": "AC-GLOBAL-03",
+      "description": "Post-change verification passes (Mac: native, Win11: Docker)",
+      "verification_command": "python scripts/detect_env.py && pytest tests/ -v",
+      "notes": "On Win11 Docker: ./scripts/verify-changes.sh"
     }
   ],
   "completion": {
