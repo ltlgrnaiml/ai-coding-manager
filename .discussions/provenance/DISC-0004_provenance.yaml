@@ -1,0 +1,99 @@
+provenance:
+  enrichment_date: '2026-01-03T17:21:50.208445'
+  confidence_score: 0.787
+  sources_searched:
+  - chatlogs.db
+  - workspace
+  - artifacts.db
+  - research.db
+  evidence_count: 55
+  key_concepts:
+  - p2re
+  - aikh
+  - chat
+  - tap_in
+  - uam
+  - llm
+  - artifact_gen
+  - rag
+  evidence_chain:
+  - source: artifacts:discussion
+    id: discussion_dc012aae4b8718ce
+    title: 'DISC-0004: AIKH — AI Knowledge Hub (Pillar 2)'
+    score: 0.886
+    match_type: semantic
+    concepts:
+    - aikh
+    - uam
+  - source: artifacts:discussion
+    id: discussion_3fc6b92674275c2d
+    title: 'DISC-0001: Genesis — AI Coding Manager (AICM) Vision and Foundation'
+    score: 0.754
+    match_type: semantic
+    concepts:
+    - p2re
+    - aikh
+    - tap_in
+  - source: artifacts:archived_discussions
+    id: archive_v0_9e0987164f2cd783
+    title: '[Archived] DISC-0022: AI Knowledge Hub (AIKH) Architecture'
+    score: 0.751
+    match_type: semantic
+    concepts:
+    - aikh
+  - source: artifacts:archived_docs
+    id: archive_v0_738524ab3931ddb0
+    title: '[Archived] AI Knowledge Hub (AIKH) Architecture'
+    score: 0.726
+    match_type: semantic
+    concepts:
+    - aikh
+    - rag
+  - source: workspace:concept_node
+    id: concept:rag
+    title: 'Concept: rag'
+    score: 0.7
+    match_type: concept
+    concepts:
+    - rag
+    - rag
+  - source: artifacts:session
+    id: session_34ca47a0c2da4f71
+    title: 'SESSION_005: Data Migration & Processing'
+    score: 0.674
+    match_type: semantic
+    concepts:
+    - aikh
+    - rag
+  - source: artifacts:discussion
+    id: discussion_0412515fd2f93d31
+    title: 'DISC-0009: AI Chat Integration Architecture (Cross-Cutting)'
+    score: 0.666
+    match_type: semantic
+    concepts:
+    - chat
+    - uam
+  - source: chatlogs:chat_turn
+    id: '650'
+    title: Cascade Chat Conversation
+    score: 0.65
+    match_type: semantic
+    concepts:
+    - aikh
+    - chat
+  - source: chatlogs:chat_turn
+    id: '1291'
+    title: Cascade Chat Conversation
+    score: 0.65
+    match_type: semantic
+    concepts:
+    - aikh
+    - chat
+  - source: chatlogs:chat_turn
+    id: '1412'
+    title: Cascade Chat Conversation
+    score: 0.65
+    match_type: semantic
+    concepts:
+    - aikh
+    - chat

@@ -1,0 +1,91 @@
+provenance:
+  enrichment_date: '2026-01-03T17:21:49.504185'
+  confidence_score: 0.787
+  sources_searched:
+  - chatlogs.db
+  - workspace
+  - artifacts.db
+  - research.db
+  evidence_count: 65
+  key_concepts:
+  - p2re
+  - aikh
+  - chat
+  - uam
+  - splan
+  - rainstorm
+  - artifact_gen
+  - rag
+  evidence_chain:
+  - source: chatlogs:chat_turn
+    id: '743'
+    title: Cascade Chat Conversation
+    score: 0.8
+    match_type: lexical
+    concepts: []
+  - source: workspace:concept_node
+    id: concept:rag
+    title: 'Concept: rag'
+    score: 0.7
+    match_type: concept
+    concepts:
+    - rag
+    - rag
+  - source: chatlogs:chat_turn
+    id: '781'
+    title: Cascade Chat Conversation
+    score: 0.691
+    match_type: semantic
+    concepts:
+    - rainstorm
+  - source: chatlogs:chat_turn
+    id: '1624'
+    title: Cascade Chat Conversation
+    score: 0.691
+    match_type: semantic
+    concepts:
+    - rainstorm
+  - source: artifacts:discussion
+    id: discussion_90719bdec8000595
+    title: 'DISC-0002: The Rainstorm ⛈️ — Nested Umbrella DISC Workflow'
+    score: 0.674
+    match_type: semantic
+    concepts:
+    - chat
+    - splan
+    - rainstorm
+  - source: chatlogs:chat_turn
+    id: '166'
+    title: Cascade Chat Conversation
+    score: 0.669
+    match_type: semantic
+    concepts:
+    - uam
+  - source: chatlogs:chat_turn
+    id: '125'
+    title: Cascade Chat Conversation
+    score: 0.66
+    match_type: semantic
+    concepts:
+    - rainstorm
+  - source: chatlogs:chat_turn
+    id: '1115'
+    title: Cascade Chat Conversation
+    score: 0.66
+    match_type: semantic
+    concepts:
+    - rainstorm
+  - source: chatlogs:chat_turn
+    id: '780'
+    title: Cascade Chat Conversation
+    score: 0.659
+    match_type: semantic
+    concepts:
+    - rainstorm
+  - source: chatlogs:chat_turn
+    id: '1623'
+    title: Cascade Chat Conversation
+    score: 0.659
+    match_type: semantic
+    concepts:
+    - rainstorm

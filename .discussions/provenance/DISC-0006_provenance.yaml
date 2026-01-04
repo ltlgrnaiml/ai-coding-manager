@@ -1,0 +1,97 @@
+provenance:
+  enrichment_date: '2026-01-03T17:21:50.921482'
+  confidence_score: 0.778
+  sources_searched:
+  - chatlogs.db
+  - workspace
+  - artifacts.db
+  - research.db
+  evidence_count: 29
+  key_concepts:
+  - p2re
+  - agent
+  - aikh
+  - tap_in
+  - uam
+  - rainstorm
+  - rag
+  evidence_chain:
+  - source: artifacts:discussion
+    id: discussion_1b3e27f95b3fd9f6
+    title: 'DISC-0006: Tap-In Protocol (Pillar 4)'
+    score: 0.9
+    match_type: semantic
+    concepts:
+    - aikh
+    - tap_in
+    - uam
+  - source: workspace:concept_node
+    id: concept:agentic
+    title: 'Concept: agentic'
+    score: 0.7
+    match_type: concept
+    concepts:
+    - agent
+    - agent
+  - source: workspace:concept_node
+    id: concept:multi-agent
+    title: 'Concept: multi-agent'
+    score: 0.7
+    match_type: concept
+    concepts:
+    - agent
+    - agent
+  - source: workspace:concept_node
+    id: concept:rag
+    title: 'Concept: rag'
+    score: 0.7
+    match_type: concept
+    concepts:
+    - rag
+    - rag
+  - source: artifacts:archived_discussions
+    id: archive_v0_0b258a26117bc1ed
+    title: '[Archived] DISC-017: AI Coding Management Hub (AICM)'
+    score: 0.698
+    match_type: semantic
+    concepts:
+    - aikh
+    - tap_in
+    - uam
+  - source: artifacts:archived_discussions
+    id: archive_v0_76c65b5b94bd00a2
+    title: '[Archived] DISC-017: AI Coding Management Hub (AICM)'
+    score: 0.643
+    match_type: semantic
+    concepts:
+    - agent
+    - aikh
+    - tap_in
+  - source: artifacts:discussion
+    id: discussion_0412515fd2f93d31
+    title: 'DISC-0009: AI Chat Integration Architecture (Cross-Cutting)'
+    score: 0.622
+    match_type: semantic
+    concepts:
+    - uam
+  - source: chatlogs:chat_turn
+    id: '163'
+    title: Cascade Chat Conversation
+    score: 0.621
+    match_type: semantic
+    concepts:
+    - tap_in
+  - source: artifacts:archived_docs
+    id: archive_v0_6c954f50564e514f
+    title: '[Archived] AICM Vision Scope Analysis'
+    score: 0.611
+    match_type: semantic
+    concepts:
+    - p2re
+    - tap_in
+  - source: chatlogs:chat_turn
+    id: '653'
+    title: Cascade Chat Conversation
+    score: 0.604
+    match_type: semantic
+    concepts: []

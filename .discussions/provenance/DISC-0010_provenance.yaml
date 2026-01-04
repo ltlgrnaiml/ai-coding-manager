@@ -1,0 +1,85 @@
+provenance:
+  enrichment_date: '2026-01-03T17:21:52.261350'
+  confidence_score: 0.652
+  sources_searched:
+  - chatlogs.db
+  - workspace
+  - artifacts.db
+  - research.db
+  evidence_count: 36
+  key_concepts:
+  - uam
+  - splan
+  - artifact_gen
+  - rainstorm
+  evidence_chain:
+  - source: artifacts:discussion
+    id: discussion_4b1bae5ff8978c8b
+    title: 'DISC-0010: SPLAN — Super-Plan Orchestration System'
+    score: 0.856
+    match_type: semantic
+    concepts:
+    - uam
+    - splan
+    - rainstorm
+  - source: chatlogs:chat_turn
+    id: '652'
+    title: Cascade Chat Conversation
+    score: 0.661
+    match_type: semantic
+    concepts:
+    - rainstorm
+  - source: chatlogs:chat_turn
+    id: '1293'
+    title: Cascade Chat Conversation
+    score: 0.661
+    match_type: semantic
+    concepts:
+    - rainstorm
+  - source: chatlogs:chat_turn
+    id: '1414'
+    title: Cascade Chat Conversation
+    score: 0.661
+    match_type: semantic
+    concepts:
+    - rainstorm
+  - source: chatlogs:chat_turn
+    id: '1812'
+    title: Cascade Chat Conversation
+    score: 0.661
+    match_type: semantic
+    concepts:
+    - rainstorm
+  - source: artifacts:archived_discussions
+    id: archive_v0_6c2af5e99d4478e0
+    title: '[Archived] DISC-0022: Advanced AI Agent Feedback Loops'
+    score: 0.617
+    match_type: semantic
+    concepts: []
+  - source: chatlogs:chat_turn
+    id: '260'
+    title: Cascade Chat Conversation
+    score: 0.61
+    match_type: semantic
+    concepts:
+    - uam
+  - source: chatlogs:chat_turn
+    id: '1281'
+    title: Cascade Chat Conversation
+    score: 0.608
+    match_type: semantic
+    concepts:
+    - uam
+  - source: artifacts:archived_discussions
+    id: archive_v0_616f9f0a1a4b884c
+    title: '[Archived] DISC-001: Knowledge Capture System Vision'
+    score: 0.599
+    match_type: semantic
+    concepts:
+    - rainstorm
+  - source: artifacts:archived_discussions
+    id: archive_v0_e025b0f6d2c74126
+    title: '[Archived] DISC-018: Meta-Agent Self-Improvement System'
+    score: 0.598
+    match_type: semantic
+    concepts: []

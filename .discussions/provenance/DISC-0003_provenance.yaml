@@ -1,0 +1,86 @@
+provenance:
+  enrichment_date: '2026-01-03T17:21:49.856913'
+  confidence_score: 0.772
+  sources_searched:
+  - chatlogs.db
+  - workspace
+  - artifacts.db
+  - research.db
+  evidence_count: 57
+  key_concepts:
+  - p2re
+  - aikh
+  - chat
+  - tap_in
+  - quality
+  - uam
+  - splan
+  - rainstorm
+  - artifact_gen
+  - rag
+  evidence_chain:
+  - source: artifacts:discussion
+    id: discussion_bfececaf6fef07cd
+    title: 'DISC-0003: UAM — Unified Artifact Model (Umbrella)'
+    score: 0.87
+    match_type: semantic
+    concepts:
+    - uam
+  - source: chatlogs:chat_turn
+    id: '653'
+    title: Cascade Chat Conversation
+    score: 0.8
+    match_type: lexical
+    concepts: []
+  - source: chatlogs:chat_turn
+    id: '1294'
+    title: Cascade Chat Conversation
+    score: 0.8
+    match_type: lexical
+    concepts: []
+  - source: chatlogs:chat_turn
+    id: '1415'
+    title: Cascade Chat Conversation
+    score: 0.8
+    match_type: lexical
+    concepts: []
+  - source: chatlogs:chat_turn
+    id: '107'
+    title: Cascade Chat Conversation
+    score: 0.8
+    match_type: lexical
+    concepts:
+    - uam
+  - source: chatlogs:chat_turn
+    id: '115'
+    title: Cascade Chat Conversation
+    score: 0.8
+    match_type: lexical
+    concepts:
+    - uam
+  - source: chatlogs:chat_turn
+    id: '121'
+    title: Cascade Chat Conversation
+    score: 0.8
+    match_type: lexical
+    concepts: []
+  - source: chatlogs:chat_turn
+    id: '132'
+    title: Cascade Chat Conversation
+    score: 0.8
+    match_type: lexical
+    concepts: []
+  - source: artifacts:archived_discussions
+    id: archive_v0_5ea9ddf131c33906
+    title: '[Archived] DISC-029: Cross-Platform Development Workflow Strategy'
+    score: 0.794
+    match_type: semantic
+    concepts:
+    - uam
+    - rainstorm
+  - source: artifacts:archived_docs
+    id: archive_v0_6c954f50564e514f
+    title: '[Archived] AICM Vision Scope Analysis'
+    score: 0.784
+    match_type: semantic
+    concepts: []

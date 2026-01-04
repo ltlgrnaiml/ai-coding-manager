@@ -1,5 +1,6 @@
 # Discussions (DISC)
 
+> **Part of**: AI Coding Manager (AICM)
 > **Purpose**: Refine chat conversations into structured problem explorations.
 
 ---

@@ -1,5 +1,6 @@
 # Architecture Decision Records (ADR)
 
+> **Part of**: AI Coding Manager (AICM)
 > **Purpose**: Capture architectural decisions with context and rationale.
 
 ---

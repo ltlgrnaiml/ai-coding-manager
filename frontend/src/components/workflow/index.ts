@@ -49,5 +49,11 @@ export { getStartingStage, getWorkflowStages, isStageInWorkflow, artifactTypeToS
 export { GenerateWorkflowModal } from './GenerateWorkflowModal'
 export { ReviewApprovePanel } from './ReviewApprovePanel'
 
+// Rainstorm Components
+export { RainstormWelcome } from './RainstormWelcome'
+export { WorkflowBuilder } from './WorkflowBuilder'
+export { ArtifactTree } from './ArtifactTree'
+export { ActionPanel } from './ActionPanel'
+
 // Types
-export type { ArtifactType, ArtifactStatus, FileFormat, ArtifactSummary, ArtifactListResponse, WorkflowState, WorkflowMode, WorkflowScenario, GraphResponse, PromptResponse } from './types'
+export type { ArtifactType, ArtifactStatus, FileFormat, ArtifactSummary, ArtifactListResponse, WorkflowState, WorkflowMode, WorkflowScenario, GraphResponse, PromptResponse, UmbrellaDisc, ArtifactTreeNode, RainstormState, PromptTemplate } from './types'

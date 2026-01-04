@@ -1,4 +1,4 @@
-# AICM Vision Statement
+# AI Coding Manager (AICM) Vision Statement
 
 > **Version**: 0.1.0 (Genesis)  
 > **Created**: 2026-01-03  
@@ -78,7 +78,7 @@
 
 ---
 
-### 3. P2RE — Prompt-to-Result Execution Traces
+### 3. P2RE — Prompt-to-Response Evaluator
 
 **What it is**: Full observability of AI interactions — what was asked, what was retrieved, what was generated, what was executed.
 

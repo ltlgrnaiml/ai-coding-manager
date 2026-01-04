@@ -1,0 +1,78 @@
+provenance:
+  enrichment_date: '2026-01-03T17:21:49.167948'
+  confidence_score: 0.783
+  sources_searched:
+  - chatlogs.db
+  - workspace
+  - artifacts.db
+  - research.db
+  evidence_count: 77
+  key_concepts:
+  - p2re
+  - aikh
+  - tap_in
+  - uam
+  - rainstorm
+  evidence_chain:
+  - source: artifacts:archived_discussions
+    id: archive_v0_9e0987164f2cd783
+    title: '[Archived] DISC-0022: AI Knowledge Hub (AIKH) Architecture'
+    score: 0.788
+    match_type: semantic
+    concepts:
+    - aikh
+    - uam
+  - source: chatlogs:chat_turn
+    id: '403'
+    title: Cascade Chat Conversation
+    score: 0.75
+    match_type: lexical
+    concepts: []
+  - source: chatlogs:chat_turn
+    id: '649'
+    title: Cascade Chat Conversation
+    score: 0.732
+    match_type: semantic
+    concepts: []
+  - source: chatlogs:chat_turn
+    id: '1290'
+    title: Cascade Chat Conversation
+    score: 0.732
+    match_type: semantic
+    concepts: []
+  - source: chatlogs:chat_turn
+    id: '1411'
+    title: Cascade Chat Conversation
+    score: 0.732
+    match_type: semantic
+    concepts: []
+  - source: chatlogs:chat_turn
+    id: '1809'
+    title: Cascade Chat Conversation
+    score: 0.732
+    match_type: semantic
+    concepts: []
+  - source: chatlogs:chat_turn
+    id: '653'
+    title: Cascade Chat Conversation
+    score: 0.706
+    match_type: semantic
+    concepts: []
+  - source: chatlogs:chat_turn
+    id: '1294'
+    title: Cascade Chat Conversation
+    score: 0.706
+    match_type: semantic
+    concepts: []
+  - source: chatlogs:chat_turn
+    id: '1415'
+    title: Cascade Chat Conversation
+    score: 0.706
+    match_type: semantic
+    concepts: []
+  - source: chatlogs:chat_turn
+    id: '1813'
+    title: Cascade Chat Conversation
+    score: 0.706
+    match_type: semantic
+    concepts: []

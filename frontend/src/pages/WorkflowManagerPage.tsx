@@ -12,6 +12,7 @@ import {
   WorkflowStartedState,
   GenerateWorkflowModal,
 } from '../components/workflow'
+import { RainstormWelcome } from '../components/workflow/RainstormWelcome'
 import { useWorkflowState } from '../components/workflow/useWorkflowState'
 import type { ArtifactType, FileFormat, ArtifactSummary } from '../components/workflow/types'
 import type { WorkflowType } from '../components/workflow/workflowUtils'
@@ -257,7 +258,21 @@ export function WorkflowManagerPage() {
             </div>
           ) : (
             <div className="flex-1 flex items-center justify-center">
-              <EmptyState type="adr" onAction={() => handleNewWorkflow('feature')} />
+              <RainstormWelcome
+                onStartNew={() => {
+                  // TODO: Open modal to create new Umbrella DISC
+                  console.log('Start new Rainstorm')
+                  handleNewWorkflow('feature')
+                }}
+                onOpenExisting={() => {
+                  // TODO: Open file picker for existing Umbrella DISCs
+                  console.log('Open existing Rainstorm')
+                }}
+                onLearnMore={() => {
+                  // TODO: Navigate to documentation
+                  window.open('https://github.com/your-repo/docs/rainstorm', '_blank')
+                }}
+              />
             </div>
           )}
         </div>

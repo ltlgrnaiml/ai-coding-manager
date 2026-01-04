@@ -59,3 +59,41 @@ export interface PromptResponse {
   target_type: ArtifactType
   context: Record<string, unknown>
 }
+
+// Rainstorm-specific types
+export interface UmbrellaDisc {
+  id: string
+  title: string
+  filePath: string
+  children: string[]  // artifact IDs
+  splanId?: string
+  createdAt: string
+  status: 'active' | 'resolved'
+}
+
+export interface ArtifactTreeNode {
+  id: string
+  type: ArtifactType | 'placeholder'
+  title: string
+  filePath?: string
+  status: 'exists' | 'in_progress' | 'missing'
+  children: ArtifactTreeNode[]
+  parentId?: string
+  depth: number
+  isUmbrella?: boolean
+}
+
+export interface RainstormState {
+  activeUmbrella: UmbrellaDisc | null
+  artifactTree: ArtifactTreeNode[]
+  selectedNode: ArtifactTreeNode | null
+  expandedNodes: Set<string>
+  discoveryEnabled: boolean
+  lastDiscoveryCheck: number
+}
+
+export interface PromptTemplate {
+  type: ArtifactType
+  template: string
+  variables: string[]  // e.g., ['parent_title', 'parent_path', 'questions']
+}

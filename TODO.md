@@ -1,6 +1,6 @@
-# AI Dev Orchestrator - TODO & Roadmap
+# AI Coding Manager (AICM) - TODO & Roadmap
 
-> Extracted from engineering-tools on December 30-31, 2025
+> Originally extracted from engineering-tools, now the foundation for the AI Coding Manager vision.
 
 ---
 

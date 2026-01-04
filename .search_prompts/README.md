@@ -1,4 +1,4 @@
-# Research Prompts for AICM Vision Refinement
+# Research Prompts for AI Coding Manager (AICM) Vision Refinement
 
 > **Created**: SESSION_009 | 2026-01-02
 > **Purpose**: Targeted research acquisition to fill vision gaps

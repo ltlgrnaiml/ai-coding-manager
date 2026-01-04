@@ -1,4 +1,4 @@
-# DISC-0001: Genesis — AICM Vision and Foundation
+# DISC-0001: Genesis — AI Coding Manager (AICM) Vision and Foundation
 
 > **Status**: `active`
 > **Created**: 2026-01-03
@@ -32,7 +32,7 @@ User directive: *"Ok time to get creative, become the full embodiment of our SOL
 
 ## The Answer: What IS AICM?
 
-**AICM is a methodology-as-software** — a system that embodies AI-human collaborative development while being built BY that methodology.
+**The AI Coding Manager (AICM) is a methodology-as-software** — a system that embodies AI-human collaborative development while being built BY that methodology.
 
 ### The Core Loop
 
@@ -44,7 +44,7 @@ Chat Logs → Discussions → Decisions → Specifications → Code → Traces �
 
 1. **UAM** — Unified Artifact Model (deterministic traceability)
 2. **AIKH** — AI Knowledge Hub (persistent cross-project knowledge)
-3. **P2RE** — Prompt-to-Result Execution (observability)
+3. **P2RE** — Prompt-to-Response Evaluator (observability)
 4. **Tap-In Protocol** — Zero ramp-up AI session continuity
 
 ### Why Special
@@ -92,6 +92,15 @@ All artifacts now use **4-digit numbering** for consistency and scalability:
 - Chat log content used to infer actual conversation dates
 
 **Note**: Session numbering may need repo-specific adjustment in future as sessions span multiple projects.
+
+---
+
+## Child Discussions
+
+| DISC | Title | Type | Status |
+|------|-------|------|--------|
+| DISC-0002 | The Rainstorm ⛈️ | Workflow | `active` 🔴 CRITICAL |
+| DISC-0003 | UAM — Unified Artifact Model | Umbrella | `active` |
 
 ---
 

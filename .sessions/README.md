@@ -1,5 +1,7 @@
 # Sessions Directory
 
+> **Part of**: AI Coding Manager (AICM)
+
 Session logs for AI-assisted development continuity.
 
 ## Purpose

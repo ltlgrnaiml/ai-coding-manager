@@ -1,0 +1,85 @@
+provenance:
+  enrichment_date: '2026-01-03T17:21:51.590340'
+  confidence_score: 0.787
+  sources_searched:
+  - chatlogs.db
+  - workspace
+  - artifacts.db
+  - research.db
+  evidence_count: 90
+  key_concepts:
+  - aikh
+  - quality
+  - uam
+  - llm
+  - rainstorm
+  - artifact_gen
+  evidence_chain:
+  - source: artifacts:discussion
+    id: discussion_371dacc211004ad6
+    title: 'DISC-0008: Artifact Generation Pipelines (Cross-Cutting)'
+    score: 0.927
+    match_type: semantic
+    concepts:
+    - uam
+    - artifact_gen
+  - source: artifacts:archived_discussions
+    id: archive_v0_0b258a26117bc1ed
+    title: '[Archived] DISC-017: AI Coding Management Hub (AICM)'
+    score: 0.722
+    match_type: semantic
+    concepts:
+    - rainstorm
+    - artifact_gen
+  - source: artifacts:archived_discussions
+    id: archive_v0_76c65b5b94bd00a2
+    title: '[Archived] DISC-017: AI Coding Management Hub (AICM)'
+    score: 0.711
+    match_type: semantic
+    concepts: []
+  - source: artifacts:archived_discussions
+    id: archive_v0_70a80cb21a90f97b
+    title: '[Archived] DISC-002: AI-Lite Prompt Chain Workflow'
+    score: 0.695
+    match_type: semantic
+    concepts:
+    - rainstorm
+  - source: chatlogs:chat_log
+    id: '69'
+    title: Cascade Chat Conversation
+    score: 0.686
+    match_type: semantic
+    concepts: []
+  - source: chatlogs:chat_log
+    id: '79'
+    title: Cascade Chat Conversation
+    score: 0.686
+    match_type: semantic
+    concepts: []
+  - source: chatlogs:chat_log
+    id: '81'
+    title: Cascade Chat Conversation
+    score: 0.686
+    match_type: semantic
+    concepts: []
+  - source: chatlogs:chat_log
+    id: '91'
+    title: Cascade Chat Conversation
+    score: 0.686
+    match_type: semantic
+    concepts: []
+  - source: chatlogs:chat_turn
+    id: '1281'
+    title: Cascade Chat Conversation
+    score: 0.682
+    match_type: semantic
+    concepts:
+    - aikh
+    - uam
+  - source: artifacts:discussion
+    id: discussion_bfececaf6fef07cd
+    title: 'DISC-0003: UAM — Unified Artifact Model (Umbrella)'
+    score: 0.68
+    match_type: semantic
+    concepts:
+    - uam

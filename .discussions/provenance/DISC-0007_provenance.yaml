@@ -1,0 +1,93 @@
+provenance:
+  enrichment_date: '2026-01-03T17:21:51.260382'
+  confidence_score: 0.792
+  sources_searched:
+  - chatlogs.db
+  - workspace
+  - artifacts.db
+  - research.db
+  evidence_count: 22
+  key_concepts:
+  - p2re
+  - aikh
+  - quality
+  - uam
+  - llm
+  - rainstorm
+  evidence_chain:
+  - source: artifacts:discussion
+    id: discussion_137875e643c3b7c3
+    title: 'DISC-0007: Quality Scoring System (Cross-Cutting)'
+    score: 0.825
+    match_type: semantic
+    concepts:
+    - quality
+    - uam
+    - llm
+  - source: artifacts:archived_discussions
+    id: archive_v0_7d90b3ccfe0a81cb
+    title: '[Archived] DISC-013: Quality Scoring System'
+    score: 0.738
+    match_type: semantic
+    concepts: []
+  - source: artifacts:archived_docs
+    id: archive_v0_6c954f50564e514f
+    title: '[Archived] AICM Vision Scope Analysis'
+    score: 0.683
+    match_type: semantic
+    concepts:
+    - p2re
+    - llm
+  - source: artifacts:archived_discussions
+    id: archive_v0_1874906ca951d3ec
+    title: '[Archived] DISC-011: Unified Artifact Model (UAM)'
+    score: 0.644
+    match_type: semantic
+    concepts:
+    - uam
+  - source: artifacts:archived_experiments
+    id: archive_v0_dde2476a242dd9c2
+    title: '[Archived] EXP-001: Enhanced L1 Model Scoring (V2 Rubric)'
+    score: 0.608
+    match_type: semantic
+    concepts:
+    - quality
+  - source: chatlogs:chat_turn
+    id: '79'
+    title: Cascade Chat Conversation
+    score: 0.608
+    match_type: semantic
+    concepts:
+    - p2re
+    - quality
+    - rainstorm
+  - source: chatlogs:chat_turn
+    id: '1069'
+    title: Cascade Chat Conversation
+    score: 0.608
+    match_type: semantic
+    concepts:
+    - p2re
+    - quality
+    - rainstorm
+  - source: workspace:paper_reference
+    id: paper:paper_7b999cacac0c1932
+    title: Assessing the Quality and Security of AI-Generated
+    score: 0.6
+    match_type: citation
+    concepts: []
+  - source: artifacts:discussion
+    id: discussion_fce69baa3b97ddca
+    title: 'DISC-0005: P2RE — Prompt-to-Response Evaluator (Pillar 3)'
+    score: 0.593
+    match_type: semantic
+    concepts:
+    - p2re
+    - uam
+  - source: chatlogs:chat_turn
+    id: '81'
+    title: Cascade Chat Conversation
+    score: 0.585
+    match_type: semantic
+    concepts:
+    - quality

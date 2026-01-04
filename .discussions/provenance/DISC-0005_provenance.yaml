@@ -1,0 +1,96 @@
+provenance:
+  enrichment_date: '2026-01-03T17:21:50.553686'
+  confidence_score: 0.74
+  sources_searched:
+  - chatlogs.db
+  - workspace
+  - artifacts.db
+  - research.db
+  evidence_count: 48
+  key_concepts:
+  - p2re
+  - agent
+  - aikh
+  - quality
+  - uam
+  - llm
+  - rag
+  evidence_chain:
+  - source: artifacts:discussion
+    id: discussion_fce69baa3b97ddca
+    title: 'DISC-0005: P2RE — Prompt-to-Response Evaluator (Pillar 3)'
+    score: 0.903
+    match_type: semantic
+    concepts:
+    - p2re
+    - uam
+    - llm
+  - source: artifacts:archived_plans
+    id: archive_v0_6b144b73ec22a399
+    title: '[Archived] PLAN-0008: P2RE - Prompt-to-Response Evaluator'
+    score: 0.72
+    match_type: semantic
+    concepts:
+    - p2re
+    - llm
+  - source: workspace:concept_node
+    id: concept:agentic
+    title: 'Concept: agentic'
+    score: 0.7
+    match_type: concept
+    concepts:
+    - agent
+    - agent
+  - source: workspace:concept_node
+    id: concept:multi-agent
+    title: 'Concept: multi-agent'
+    score: 0.7
+    match_type: concept
+    concepts:
+    - agent
+    - agent
+  - source: workspace:concept_node
+    id: concept:rag
+    title: 'Concept: rag'
+    score: 0.7
+    match_type: concept
+    concepts:
+    - rag
+    - rag
+  - source: artifacts:archived_discussions
+    id: archive_v0_3353e819bdcdee31
+    title: '[Archived] P2RE Tools Viewer Panel'
+    score: 0.627
+    match_type: semantic
+    concepts:
+    - p2re
+  - source: artifacts:discussion
+    id: discussion_0412515fd2f93d31
+    title: 'DISC-0009: AI Chat Integration Architecture (Cross-Cutting)'
+    score: 0.619
+    match_type: semantic
+    concepts:
+    - uam
+  - source: artifacts:archived_discussions
+    id: archive_v0_4dba3f42153a212c
+    title: '[Archived] DISC-0027: Automated Testing & Debugging Infrastructure'
+    score: 0.617
+    match_type: semantic
+    concepts: []
+  - source: artifacts:archived_discussions
+    id: archive_v0_0b258a26117bc1ed
+    title: '[Archived] DISC-017: AI Coding Management Hub (AICM)'
+    score: 0.61
+    match_type: semantic
+    concepts:
+    - agent
+    - aikh
+  - source: artifacts:archived_discussions
+    id: archive_v0_0932afe4dba73577
+    title: '[Archived] DISC-016: AI Context Prompt Generator'
+    score: 0.608
+    match_type: semantic
+    concepts:
+    - aikh
+    - quality
+    - rag

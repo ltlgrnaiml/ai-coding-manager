@@ -8,7 +8,7 @@
 
 ## Summary
 
-Embedded viewer panel for P2RE (Prompts to Response Ecosystem) tools, starting with Phoenix trace inspection and expandable to include prompt optimization, quality grading, hallucination detection, and context optimization tools.
+Embedded viewer panel for P2RE (Prompt-to-Response Evaluator) tools, starting with Phoenix trace inspection and expandable to include prompt optimization, quality grading, hallucination detection, and context optimization tools.
 
 ---
 

@@ -1,4 +1,4 @@
-# PLAN-0008: P2RE - Prompts to Response Ecosystem
+# PLAN-0008: P2RE - Prompt-to-Response Evaluator
 
 > **Status**: draft
 > **Created**: 2025-01-03
@@ -8,7 +8,7 @@
 
 ## Overview
 
-P2RE (Prompts to Response Ecosystem) captures the full lifecycle of LLM interactions:
+P2RE (Prompt-to-Response Evaluator) captures the full lifecycle of LLM interactions:
 - **Prompts**: Templates, versions, system messages
 - **Traces**: Individual LLM calls with full context
 - **Responses**: Output content, tokens, latency

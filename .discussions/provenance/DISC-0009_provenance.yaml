@@ -1,0 +1,101 @@
+provenance:
+  enrichment_date: '2026-01-03T17:21:51.912545'
+  confidence_score: 0.791
+  sources_searched:
+  - chatlogs.db
+  - workspace
+  - artifacts.db
+  - research.db
+  evidence_count: 71
+  key_concepts:
+  - p2re
+  - agent
+  - aikh
+  - chat
+  - tap_in
+  - uam
+  - llm
+  - artifact_gen
+  - rag
+  evidence_chain:
+  - source: artifacts:discussion
+    id: discussion_0412515fd2f93d31
+    title: 'DISC-0009: AI Chat Integration Architecture (Cross-Cutting)'
+    score: 0.9
+    match_type: semantic
+    concepts:
+    - chat
+    - uam
+  - source: chatlogs:chat_turn
+    id: '166'
+    title: Cascade Chat Conversation
+    score: 0.8
+    match_type: lexical
+    concepts:
+    - tap_in
+    - uam
+  - source: chatlogs:chat_turn
+    id: '1794'
+    title: Cascade Chat Conversation
+    score: 0.8
+    match_type: lexical
+    concepts:
+    - chat
+  - source: workspace:concept_node
+    id: concept:agentic
+    title: 'Concept: agentic'
+    score: 0.7
+    match_type: concept
+    concepts:
+    - agent
+    - agent
+  - source: workspace:concept_node
+    id: concept:multi-agent
+    title: 'Concept: multi-agent'
+    score: 0.7
+    match_type: concept
+    concepts:
+    - agent
+    - agent
+  - source: workspace:concept_node
+    id: concept:rag
+    title: 'Concept: rag'
+    score: 0.7
+    match_type: concept
+    concepts:
+    - rag
+    - rag
+  - source: artifacts:discussion
+    id: discussion_1b3e27f95b3fd9f6
+    title: 'DISC-0006: Tap-In Protocol (Pillar 4)'
+    score: 0.69
+    match_type: semantic
+    concepts:
+    - aikh
+    - tap_in
+    - uam
+  - source: artifacts:session
+    id: session_6244391c4d407b28
+    title: 'SESSION_016: Conversation Memory Architecture'
+    score: 0.689
+    match_type: semantic
+    concepts:
+    - aikh
+    - llm
+  - source: artifacts:archived_discussions
+    id: archive_v0_0b258a26117bc1ed
+    title: '[Archived] DISC-017: AI Coding Management Hub (AICM)'
+    score: 0.684
+    match_type: semantic
+    concepts:
+    - aikh
+    - uam
+  - source: artifacts:archived_discussions
+    id: archive_v0_76c65b5b94bd00a2
+    title: '[Archived] DISC-017: AI Coding Management Hub (AICM)'
+    score: 0.659
+    match_type: semantic
+    concepts:
+    - agent
+    - artifact_gen
+    - rag
