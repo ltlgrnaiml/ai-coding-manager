@@ -155,14 +155,21 @@ export function WorkflowPage() {
 
     setLoadingDisc(discId)
     try {
-      // Fetch the DISC content
-      const res = await fetch(`${API_BASE}/artifact/${discId}/content`)
+      // Fetch the DISC content - correct endpoint is /artifacts/{id}
+      const res = await fetch(`${API_BASE}/artifacts/${discId}`)
+      if (!res.ok) {
+        throw new Error(`Failed to fetch: ${res.status}`)
+      }
       const data = await res.json()
-      const content = data.content || ''
+      // Content can be string (markdown) or object
+      const content = typeof data.content === 'string' ? data.content : JSON.stringify(data.content, null, 2)
+      
+      console.log(`Loaded DISC ${discId}, content length: ${content.length}`)
 
       // Parse the DISC
       const parsed = parseDisc(content, discId)
-      parsed.title = disc.title
+      parsed.title = data.title || disc.title
+      parsed.status = data.status || parsed.status
       
       setParsedDiscs(prev => ({ ...prev, [discId]: parsed }))
       setExpandedNodes(prev => new Set([...prev, discId]))
