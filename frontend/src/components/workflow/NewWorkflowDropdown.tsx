@@ -1,12 +1,21 @@
 import { useState, useRef, useEffect } from 'react'
-import { Plus, ChevronDown, Sparkles, Bug, Wrench, FileText, Wand2 } from 'lucide-react'
+import { Plus, ChevronDown, CloudRain } from 'lucide-react'
 
+// Only "The Rainstorm" workflow is active - others deprecated for future cleanup
 const WORKFLOW_TYPES = [
-  { id: 'ai_full', label: 'AI-Full Mode ✨', icon: Wand2, description: 'One-click: Generate all artifacts automatically', highlight: true },
-  { id: 'feature', label: 'New Feature', icon: Sparkles, description: 'Manual: Discussion → ADR → SPEC → Plan' },
-  { id: 'bugfix', label: 'Bug Fix', icon: Bug, description: 'Manual: Plan → Fragment' },
-  { id: 'refactor', label: 'Refactor', icon: Wrench, description: 'Manual: ADR → Plan' },
-  { id: 'enhancement', label: 'Enhancement', icon: FileText, description: 'Manual: SPEC → Plan' },
+  { 
+    id: 'rainstorm', 
+    label: 'The Rainstorm ⛈️', 
+    icon: CloudRain, 
+    description: 'Guided: DISC → ADR → SPEC → Contract → Plan → Fragment',
+    highlight: true 
+  },
+  // DEPRECATED: To be removed in future cleanup
+  // { id: 'ai_full', label: 'AI-Full Mode ✨', icon: Wand2, description: 'One-click: Generate all artifacts automatically', highlight: true },
+  // { id: 'feature', label: 'New Feature', icon: Sparkles, description: 'Manual: Discussion → ADR → SPEC → Plan' },
+  // { id: 'bugfix', label: 'Bug Fix', icon: Bug, description: 'Manual: Plan → Fragment' },
+  // { id: 'refactor', label: 'Refactor', icon: Wrench, description: 'Manual: ADR → Plan' },
+  // { id: 'enhancement', label: 'Enhancement', icon: FileText, description: 'Manual: SPEC → Plan' },
 ]
 
 interface NewWorkflowDropdownProps {

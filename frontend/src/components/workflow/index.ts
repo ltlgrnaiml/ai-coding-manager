@@ -51,6 +51,9 @@ export { ReviewApprovePanel } from './ReviewApprovePanel'
 
 // Rainstorm Components
 export { RainstormWelcome } from './RainstormWelcome'
+export { RainstormStep1 } from './RainstormStep1'
+export { RainstormBuilder } from './RainstormBuilder'
+export { RainstormArtifactMapper } from './RainstormArtifactMapper'
 export { WorkflowBuilder } from './WorkflowBuilder'
 export { ArtifactTree } from './ArtifactTree'
 export { ActionPanel } from './ActionPanel'

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { List, Network, BookOpen, Sparkles } from 'lucide-react'
+import { List, Network, BookOpen, Sparkles, Workflow } from 'lucide-react'
 import {
   WorkflowSidebar,
   ArtifactGraph,
@@ -11,8 +11,10 @@ import {
   EmptyState,
   WorkflowStartedState,
   GenerateWorkflowModal,
+  RainstormWelcome,
+  RainstormStep1,
+  RainstormBuilder,
 } from '../components/workflow'
-import { RainstormWelcome } from '../components/workflow/RainstormWelcome'
 import { useWorkflowState } from '../components/workflow/useWorkflowState'
 import type { ArtifactType, FileFormat, ArtifactSummary } from '../components/workflow/types'
 import type { WorkflowType } from '../components/workflow/workflowUtils'
@@ -27,7 +29,8 @@ export function WorkflowManagerPage() {
   const [paletteOpen, setPaletteOpen] = useState(false)
   const [generateModalOpen, setGenerateModalOpen] = useState(false)
   const [allArtifacts, setAllArtifacts] = useState<ArtifactSummary[]>([])
-  const [view, setView] = useState<'list' | 'graph'>('list')
+  const [view, setView] = useState<'list' | 'graph' | 'builder'>('list')
+  const [rainstormDiscId, setRainstormDiscId] = useState<string | null>(null)
   const [relatedPapers, setRelatedPapers] = useState<Paper[]>([])
   const [showRelatedPapers, setShowRelatedPapers] = useState(false)
 
@@ -92,7 +95,7 @@ export function WorkflowManagerPage() {
         : 'Starting a new workflow will clear your current selection.'
       
       // Check for workflow type mismatch with selected artifact
-      if (selectedArtifact && type !== 'ai_full') {
+      if (selectedArtifact && type !== 'ai_full' && type !== 'rainstorm') {
         const selectedStage = artifactTypeToStage(selectedArtifact.type)
         if (selectedStage && !isStageInWorkflow(selectedStage, type as WorkflowType)) {
           msg += `\n\nNote: Your selected ${selectedArtifact.type.toUpperCase()} artifact is not part of the "${type}" workflow.`
@@ -111,10 +114,21 @@ export function WorkflowManagerPage() {
     
     if (type === 'ai_full') {
       setGenerateModalOpen(true)
+    } else if (type === 'rainstorm') {
+      // Start The Rainstorm workflow (feature workflow with enhanced UX)
+      workflow.startWorkflow('feature' as WorkflowType)
     } else {
       workflow.startWorkflow(type as WorkflowType)
     }
   }, [workflow, selectedArtifact])
+
+  const handleResetWorkflow = useCallback(() => {
+    if (window.confirm('Reset the current workflow? This will clear your progress.')) {
+      workflow.resetWorkflow()
+      setSelectedArtifact(null)
+      setEditorOpen(false)
+    }
+  }, [workflow])
 
   return (
     <div className="flex flex-col h-screen bg-zinc-950 text-white">
@@ -157,6 +171,17 @@ export function WorkflowManagerPage() {
         >
           <Network size={14} />
           Graph
+        </button>
+        <button
+          onClick={() => setView('builder')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-sm transition-colors ${
+            view === 'builder' 
+              ? 'bg-purple-600 text-white' 
+              : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white'
+          }`}
+        >
+          <Workflow size={14} />
+          Builder
         </button>
 
         {/* Research Papers Button - Find related papers using GPU semantic search */}
@@ -217,7 +242,29 @@ export function WorkflowManagerPage() {
 
         {/* Main panel */}
         <div className="flex-1 flex min-h-0 min-w-0">
-          {view === 'graph' ? (
+          {view === 'builder' ? (
+            <RainstormBuilder
+              selectedDiscId={rainstormDiscId || selectedArtifact?.id || null}
+              onSelectArtifact={(artifact) => {
+                handleArtifactSelect(artifact)
+                setView('list')
+              }}
+              onViewArtifact={(artifact) => {
+                handleArtifactSelect(artifact)
+                setView('list')
+              }}
+              onEditArtifact={(artifact) => {
+                handleArtifactSelect(artifact)
+                setEditorOpen(true)
+                setView('list')
+              }}
+              onReset={() => {
+                setRainstormDiscId(null)
+                handleResetWorkflow()
+              }}
+              className="flex-1"
+            />
+          ) : view === 'graph' ? (
             <ArtifactGraph
               onNodeClick={handleGraphNodeClick}
               selectedNodeId={selectedArtifact?.id}
@@ -232,6 +279,27 @@ export function WorkflowManagerPage() {
               onEdit={() => setEditorOpen(true)}
               className="flex-1"
             />
+          ) : workflow.workflowType && workflow.currentStage === 'discussion' ? (
+            <div className="flex-1 flex items-center justify-center">
+              <RainstormStep1
+                onSelectDisc={(disc) => {
+                  // User selected an existing DISC - set it as the rainstorm root and switch to builder
+                  setRainstormDiscId(disc.id)
+                  handleArtifactSelect(disc)
+                  setView('builder')
+                }}
+                onCreateNew={() => {
+                  // TODO: Open editor for new DISC
+                  console.log('Create new DISC')
+                }}
+                onCopyPrompt={() => {
+                  const prompt = `Create a new Discussion file for this feature.\n\nTemplate:\n# DISC-XXX: [Title]\n\n## Summary\n[One paragraph describing the feature]\n\n## Problem Statement\n[What problem does this solve?]\n\n## Requirements\n### Functional Requirements\n- [ ] **FR-1**: [Requirement]\n\n## Open Questions\n| ID | Question | Status |\n|----|----------|--------|\n| Q-1 | [Question] | open |`
+                  navigator.clipboard.writeText(prompt)
+                  alert('Prompt copied to clipboard! Paste it into your AI assistant.')
+                }}
+                onReset={handleResetWorkflow}
+              />
+            </div>
           ) : workflow.workflowType ? (
             <div className="flex-1 flex items-center justify-center">
               <WorkflowStartedState
@@ -244,7 +312,6 @@ export function WorkflowManagerPage() {
                 onCopyPrompt={() => {
                   // Copy a starter prompt for the current stage
                   const stagePrompts: Record<string, string> = {
-                    discussion: `Create a new Discussion file for this feature.\n\nTemplate:\n# DISC-XXX: [Title]\n\n## Summary\n[One paragraph describing the feature]\n\n## Requirements\n### Functional Requirements\n- [ ] **FR-1**: [Requirement]\n\n## Open Questions\n| ID | Question | Status |\n|----|----------|--------|\n| Q-1 | [Question] | open |`,
                     adr: 'Create an ADR (Architecture Decision Record) that documents the key architectural decision for this work. Include context, decision, consequences, and alternatives considered.',
                     spec: 'Create a SPEC that defines the functional requirements, API contracts, and acceptance criteria for this feature.',
                     plan: 'Create a Plan that breaks this work into milestones and tasks with verification commands.',
