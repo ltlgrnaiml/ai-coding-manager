@@ -23,7 +23,7 @@ import { useResearch, type Paper } from '../hooks/useResearch'
 
 const API_BASE = '/api/devtools'
 
-export function WorkflowManagerPage() {
+export function ArtifactManagerPage() {
   const [selectedArtifact, setSelectedArtifact] = useState<{ id: string; type: ArtifactType; filePath: string; fileFormat: FileFormat } | null>(null)
   const [editorOpen, setEditorOpen] = useState(false)
   const [paletteOpen, setPaletteOpen] = useState(false)

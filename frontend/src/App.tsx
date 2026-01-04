@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
-import { MessageSquare, GitBranch, Settings, Zap, BookOpen, Activity } from 'lucide-react'
+import { MessageSquare, GitBranch, Settings, Zap, BookOpen, Activity, CloudRain, FolderOpen } from 'lucide-react'
 import ChatView from './views/ChatView'
-import { WorkflowManagerPage } from './pages/WorkflowManagerPage'
+import { ArtifactManagerPage } from './pages/ArtifactManagerPage'
+import { WorkflowPage } from './pages/WorkflowPage'
 import ResearchPage from './pages/ResearchPage'
 import { P2REPage } from './pages/P2REPage'
 
@@ -20,7 +21,8 @@ function App() {
 
   const navItems = [
     { path: '/', icon: MessageSquare, label: 'Chat' },
-    { path: '/workflow', icon: GitBranch, label: 'Workflow' },
+    { path: '/workflow', icon: CloudRain, label: 'Workflow' },
+    { path: '/artifacts', icon: FolderOpen, label: 'Artifacts' },
     { path: '/research', icon: BookOpen, label: 'Research' },
     { path: '/p2re', icon: Activity, label: 'P2RE Tools' },
   ]
@@ -80,7 +82,8 @@ function App() {
         {/* Routes */}
         <Routes>
           <Route path="/" element={<ChatView />} />
-          <Route path="/workflow" element={<WorkflowManagerPage />} />
+          <Route path="/workflow" element={<WorkflowPage />} />
+          <Route path="/artifacts" element={<ArtifactManagerPage />} />
           <Route path="/research" element={<ResearchPage />} />
           <Route path="/p2re" element={<P2REPage />} />
         </Routes>
