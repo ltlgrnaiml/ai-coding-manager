@@ -2,11 +2,24 @@
 
 All port and host configuration should be read from here.
 Values come from environment variables with sensible defaults.
+
+IMPORTANT: This module loads .env defensively to ensure env vars are available
+even if this module is imported before main.py runs load_dotenv().
 """
 
 import os
 from functools import lru_cache
+from pathlib import Path
 from pydantic import BaseModel
+
+# Defensive .env loading - ensures env vars are available regardless of import order
+try:
+    from dotenv import load_dotenv
+    _env_path = Path(__file__).parent.parent / ".env"
+    if _env_path.exists():
+        load_dotenv(_env_path)
+except ImportError:
+    pass  # dotenv not installed, rely on system env vars
 
 
 class PortConfig(BaseModel):

@@ -211,14 +211,16 @@ Every session must:
 1. Update session file with progress
 2. Ensure project builds
 3. Ensure all tests pass
-4. Document remaining work, blockers, or next steps
-5. Write handoff notes for next session
+4. **Run post-change verification** (see Rule 16)
+5. Document remaining work, blockers, or next steps
+6. Write handoff notes for next session
 
 ### Session Handoff Checklist
 
 - [ ] Project builds cleanly
 - [ ] All tests pass
 - [ ] Regression tests pass (if applicable)
+- [ ] **Post-change verification passes** (`./scripts/verify-changes.sh`)
 - [ ] Session file updated
 - [ ] Remaining TODOs documented
 
@@ -242,11 +244,48 @@ Add to project TODO file with file path + description.
 
 ---
 
+## Rule 16 — Post-Change Verification (CRITICAL)
+
+**After ANY code changes, run the verification checklist.**
+
+This prevents the most common failures:
+- `.env` not loaded (API keys missing)
+- Databases not initialized
+- Docker containers running stale code
+
+### Quick Check
+
+```bash
+./scripts/verify-changes.sh
+```
+
+### What It Verifies
+
+1. **Environment**: `.env` exists and has real API keys
+2. **Docker**: Containers rebuilt and running
+3. **Databases**: Knowledge, P2RE, Memory DBs initialized
+4. **Health**: Backend and frontend endpoints responding
+5. **Files**: Database files exist on disk
+
+### When to Run
+
+- After ANY Python/TypeScript code change
+- After modifying `.env` or `docker-compose.yml`
+- After pulling from git
+- Before marking a task complete
+- Before session handoff
+
+### Full Documentation
+
+See `POST_CHANGE_CHECKLIST.md` for detailed failure recovery procedures.
+
+---
+
 ## Solo-Dev Principles Summary
 
 1. **First-Principles**: Question everything, no legacy baggage
 2. **Full Control**: Break things freely, fix them completely
-3. **AI-Assisted**: Optimize for AI     comprehension and continuity
+3. **AI-Assisted**: Optimize for AI comprehension and continuity
 4. **Automate Everything**: Documentation, tests, validation
 5. **Deterministic Design**: Clear contracts, predictable behavior
 6. **Quality First**: Modern, clean, efficient, industry-leading

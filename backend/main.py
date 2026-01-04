@@ -7,20 +7,23 @@ Provides:
 - Phoenix tracing for observability
 """
 
+# CRITICAL: Load .env FIRST before ANY other imports
+# This must be at the very top to ensure env vars are available
+# when other modules are imported and read os.getenv()
+from pathlib import Path
+from dotenv import load_dotenv
+_env_path = Path(__file__).parent.parent / ".env"
+load_dotenv(_env_path)  # Explicit path for reliability
+
 import asyncio
 import json
 import logging
 import os
 from contextlib import asynccontextmanager
 from datetime import datetime
-from pathlib import Path
 from typing import AsyncGenerator
 
-from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query
-
-# Load .env file for local development (Mac native mode)
-load_dotenv()
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
