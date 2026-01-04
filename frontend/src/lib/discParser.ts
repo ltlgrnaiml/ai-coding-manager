@@ -19,6 +19,9 @@ export interface ArtifactReference {
   scope?: string
   status: 'exists' | 'planned' | 'referenced'
   context?: string
+  // NEW: Categorization
+  category: 'proposed' | 'dependency' | 'concept' | 'archived'
+  isArchived: boolean
 }
 
 export interface ProposedArtifact {
@@ -67,12 +70,14 @@ export interface ParsedDisc {
   problemStatement?: string
   metaphor?: string
   
-  // Structured data
+  // Structured data - CATEGORIZED
   references: ArtifactReference[]
+  proposedArtifacts: ProposedArtifact[]  // Artifacts TO BE CREATED from this DISC
+  dependencies: Dependency[]              // Artifacts this DISC DEPENDS ON
+  archivedReferences: ArtifactReference[] // Legacy/archived docs (reference only)
+  conceptReferences: ArtifactReference[]  // Topic/concept mentions (not actionable)
   childDiscs: string[]
-  proposedArtifacts: ProposedArtifact[]
   keyQuestions: KeyQuestion[]
-  dependencies: Dependency[]
   componentSpecs: ComponentSpec[]
   
   // Requirements
@@ -367,7 +372,10 @@ export function parseDisc(content: string, discId: string): ParsedDisc {
     }
   }
 
-  // === ARTIFACT REFERENCES ===
+  // === ARTIFACT REFERENCES WITH CATEGORIZATION ===
+  const archivedReferences: ArtifactReference[] = []
+  const conceptReferences: ArtifactReference[] = []
+  
   for (const [type, pattern] of Object.entries(ARTIFACT_PATTERNS)) {
     const matches = content.matchAll(pattern)
     for (const match of matches) {
@@ -385,8 +393,24 @@ export function parseDisc(content: string, discId: string): ParsedDisc {
       const lines = content.split('\n')
       const contextLine = lines[lineIndex - 1] || ''
 
-      // Check if this is a proposed artifact
+      // Detect if archived (in .archive folder or marked deprecated)
+      const isArchived = /\.archive|archived|deprecated|legacy|obsolete/i.test(contextLine)
+      
+      // Check if this is a proposed artifact (from "Proposed ADRs" table)
       const proposedArtifact = proposedArtifacts.find(p => p.id === id)
+      
+      // Check if this is a dependency (from "Dependencies" table)
+      const isDependency = dependencies.some(d => d.id === id)
+      
+      // Determine category
+      let category: ArtifactReference['category'] = 'concept'
+      if (isArchived) {
+        category = 'archived'
+      } else if (proposedArtifact) {
+        category = 'proposed'
+      } else if (isDependency) {
+        category = 'dependency'
+      }
 
       const reference: ArtifactReference = {
         type: type as ArtifactReference['type'],
@@ -395,9 +419,18 @@ export function parseDisc(content: string, discId: string): ParsedDisc {
         scope: proposedArtifact?.scope,
         status: proposedArtifact ? 'planned' : 'referenced',
         context: contextLine.trim().substring(0, 150),
+        category,
+        isArchived,
       }
 
-      references.push(reference)
+      // Route to appropriate list
+      if (isArchived) {
+        archivedReferences.push(reference)
+      } else if (category === 'concept') {
+        conceptReferences.push(reference)
+      } else {
+        references.push(reference)
+      }
 
       // Track child DISCs
       if (type === 'disc') {
@@ -429,10 +462,12 @@ export function parseDisc(content: string, discId: string): ParsedDisc {
     problemStatement,
     metaphor,
     references,
-    childDiscs,
     proposedArtifacts,
-    keyQuestions,
     dependencies,
+    archivedReferences,
+    conceptReferences,
+    childDiscs,
+    keyQuestions,
     componentSpecs,
     requirements: {
       functional: functionalReqs,
@@ -673,33 +708,57 @@ ${p.tasks.map(t => `- [ ] ${t}`).join('\n')}
 `
   }
 
-  // Build existing artifacts context
+  // Build existing artifacts context (only proposed/dependency, not concepts)
   const buildExistingArtifacts = () => {
-    if (existingArtifacts.length === 0) return ''
+    const actionable = existingArtifacts.filter(a => 
+      !parsedDisc.conceptReferences.some(c => c.id === a)
+    )
+    if (actionable.length === 0) return ''
     
     return `
 ## Already Created Artifacts
 
-The following artifacts have already been created for this discussion:
-${existingArtifacts.map(a => `- ${a}`).join('\n')}
-
-**Ensure consistency** with these existing artifacts.
+${actionable.map(a => `- ${a}`).join('\n')}
 `
   }
 
-  // Build key insights
+  // Build archived references (legacy only, clearly marked)
+  const buildArchivedReferences = () => {
+    if (parsedDisc.archivedReferences.length === 0) return ''
+    
+    return `
+## ⚠️ Legacy References (Archived)
+
+These are **archived/deprecated** documents. Reference for historical context only:
+${parsedDisc.archivedReferences.map(r => `- ~~${r.id}~~: ${r.context || 'archived'}`).join('\n')}
+`
+  }
+
+  // Build concept references (informational only, not actionable)
+  const buildConceptReferences = () => {
+    if (parsedDisc.conceptReferences.length === 0) return ''
+    
+    // Only show if there are many concept refs cluttering things
+    if (parsedDisc.conceptReferences.length < 3) return ''
+    
+    return `
+## Related Concepts (Informational)
+
+These are mentioned for context but are NOT part of this artifact chain:
+${parsedDisc.conceptReferences.slice(0, 5).map(r => `- ${r.id}`).join('\n')}
+`
+  }
+
+  // Build key insights (keep concise)
   const buildKeyInsights = () => {
     if (parsedDisc.keyInsights.length === 0 && parsedDisc.userQuotes.length === 0) return ''
     
-    let section = '\n## Key Insights from Discussion\n\n'
+    let section = ''
     
-    if (parsedDisc.keyInsights.length > 0) {
-      section += parsedDisc.keyInsights.slice(0, 5).map(i => `- ${i}`).join('\n')
-    }
-    
+    // Only include user quotes if present - these are high value
     if (parsedDisc.userQuotes.length > 0) {
-      section += '\n\n**User Vision**:\n'
-      section += parsedDisc.userQuotes.slice(0, 2).map(q => `> "${q}"`).join('\n\n')
+      section += '\n## User Vision\n\n'
+      section += parsedDisc.userQuotes.slice(0, 1).map(q => `> "${q}"`).join('\n')
     }
     
     return section
